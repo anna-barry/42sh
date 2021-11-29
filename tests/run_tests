@@ -1,3 +1,5 @@
 #!/bin/sh
 
+res1=testing_token(3, "If echo 'hello my name is ' Anna; then exit 1");
+echo $res1
 echo 'You have to write tests'
