@@ -19,7 +19,6 @@ struct ast_if_root
 {
     int nb_children;
     int status;
-    //enum ast_type *type;
     struct ast *type;
     union ast_data *children;
 };
@@ -34,30 +33,23 @@ struct ast_command
 struct ast_if
 {
     struct ast_command *cond;
-    //enum ast_type type;
-    struct ast type;
-    union ast_data *then;
+    struct ast_if_root *then;
 };
  
 struct ast_else
 {
-    //enum ast_type type;
-    struct ast type;
-    union ast_data *then;
+    struct ast_if_root *then;
 };
  
 struct ast_elif
 {
     struct ast_command *cond;
-    //enum ast_type type;
-    struct ast type;
-    union ast_data *then;
+    struct ast_if_root *then;
 };
 
 struct ast_main_root
 {
     int nb_children;
-    //enum ast_type *type;
     struct ast *type;
     union ast_data *children;
 };
