@@ -32,7 +32,7 @@ struct ast_main_root *build_ast(struct lexer *lex);
 //type is here to determine wich type of struct has to be created
 union ast_data *create_node(enum ast_type type)
 {
-    union ast_data *new;
+    union ast_data *new = malloc(sizeof(union ast_data));
     if (type == NODE_ROOT)
     {
         struct ast_main_root *ast = malloc(sizeof(struct ast_main_root));
@@ -192,13 +192,13 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
     printf("in the if\n");
     printf("%d\n", !lex);
     print(lex);
-    while (!lex || !lexer_peek(lex) || lexer_peek(lex)->type == TOKEN_EOF)
+    while (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
-    printf("heyyy\n");
     if (lex && lexer_peek(lex)->type != TOKEN_ELSE && lexer_peek(lex)->type != TOKEN_ELIF && lexer_peek(lex)->type != TOKEN_FI)
         errx(2, "bad args in a wrong place after if");
-    printf("heyyy\n");
     //add elif childs
+    if (lexer_peek(lex)->type == TOKEN_FI)
+        return new_root;
     while ((tip = lexer_pop(lex))->type != TOKEN_EOF && tip->type == TOKEN_ELIF)
     {
         if (build_elif(lex, new_root))
@@ -206,17 +206,17 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
         while (!lex || lexer_peek(lex)->type == TOKEN_EOF)
             lex = ask_entry();
     }
+    printf("TOKEN TYPE \n%d\n",lexer_peek(lex)->type );
+     printf("okkkkk\n");
     if (lexer_peek(lex)->type != TOKEN_ELSE && lexer_peek(lex)->type != TOKEN_FI)
         errx(2, "bad args in a wrong place after elif");
     //add else childs if existing
     if (lexer_peek(lex)->type == TOKEN_ELSE)
         build_else(lex, new_root);
-    
     while (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
     if (lexer_peek(lex)->type !=  TOKEN_FI)
         errx(2, "needed FI to close de IF condition");
-    
     //remove the FI token
     lexer_pop(lex);
     return new_root;
@@ -228,6 +228,7 @@ struct ast_main_root *build_ast(struct lexer *lex)
 {
     printf("ici2\n");
     struct ast_main_root *ast = create_node(NODE_IF_ROOT)->ast_main_root;
+    printf("ici2\n");
     ast->children = malloc(sizeof(union ast_data));
     if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
