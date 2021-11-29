@@ -13,11 +13,11 @@ union ast_data *create_node(enum ast_type type)
     union ast_data *new;
     if (type == NODE_ROOT)
     {
-        struct ast_root *root = malloc(sizeof(struct ast_root));
+        struct ast_if_root *root = malloc(sizeof(struct ast_if_root));
         root->nb_children = 0;
         root->status = 0;
         root->children = malloc(sizeof(struct ast_if));
-        new->ast_root = root;
+        new->ast_if_root = root;
     }
     else if (type == NODE_ELSE)
     {
@@ -98,7 +98,7 @@ int get_then(struct lexer *lex, union ast_data *then)
 
 //returns 0 if ok, if error 1
 //builds the if ast with cond ast and then ast
-int build_if(struct lexer *lex, struct ast_root *root)
+int build_if(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_if *new_if = create_node(NODE_IF)->ast_if;
     
@@ -110,7 +110,7 @@ int build_if(struct lexer *lex, struct ast_root *root)
     return 0;
 }
 
-int build_else(struct lexer *lex, struct ast_root *root)
+int build_else(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_else *new_else = create_node(NODE_ELSE)->ast_else;
     
@@ -123,7 +123,7 @@ int build_else(struct lexer *lex, struct ast_root *root)
     return 0;
 }
 
-int build_elif(struct lexer *lex, struct ast_root *root)
+int build_elif(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_elif *new_elif = create_node(NODE_ELIF)->ast_elif;
     if (get_command(lex, new_elif->cond) || get_then(lex, new_elif->then)) //if one of them is an error, then 1
@@ -136,11 +136,11 @@ int build_elif(struct lexer *lex, struct ast_root *root)
     return 0;
 }
 
-//builds and return ast_root if command is if
-struct ast_root *build_ast_if(struct lexer *lex)
+//builds and return ast_if_root if command is if
+struct ast_if_root *build_ast_if(struct lexer *lex)
 {
-    //creating the ast_root node
-    struct ast_root *new_root = create_node(NODE_ROOT)->ast_root;
+    //creating the ast_if_root node
+    struct ast_if_root *new_root = create_node(NODE_ROOT)->ast_if_root;
 
     //here getting if out of the lexer
     struct token *tip = lexer_pop(lex);
@@ -193,7 +193,7 @@ struct ast_main_root *build_ast(const char *entry)
         ast->nb_children++;
         ast->children = realloc(ast->children, sizeof(union ast_data) * ast->nb_children);
         if (lexer_peek(lex)->type == TOKEN_IF)
-            ast->children[ast->nb_children - 1].ast_root = build_ast_if(lex);
+            ast->children[ast->nb_children - 1].ast_if_root = build_ast_if(lex);
         if (lexer_peek(lex)->type == TOKEN_WORDS)
         {
             struct ast_command *new_com = create_node(NODE_COMMAND)->ast_command;

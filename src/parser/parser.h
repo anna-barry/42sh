@@ -10,7 +10,7 @@ enum ast_type
     NODE_COMMAND,
 };
 
-struct ast_root
+struct ast_if_root
 {
     int nb_children;
     int status;
