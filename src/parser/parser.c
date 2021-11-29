@@ -14,6 +14,7 @@ union ast_data *create_node(enum ast_type type)
     if (type == NODE_ROOT)
     {
         struct ast_if_root *root = malloc(sizeof(struct ast_if_root));
+        enum ast_type *type = malloc(sizeof(enum ast_type));
         root->nb_children = 0;
         root->status = 0;
         root->children = malloc(sizeof(struct ast_if));
@@ -22,7 +23,7 @@ union ast_data *create_node(enum ast_type type)
     else if (type == NODE_ELSE)
     {
         struct ast_else *new_else = malloc(sizeof(struct ast_else));
-        new_else->cond = malloc(sizeof(struct ast_command));
+        new_else->then = malloc(sizeof(struct ast_command));
         new->ast_else = new_else;
     }
     else if (type == NODE_IF)
@@ -106,6 +107,7 @@ int build_if(struct lexer *lex, struct ast_if_root *root)
         return 1;
 
     root->nb_children = 1;
+    root->type[0] = NODE_IF;
     root->children[0].ast_if = new_if;
     return 0;
 }
@@ -114,10 +116,12 @@ int build_else(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_else *new_else = create_node(NODE_ELSE)->ast_else;
     
-    if (get_command(lex, new_else->cond))
+    if (get_then(lex, new_else->then))
         return 1;
     
     root->nb_children++;
+    root->type = realloc(root->type, sizeof(struct ast_if) * root->nb_children);
+    root->type[root->nb_children - 1] = NODE_ELSE;
     root->children = realloc(root->children, sizeof(struct ast_if) * root->nb_children);
     root->children[root->nb_children - 1].ast_else = new_else;
     return 0;
@@ -130,6 +134,8 @@ int build_elif(struct lexer *lex, struct ast_if_root *root)
         return 1;
     
     int size = sizeof(struct ast_if) * root->nb_children + sizeof(struct ast_else);
+    root->type = realloc(root->type, sizeof(struct ast_if) * root->nb_children);
+    root->type[root->nb_children - 1] = NODE_ELIF;
     root->children = realloc(root->children, size);
     root->children[root->nb_children].ast_elif = new_elif;
     root->children++;
@@ -185,6 +191,7 @@ struct ast_main_root *build_ast(const char *entry)
     struct ast_main_root *ast = malloc(sizeof(struct ast_main_root));
     ast->nb_children = 0;
     ast->children = malloc(sizeof(union ast_data));
+    ast->type = malloc(sizeof(enum ast_type));
     struct lexer *lex = lexer_new(entry);
     if (!lex)
         lex = ask_entry();
@@ -192,10 +199,15 @@ struct ast_main_root *build_ast(const char *entry)
     {
         ast->nb_children++;
         ast->children = realloc(ast->children, sizeof(union ast_data) * ast->nb_children);
+        ast->type = realloc(ast->type, sizeof(enum ast_type) * ast->nb_children);
         if (lexer_peek(lex)->type == TOKEN_IF)
+        {
+            ast->type[ast->nb_children - 1] = NODE_IF;
             ast->children[ast->nb_children - 1].ast_if_root = build_ast_if(lex);
+        }
         if (lexer_peek(lex)->type == TOKEN_WORDS)
         {
+            ast->type[ast->nb_children - 1] = NODE_COMMAND;
             struct ast_command *new_com = create_node(NODE_COMMAND)->ast_command;
             if (get_command(lex, new_com))
                 errx(2, "could'nt get condition");
