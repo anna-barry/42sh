@@ -88,6 +88,9 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
           }
           new[index - 1].current_tok->value = strndup(input + i, nb);
           new[index - 1].current_tok->value[nb] = '\0';
+          if (nb > 0) {
+            nb--;
+          }
         }
   }
   else
@@ -107,7 +110,7 @@ struct lexer *lexer_new(const char *input)
     size_t nb = 0;
     for (; i <= strlen(input); i++)
     {
-      nb = 1;
+      nb = 0;
       if (is_space(input[i]))
         continue;
       if (cap < (i + 1))
