@@ -7,6 +7,7 @@
 #include "../lexer/lexer.h"
 #include "../lexer/token.h"
 
+struct ast_main_root *build_ast(struct lexer *lex);
 //creating and allocating space for node
 //type is here to determine wich type of struct has to be created
 union ast_data *create_node(enum ast_type type)
@@ -17,13 +18,13 @@ union ast_data *create_node(enum ast_type type)
         struct ast_main_root *ast = malloc(sizeof(struct ast_main_root));
         ast->nb_children = 0;
         ast->children = malloc(sizeof(union ast_data));
-        ast->type = malloc(sizeof(enum ast_type));
+        ast->type.type = NODE_ROOT;
         new->ast_main_root = ast;
     }
     if (type == NODE_IF_ROOT)
     {
         struct ast_if_root *root = malloc(sizeof(struct ast_if_root));
-        enum ast_type *type = malloc(sizeof(enum ast_type));
+        root->type.type = NODE_IF_ROOT;
         root->nb_children = 0;
         root->status = 0;
         root->children = malloc(sizeof(struct ast_if));
@@ -32,12 +33,14 @@ union ast_data *create_node(enum ast_type type)
     else if (type == NODE_ELSE)
     {
         struct ast_else *new_else = malloc(sizeof(struct ast_else));
+        new_else->type.type = NODE_ELSE;
         new_else->then = malloc(sizeof(struct ast_command));
         new->ast_else = new_else;
     }
     else if (type == NODE_IF)
     {
         struct ast_if *new_if = malloc(sizeof(struct ast_if));
+        new_if->type.type = NODE_IF;
         new_if->cond = malloc(sizeof(struct ast_command));
         new_if->then = malloc(sizeof(union ast_data));
         new->ast_if = new_if;
@@ -45,11 +48,13 @@ union ast_data *create_node(enum ast_type type)
     else if (type == NODE_ELIF)
     {
         struct ast_elif *new_elif = malloc(sizeof(struct ast_elif));
+        new_elif->type.type = NODE_ELIF;
         new_elif->cond = malloc(sizeof(struct ast_command));
         new_elif->then = malloc(sizeof(union ast_data));
         new->ast_elif = new_elif;
     }
     struct ast_command *new_c = malloc(sizeof(struct ast_command));
+    new_c->type.type = NODE_COMMAND;
     new_c->count = 0;
     new->ast_command = new_c;
     return new;
@@ -96,13 +101,13 @@ int get_command(struct lexer *lex, struct ast_command *new)
     return 0;
 }
 
-int get_then(struct lexer *lex, union ast_data *now, enum ast_type)
+int get_then(struct lexer *lex, struct ast_main_root *new)
 {
     if (!lex)
         lex = ask_entry();
     if (lexer_peek(lex)->type != TOKEN_THEN)
         return 1;
-    struct ast_main_root *new_root =
+    new = build_ast(lex);
     return 0;
 }
 
@@ -112,11 +117,10 @@ int build_if(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_if *new_if = create_node(NODE_IF)->ast_if;
     
-    if (get_command(lex, new_if->cond) || get_then(lex, new_if->then, NODE_IF)) //if one of them is an error, then 1
+    if (get_command(lex, new_if->cond) || get_then(lex, new_if->then)) //if one of them is an error, then 1
         return 1;
 
     root->nb_children = 1;
-    root->type[0] = NODE_IF;
     root->children[0].ast_if = new_if;
     return 0;
 }
@@ -125,12 +129,10 @@ int build_else(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_else *new_else = create_node(NODE_ELSE)->ast_else;
     
-    if (get_then(lex, new_else->then, NODE_ELSE))
+    if (get_then(lex, new_else->then))
         return 1;
     
     root->nb_children++;
-    root->type = realloc(root->type, sizeof(struct ast_if) * root->nb_children);
-    root->type[root->nb_children - 1] = NODE_ELSE;
     root->children = realloc(root->children, sizeof(struct ast_if) * root->nb_children);
     root->children[root->nb_children - 1].ast_else = new_else;
     return 0;
@@ -139,12 +141,10 @@ int build_else(struct lexer *lex, struct ast_if_root *root)
 int build_elif(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_elif *new_elif = create_node(NODE_ELIF)->ast_elif;
-    if (get_command(lex, new_elif->cond) || get_then(lex, new_elif->then, NODE_ELIF)) //if one of them is an error, then 1
+    if (get_command(lex, new_elif->cond) || get_then(lex, new_elif->then)) //if one of them is an error, then 1
         return 1;
     
     int size = sizeof(struct ast_if) * root->nb_children + sizeof(struct ast_else);
-    root->type = realloc(root->type, sizeof(struct ast_if) * root->nb_children);
-    root->type[root->nb_children - 1] = NODE_ELIF;
     root->children = realloc(root->children, size);
     root->children[root->nb_children].ast_elif = new_elif;
     root->children++;
@@ -198,25 +198,21 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
 //for now only handles IF and commands (for now echo)
 struct ast_main_root *build_ast(struct lexer *lex)
 {
-    struct ast_main_root *ast = create_node(NODE_IF_ROOT);
+    struct ast_main_root *ast = create_node(NODE_IF_ROOT)->ast_main_root;
     if (!lex)
         lex = ask_entry();
     while (lex)
     {
         ast->nb_children++;
         ast->children = realloc(ast->children, sizeof(union ast_data) * ast->nb_children);
-        ast->type = realloc(ast->type, sizeof(enum ast_type) * ast->nb_children);
         if (lexer_peek(lex)->type == TOKEN_IF)
-        {
-            ast->type[ast->nb_children - 1] = NODE_IF_ROOT;
             ast->children[ast->nb_children - 1].ast_if_root = build_ast_if(lex);
-        }
         if (lexer_peek(lex)->type == TOKEN_WORDS)
         {
-            ast->type[ast->nb_children - 1] = NODE_COMMAND;
             struct ast_command *new_com = create_node(NODE_COMMAND)->ast_command;
             if (get_command(lex, new_com))
                 errx(2, "could'nt get condition");
+            ast->children[ast->nb_children - 1].ast_command->type.type = NODE_COMMAND;
             ast->children[ast->nb_children - 1].ast_command = new_com;
         }
     }
