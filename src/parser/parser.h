@@ -19,29 +19,33 @@ struct ast_root
 
 struct ast_command
 {
+    int count;
     char **argv;
 };
 
 struct ast_if
 {
     struct ast_command *cond;
+    enum ast_type type;
     union ast_data *then;
 };
  
 struct ast_else
 {
-    struct ast_node *cond;
+    struct ast_command *cond;
 };
  
 struct ast_elif
 {
-    struct ast_node *cond;
+    struct ast_command *cond;
+    enum ast_type type;
     union ast_data *then;
 };
 
 struct ast_main_root
 {
     int nb_children;
+    enum ast_type *type;
     union ast_data *children;
 };
 
