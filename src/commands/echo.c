@@ -1,7 +1,9 @@
+#include "echo.h"
+
 #include <stdio.h>
 #include <string.h>
 
-int echo(char const *argv[])
+int echo(char *argv[])
 {
     int flag = 0;
     if (argv[1] == NULL)
@@ -54,7 +56,7 @@ int echo(char const *argv[])
     return 0;
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
     if (argc == 8)
     {
