@@ -34,20 +34,20 @@ struct ast_if
 {
     struct ast_command *cond;
     struct ast type;
-    struct ast_if_root *then;
+    struct ast_main_root *then;
 };
  
 struct ast_else
 {
     struct ast type;
-    struct ast_if_root *then;
+    struct ast_main_root *then;
 };
  
 struct ast_elif
 {
     struct ast type;
     struct ast_command *cond;
-    struct ast_if_root *then;
+    struct ast_main_root *then;
 };
 
 struct ast_main_root
