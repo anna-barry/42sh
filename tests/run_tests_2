@@ -34,3 +34,4 @@ rm ./token_printer
 exit 1;
 fi
 echo "done [ok] "
+rm ./token_printer
