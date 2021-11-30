@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "command.h"
-#include "echo.h"
+#include "../commands/command.h"
+#include "../commands/echo.h"
 #include "parser.h"
 
 void exec_ast_if_root(struct ast *ast)
@@ -49,9 +49,9 @@ int exec_ast_command(struct ast *ast)
 {
     struct ast_command *a = (struct ast_command *)ast;
     if (strcmp("echo", a->argv[0]))
-        return echo(argv);
+        return echo(a->argv);
     else
-        return command_exec(a->count, a->argv);
+        return command_exec(a->argv);
 }
 
 typedef void (*ast_exec_function)(struct ast *ast);

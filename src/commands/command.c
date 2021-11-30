@@ -11,25 +11,30 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-int command_exec(int argc, char *argv[])
+int command_exec(char *argv[]) // the command should be as : char *argv[4] = {
+                               // "echo", "geoffroy", "geoffroy", NULL };
+                               // the NULL argument is nessessary.
 {
-    if (argc != 1)
-        return 0;
     int pid = fork();
     if (pid == -1)
         err(1, NULL);
     if (pid == 0)
     {
-        if (execl("/bin/sh", "supershell", "-c", argv) == -1)
-            err(1, NULL);
-        return 1;
+        if (execvp(argv[0], argv) == -1) // execute the commande
+            return 127;
     }
     int wstatus;
     if (waitpid(pid, &wstatus, 0) == -1)
         err(1, NULL);
-    printf("process exit status: %d\n", WEXITSTATUS(wstatus));
-    return 0;
+    return WEXITSTATUS(wstatus); // return the return value of the command
 }
+
+// int main()
+// {
+//     char *argv[4] = { "echo", "geoffroy", "geoffroy", NULL };
+//     return command_exec(argv);
+//     return 0;
+// }
 
 // if (argc < 3) {
 //     err(2, "Not enough arguments");
