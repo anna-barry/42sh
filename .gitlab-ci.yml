@@ -22,7 +22,7 @@ build:
     expose_as: 42sh
 
 test_shell:
-  stage: test_shell
+  stage: test
   script:
     - tests/run_tests
   
