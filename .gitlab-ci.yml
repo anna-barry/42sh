@@ -26,7 +26,7 @@ test:
   dependencies:
     - build
   script:
-    - tests/run_tests builddir/42sh
+    - tests/run_tests #builddir/42sh
 
 clang-format:
   stage: qa
