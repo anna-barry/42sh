@@ -37,14 +37,18 @@ union ast_data *create_node(enum ast_type type)
     union ast_data *new = malloc(sizeof(union ast_data));
     if (type == NODE_ROOT)
     {
+        printf("\n\n\n Creating node root \n\n\n");
         struct ast_main_root *ast = malloc(sizeof(struct ast_main_root));
         ast->nb_children = 0;
         ast->children = NULL;
         ast->type.type = NODE_ROOT;
         new->ast_main_root = ast;
+        if (new->ast_main_root->type.type == NODE_ROOT)
+            printf("testing here \n");
     }
     if (type == NODE_IF_ROOT)
     {
+        printf("\n Creating if node root \n");
         struct ast_if_root *root = malloc(sizeof(struct ast_if_root));
         root->type.type = NODE_IF_ROOT;
         root->nb_children = 0;
@@ -54,6 +58,7 @@ union ast_data *create_node(enum ast_type type)
     }
     else if (type == NODE_ELSE)
     {
+        printf("node else\n");
         struct ast_else *new_else = malloc(sizeof(struct ast_else));
         new_else->type.type = NODE_ELSE;
         new_else->then = malloc(sizeof(struct ast_command));
@@ -61,6 +66,7 @@ union ast_data *create_node(enum ast_type type)
     }
     else if (type == NODE_IF)
     {
+        printf("node if\n");
         struct ast_if *new_if = malloc(sizeof(struct ast_if));
         new_if->type.type = NODE_IF;
         new_if->cond = malloc(sizeof(struct ast_command));
@@ -69,16 +75,23 @@ union ast_data *create_node(enum ast_type type)
     }
     else if (type == NODE_ELIF)
     {
+        printf("node elif\n");
         struct ast_elif *new_elif = malloc(sizeof(struct ast_elif));
         new_elif->type.type = NODE_ELIF;
         new_elif->cond = malloc(sizeof(struct ast_command));
         new_elif->then = malloc(sizeof(union ast_data));
         new->ast_elif = new_elif;
     }
-    struct ast_command *new_c = malloc(sizeof(struct ast_command));
-    new_c->type.type = NODE_COMMAND;
-    new_c->count = 0;
-    new->ast_command = new_c;
+    else
+    {
+        struct ast_command *new_c = malloc(sizeof(struct ast_command));
+        new_c->type.type = NODE_COMMAND;
+        new_c->count = 0;
+        new->ast_command = new_c;
+        if (new->ast_main_root->type.type == NODE_ROOT)
+            printf("testing here x2\n");
+        printf("____________________________________\n");
+    }
     return new;
 }
 
@@ -238,7 +251,13 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
 //for now only handles IF and commands (for now echo)
 struct ast_main_root *build_ast(struct lexer *lex)
 {
-    struct ast_main_root *ast = create_node(NODE_IF_ROOT)->ast_main_root;
+    struct ast_main_root *ast = create_node(NODE_ROOT)->ast_main_root;
+    ast->type.type = NODE_ROOT;
+    printf("type of node = %d\n", ast->type.type);
+    if (ast->type.type == NODE_ROOT)
+    {
+        printf("\n\n\nNODE ROOT\n\n\n");
+    }
     ast->children = malloc(sizeof(union ast_data));
     if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
