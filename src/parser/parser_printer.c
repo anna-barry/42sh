@@ -8,27 +8,34 @@ void print_ast(struct ast *ast);
 
 void print_ast_if_root(struct ast *ast)
 {
+    printf("if root\n");
     struct ast_if_root *a = (struct ast_if_root *) ast;
     for (int i = 0; i < a->nb_children; i++)
     {
-        print_ast(&a->children->ast_if_root->type);
+        print_ast(&a->children[i].type);
     }
+    printf("end if root\n");
 }
 
 void print_ast_root(struct ast *ast)
 {
+    printf("root\n");
     struct ast_main_root *a = (struct ast_main_root *) ast;
     for (int i = 0; i < a->nb_children; i++)
     {
-        print_ast(&a->children->ast_if_root->type);
+        print_ast(&a->children[i].type);
     }
+    printf("end root\n");
 }
 
 void print_ast_if(struct ast *ast)
 {
     struct ast_if *a = (struct ast_if *) ast;
     printf("if { ");
-    print_ast(&a->cond->type);
+    for (int i = 0; i < a->count_cond; i++)
+    {
+        print_ast(&a->cond[i].type);
+    }
     printf("}; then {");
     print_ast(&a->then->type);
     printf("; }");
@@ -38,7 +45,10 @@ void print_ast_elif(struct ast *ast)
 {
     struct ast_elif *a = (struct ast_elif *) ast;
     printf("elif { ");
-    print_ast(&a->cond->type);
+    for (int i = 0; i < a->count_cond; i++)
+    {
+        print_ast(&a->cond[i].type);
+    }
     printf("}; then {");
     print_ast(&a->then->type);
     printf(" }");
@@ -75,19 +85,26 @@ static ast_print_function ast_printers[] =
 };
 
 void print_ast(struct ast *ast) {
+    printf("ast printing");
     ast_printers[ast->type](ast);
 }
 
 void pretty_print(struct ast_main_root *ast)
 {
+    printf("here printing");
     print_ast(&ast->type);
 }
 
 int main()
 {
-    struct lexer *lexer = lexer_new("if echo b; echo a; then echo a; fi");
+    struct lexer *lexer = lexer_new("if echo ok; then echo foobar; fi");
     struct ast_main_root *ast = build_ast(lexer);
-    printf("OKAY\n");
+    printf("\n build ast with nb %i[ok]\n\n", ast->nb_children);
+    if (ast->type.type == NODE_ROOT)
+    {
+        printf("node root\n");
+    }
+    printf("before pretty print\n");
     pretty_print(ast);
     return 0;
 }
