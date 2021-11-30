@@ -8,7 +8,7 @@ char *tab[] = {
     [TOKEN_LINE_BREAK] = "\n"
 };
 
-int testing_token(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     if (argc != 2)
         return 1;
