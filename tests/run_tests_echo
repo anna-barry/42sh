@@ -1,0 +1,68 @@
+#!/bin/bash
+
+gcc src/commands/echo.c -o echo
+echo "********* Testing Echo 0 ***********"
+diff <(./echo "test0") <(printf "\n")
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./echo
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Echo 1 ***********"
+diff <(./echo "test1") <(printf "geoffroy\n")
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./echo
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Echo 2 ***********"
+diff <(./echo "test2") <(printf "geoffroy geoffroy\n")
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./echo
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Echo 3 ***********"
+diff <(./echo "test3") <(printf "geoffroy")
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./echo
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Echo 4 ***********"
+diff <(./echo "test4") <(printf "geof'\''n'froy")
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./echo
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Echo 5 ***********"
+diff <(./echo "test5") <(printf "geof\\nfroy")
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./echo
+exit 1;
+fi
+echo "done [ok] "

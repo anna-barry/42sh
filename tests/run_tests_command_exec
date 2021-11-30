@@ -1,0 +1,68 @@
+#!/bin/bash
+
+gcc src/commands/command.c -o command_exec
+echo "********* Testing Command LS ***********"
+diff <(./command_exec "test0") <(ls)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./command_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command LS a DIR ***********"
+diff <(./command_exec "test1") <(ls tests/)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./command_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command CAT a FILE ***********"
+diff <(./command_exec "test2") <(cat tests/run_tests_echo)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./command_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command ECHO(builtin) ***********"
+diff <(./command_exec "test3") <(echo geoffroy)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./command_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command LS with wrong FILE ***********"
+diff <(./command_exec "test4") <(ls notExistantFile)
+var1=$?
+if [ $var1 -ne 1 ];
+then
+echo "error"
+rm ./command_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command with wrong COMMAND ***********"
+diff <(./command_exec "test5") <(ld)
+var1=$?
+if [ $var1 -ne 1 ];
+then
+echo "error"
+rm ./command_exec
+exit 1;
+fi
+echo "done [ok] "
