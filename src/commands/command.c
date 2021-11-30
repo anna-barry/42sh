@@ -6,6 +6,7 @@
 //#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 //#include <sys/stat.h>
 //#include <sys/types.h>
 #include <sys/wait.h>
@@ -29,6 +30,16 @@ int command_exec(char *argv[]) // the command should be as : char *argv[4] = {
     return WEXITSTATUS(wstatus); // return the return value of the command
 }
 
+// int main(int argc, char *argv[])
+// {
+//     if (argc == 0)
+//     {
+//         printf("I'm not sure about that one\n");
+//     }
+//     return command_exec(argv);
+//     return 0;
+// }
+
 // int main()
 // {
 //     char *argv[4] = { "echo", "geoffroy", "geoffroy", NULL };
@@ -36,39 +47,33 @@ int command_exec(char *argv[]) // the command should be as : char *argv[4] = {
 //     return 0;
 // }
 
-// if (argc < 3) {
-//     err(2, "Not enough arguments");
-//   }
-//   int fd = open(argv[1], O_CREAT | O_WRONLY, 0644);
-//   int pid = fork();
-//   char *nb2 = argv[2];
-//   int i = 0;
-//   for (; i + 2 < argc; i++) {
-//     argv[i] = argv[i + 2];
-//   }
-//   for (; i < argc; i++) {
-//     argv[i] = NULL;
-//   }
-//   if (pid == 0) {
-//     if (dup2(fd, 1) == -1)
-//       fprintf(stderr, "Error with dup2");
-//     if (execvp(nb2, argv) == -1)
-//       return 127;
-//     //     return EXIT_FAILURE;
-//   } else {
-//     int wstatus;
-//     int child_pid = waitpid(pid, &wstatus, 0);
-//     if (child_pid == -1) {
-//       errx(1, "wrong child pid \n");
-//     }
-//     if (WIFEXITED(wstatus)) {
-//       if (WEXITSTATUS(wstatus) == 127) {
-//         fprintf(stderr, "Incorrect command");
-//         return 1;
-//       }
-//     }
-//     printf("%s exited with %i!\n", nb2, WEXITSTATUS(wstatus));
-//   }
-//   close(fd);
-//   return 0;
-// }
+int main(int argc, char const *argv[])
+{
+    char *argv0[2] = { "ls", NULL };
+    char *argv1[3] = { "ls", "tests", NULL };
+    char *argv2[3] = { "cat", "tests/run_tests_echo", NULL };
+    char *argv3[3] = { "echo", "geoffroy", NULL };
+    char *argv4[3] = { "ls", "notExistantFile",
+                       NULL }; // err will occur and return 1
+    char *argv5[2] = { "ld", NULL }; // err will occur and return 1
+    if (argc != 2)
+        err(1, "Wrong args, try again with  : (./command_exec test-*)\n");
+    else
+    {
+        if (strcmp("test0", argv[1]) == 0) // simple command_exec
+            return command_exec(argv0);
+        else if (strcmp("test1", argv[1]) == 0)
+            return command_exec(argv1);
+        else if (strcmp("test2", argv[1]) == 0)
+            return command_exec(argv2);
+        else if (strcmp("test3", argv[1]) == 0)
+            return command_exec(argv3);
+        else if (strcmp("test4", argv[1]) == 0)
+            return command_exec(argv4);
+        else if (strcmp("test5", argv[1]) == 0)
+            return command_exec(argv5);
+        else
+            err(1, "Not implemented test");
+    }
+    return 0;
+}
