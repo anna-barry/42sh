@@ -1,6 +1,6 @@
 #!/bin/sh
 
-gcc src/lexer/lexer.c src/lexer/token.c src/lexer/token_printer.c -o tests/token_printer
+gcc src/lexer/lexer.c src/lexer/token.c src/lexer/token_printer.c -o token_printer
 #gcc token_printer.c -o token_printer
 ./tests/token_printer "If echo 'hello my name is ' Anna; then echo bs"
 var1=$?
