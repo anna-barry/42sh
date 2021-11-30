@@ -1,6 +1,6 @@
 #ifndef ECHO_H
 #define ECHO_H
 
-int echo(char const *argv[]);
+int echo(char *argv[]);
 
 #endif
