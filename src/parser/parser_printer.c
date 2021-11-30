@@ -85,8 +85,9 @@ void pretty_print(struct ast_main_root *ast)
 
 int main()
 {
-    struct lexer *lexer = lexer_new("if echo b; then echo a; fi");
+    struct lexer *lexer = lexer_new("if echo b; echo a; then echo a; fi");
     struct ast_main_root *ast = build_ast(lexer);
+    printf("OKAY\n");
     pretty_print(ast);
     return 0;
 }

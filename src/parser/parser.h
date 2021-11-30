@@ -67,10 +67,9 @@ union ast_data
     struct ast_main_root *ast_main_root;
 };
 
-void print(struct lexer *lexer);
 union ast_data *create_node(enum ast_type type);
 struct lexer *ask_entry(void);
-int get_command(struct lexer *lex, struct ast_command *new)
+int get_command(struct lexer *lex, struct ast_command *new);
 int get_then(struct lexer *lex, struct ast_main_root *new);
 int build_if(struct lexer *lex, struct ast_if_root *root);
 int build_else(struct lexer *lex, struct ast_if_root *root);

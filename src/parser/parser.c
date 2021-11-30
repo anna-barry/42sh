@@ -9,6 +9,7 @@
 
 void print(struct lexer *lexer)
 {
+    printf("START OF PRINTING ##########\n");
     char *tab[] = {
         [TOKEN_IF] = "If", [TOKEN_THEN] = "Then",  [TOKEN_ELIF] = "Elif",
         [TOKEN_ELSE] = "Else",  [TOKEN_FI] = "Fi", [TOKEN_SEMICOLON] = ";",
@@ -25,6 +26,7 @@ void print(struct lexer *lexer)
                 printf("%s\n", tab[lexer[i].current_tok->type]);
             i++;
         }
+    printf("END OF PRINTING ##########\n");
 }
 
 struct ast_main_root *build_ast(struct lexer *lex);
@@ -112,6 +114,8 @@ int get_command(struct lexer *lex, struct ast_command *new)
         }
         new[i].argv = realloc(new[i].argv, y + 1);
         new[i].argv[y] = NULL;
+        lexer_pop(lex);
+        print(lex);
         if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
             lex = ask_entry();
         if (lex && lexer_peek(lex)->type == TOKEN_SEMICOLON)
@@ -226,22 +230,19 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
 //for now only handles IF and commands (for now echo)
 struct ast_main_root *build_ast(struct lexer *lex)
 {
-    printf("ici2\n");
     struct ast_main_root *ast = create_node(NODE_IF_ROOT)->ast_main_root;
-    printf("ici2\n");
     ast->children = malloc(sizeof(union ast_data));
     if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
     while (lex && lexer_peek(lex)->type != TOKEN_EOF)
     {
-        printf("data = %s\n", lex->input);
-        printf("pos = %zu\n", lex->pos);
         ast->nb_children++;
         ast->children = realloc(ast->children, sizeof(union ast_data) * ast->nb_children);
         if (lexer_peek(lex)->type == TOKEN_IF)
         {
             ast->children[ast->nb_children - 1].ast_if_root = build_ast_if(lex);
             printf("if finished\n");
+            print(lex);
         }
         if (lexer_peek(lex)->type == TOKEN_WORDS)
         {
@@ -263,11 +264,11 @@ struct ast_main_root *build_ast(struct lexer *lex)
     return ast;
 }
 
-int main()
+/*int main()
 {
     struct lexer *lexer = lexer_new("if echo b; then echo a; fi");
     print(lexer);
     struct ast_main_root *ast = build_ast(lexer);
     free(ast);
     return 0;
-}
+}*/
