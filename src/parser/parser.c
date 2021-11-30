@@ -98,21 +98,30 @@ int get_command(struct lexer *lex, struct ast_command *new)
         lex = ask_entry();
     if (lexer_peek(lex)->type != TOKEN_WORDS)
         return 1;
+    int capy = 30;
+    int capi = 30;
     int i = 0;
-    new = malloc(sizeof(struct ast_command));
+    new = malloc(sizeof(struct ast_command) * capi);
     new->type.type = NODE_COMMAND;
     for (; lex && lexer_peek(lex)->type == TOKEN_WORDS; i++)
     {
-        new = realloc(new, sizeof(struct ast_command) * (i + 1));
-        new[i].argv = malloc(sizeof (char *));
+        if (i == capi)
+        {
+            capi *= 2;
+            new = realloc(new, sizeof(struct ast_command) * capi);
+        }
+        new[i].argv = malloc(sizeof (char *) * 30);
         int y = 0;
         for (; lex && lexer_peek(lex)->type == TOKEN_WORDS; y++)
         {
-            new[i].argv = realloc(new->argv, y + 1);
+            if (y == capy)
+            {
+                capy *= 2;
+                new[i].argv = realloc(new->argv, capy);
+            }
             new[i].argv[y] = lexer_peek(lex)->value;
             lexer_pop(lex);
         }
-        new[i].argv = realloc(new[i].argv, y + 1);
         new[i].argv[y] = NULL;
         lexer_pop(lex);
         print(lex);
@@ -121,9 +130,9 @@ int get_command(struct lexer *lex, struct ast_command *new)
         if (lex && lexer_peek(lex)->type == TOKEN_SEMICOLON)
             lexer_pop(lex);
     }
-    new = realloc(new, ++i);
     new->count = i;
     new[i].argv = NULL;
+    printf("TEST\n");
     return 0;
 }
 
@@ -190,7 +199,6 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
     struct token *tip = lexer_pop(lex);
     //add if
     print(lex);
-    printf("before build if\n");
     if (build_if(lex, new_root))
         errx(2, "bad args in a wrong place in IF");
     printf("in the if\n");
