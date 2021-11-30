@@ -48,10 +48,13 @@ void exec_ast_else(struct ast *ast)
 int exec_ast_command(struct ast *ast)
 {
     struct ast_command *a = (struct ast_command *)ast;
-    if (strcmp("echo", a->argv[0]))
-        return echo(a->argv);
-    else
-        return command_exec(a->argv);
+    for (size_t i = 0; i < a->count; i++)
+    {
+        if (strcmp("echo", a->cond[i].argv[0]) == 0)
+            return echo(a->cond[i]);
+        else
+            return command_exec(a->cond[i]);
+    }
 }
 
 typedef void (*ast_exec_function)(struct ast *ast);
