@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 gcc src/lexer/lexer.c src/lexer/token.c src/lexer/token_printer.c -o token_printer
 echo "********* Testing Lexer 1 ***********"
-./token_printer "If echo 'hello my name is ' Anna; then echo bs"
+diff <(./token_printer "If echo 'hello my name is ' Anna; then echo bs") <(printf "If\necho\n'hello my name is '\nAnna\n;\nThen\necho\nbs\nEOF\n")
 var1=$?
 #rm ./token_printer
 if [ $var1 -ne 0 ]; 
@@ -11,21 +11,10 @@ echo "error"
 rm ./token_printer
 exit 1;
 fi
-"done [ok] "
+echo "done [ok] "
 
 echo "********* Testing Lexer 2 ***********"
-diff <(./token_printer "if echo b; then echo a; fi") <(echo "If\necho\nb\n;\nThen\nech\na\n;\nFi\nEOF")
-#var2=$?
-#if [ $var2 -ne 0 ]; 
-#then
-#echo "error"
-#rm ./token_printer
-#exit 1;
-#fi
-"done [ok] "
-
-echo "********* Testing Lexer 3 ***********"
-./token_printer "if echo b; then echo a; fi"
+diff <(./token_printer "if echo b; then echo a; fi") <(printf "If\necho\nb\n;\nThen\necho\na\n;\nFi\nEOF\n")
 var2=$?
 if [ $var2 -ne 0 ]; 
 then
@@ -33,4 +22,26 @@ echo "error"
 rm ./token_printer
 exit 1;
 fi
-"done [ok] "
+echo "done [ok] "
+
+echo "********* Testing Lexer 3 ***********"
+diff <(./token_printer "if echo b; then echo a; fi") <(printf "If
+echo
+b
+;
+Then
+echo
+a
+;
+Fi
+EOF
+")
+var2=$?
+if [ $var2 -ne 0 ]; 
+then
+echo "error"
+rm ./token_printer
+exit 1;
+fi
+echo "done [ok] "
+rm ./token_printer
