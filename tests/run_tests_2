@@ -14,14 +14,14 @@ fi
 "done [ok] "
 
 echo "********* Testing Lexer 2 ***********"
-diff <(./token_printer "if echo b; then echo a; fi") <(echo "If\necho\nb\n;\nThen\nech\na\n;\nFi\nEOF")
-#var2=$?
-#if [ $var2 -ne 0 ]; 
-#then
-#echo "error"
-#rm ./token_printer
-#exit 1;
-#fi
+diff <(./token_printer "if echo b; then echo a; fi") <(printf "If\necho\nb\n;\nThen\necho\na\n;\nFi\nEOF\n")
+var2=$?
+if [ $var2 -ne 0 ]; 
+then
+echo "error"
+rm ./token_printer
+exit 1;
+fi
 "done [ok] "
 
 echo "********* Testing Lexer 3 ***********"
