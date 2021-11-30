@@ -103,7 +103,7 @@ int get_command(struct lexer *lex, struct ast_command *new)
     new->type.type = NODE_COMMAND;
     for (; lex && lexer_peek(lex)->type == TOKEN_WORDS; i++)
     {
-        new = realloc(new, sizeof(struct ast_command) * (i +1));
+        new = realloc(new, sizeof(struct ast_command) * (i + 1));
         new[i].argv = malloc(sizeof (char *));
         int y = 0;
         for (; lex && lexer_peek(lex)->type == TOKEN_WORDS; y++)
@@ -263,12 +263,3 @@ struct ast_main_root *build_ast(struct lexer *lex)
     }
     return ast;
 }
-
-/*int main()
-{
-    struct lexer *lexer = lexer_new("if echo b; then echo a; fi");
-    print(lexer);
-    struct ast_main_root *ast = build_ast(lexer);
-    free(ast);
-    return 0;
-}*/
