@@ -11,7 +11,7 @@ echo "error"
 rm ./token_printer
 exit 1;
 fi
-"done [ok] "
+echo "done [ok] "
 
 echo "********* Testing Lexer 2 ***********"
 diff <(./token_printer "if echo b; then echo a; fi") <(printf "If\necho\nb\n;\nThen\necho\na\n;\nFi\nEOF\n")
@@ -22,10 +22,10 @@ echo "error"
 rm ./token_printer
 exit 1;
 fi
-"done [ok] "
+echo "done [ok] "
 
 echo "********* Testing Lexer 3 ***********"
-./token_printer "if echo b; then echo a; fi"
+diff <(./token_printer "if echo b; then echo a; fi") <(printf "If\necho\nb\n;\nThen\necho\na\n;\Fi\nEOF\n")
 var2=$?
 if [ $var2 -ne 0 ]; 
 then
@@ -33,4 +33,4 @@ echo "error"
 rm ./token_printer
 exit 1;
 fi
-"done [ok] "
+echo "done [ok] "
