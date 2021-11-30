@@ -24,7 +24,7 @@ build:
 test_shell:
   stage: test
   script:
-    - tests/run_tests
+    - tests/run_tests_2
   
 test:
   stage: test
