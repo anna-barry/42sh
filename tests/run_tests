@@ -1,10 +1,10 @@
 #!/bin/sh
 
-#gcc ../src/lexer/lexer.c ../src/lexer/token.c ../src/lexer/token_printer.c -o token_printer
+gcc src/lexer/lexer.c src/lexer/token.c src/lexer/token_printer.c -o token_printer
 #gcc token_printer.c -o token_printer
 ./token_printer "If echo 'hello my name is ' Anna; then echo bs"
 var1=$?
-#rm token_printer
+rm token_printer
 if [ $var1 -ne 0 ]; 
 then
 exit 1;
