@@ -128,6 +128,8 @@ int main(int argc, char *argv[])
             pretty_print = 1;
         }
     }
-    const char *input = (const)find_input(argc, argv);
+    const char *input = (const char *)find_input(argc, argv);
+    if (input == NULL)
+      return 1;
     return 0;
 }
