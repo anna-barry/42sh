@@ -21,6 +21,11 @@ build:
       - builddir/42sh
     expose_as: 42sh
 
+test_shell:
+  stage: test_shell
+  script:
+    - tests/run_tests
+  
 test:
   stage: test
   dependencies:
