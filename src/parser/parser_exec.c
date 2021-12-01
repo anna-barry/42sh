@@ -7,50 +7,67 @@
 #include "../commands/echo.h"
 #include "parser.h"
 
-void exec_ast_if_root(struct ast *ast)
+int exec_ast_if_root(struct ast *ast)
 {
-    struct ast_if_root *a = (struct ast_if_root *)ast;
-    for (int i = 0; i < a->nb_children; i++)
+  struct ast_if_root *a = ast->data.ast_if_root;
+  for (int i = 0; i < a->nb_children; i++)
     {
-        exec_ast(&a->children.type);
+      a->status = exec_ast(a->children[i]);
+      if (a->status == 0)
+	break;
     }
+  return a->status;
 }
 
 void exec_ast_root(struct ast *ast)
 {
-    struct ast_main_root *a = (struct ast_main_root *)ast;
+    struct ast_main_root *a = ast->data.ast_main_root;
+    int res = -1;
     for (int i = 0; i < a->nb_children; i++)
     {
-        exec_ast(&a->children.type);
+        res = exec_ast(a->children[i]);
     }
+    return res;
 }
 
-void exec_ast_if(struct ast *ast)
+int exec_ast_if(struct ast *ast)
 {
-    struct ast_if *a = (struct ast_if *)ast;
-    exec_ast(&a->cond.type);
-    exec_ast(&a->then.type);
+  struct ast_if *a = ast->data.ast_if;
+  int res = -1;
+  int i = 0;
+  for (int i = 0; i < a->count_cond; i++)
+    {
+      if ((res = exec_ast(a->cond[i])) == 0)
+	i = exec_ast(a->then);
+    }
+  return res;
 }
 
-void exec_ast_elif(struct ast *ast)
+int exec_ast_elif(struct ast *ast)
 {
-    struct ast_elif *a = (struct ast_elif *)ast;
-    exec_ast(&a->cond.type);
-    exec_ast(&a->then.type);
+  struct ast_if *a = ast->data.ast_elif;
+  int res = -1;
+  int i = 0;
+  for (int i = 0; i < a->count_cond; i++)
+    {
+      if ((res = exec_ast(a->cond[i])) == 0)
+	i = exec_ast(a->then);
+    }
+  return res;
 }
 
-void exec_ast_else(struct ast *ast)
+int exec_ast_else(struct ast *ast)
 {
-    struct ast_else *a = (struct ast_else *)ast;
-    exec_ast(&a->cond.type);
+    struct ast_else *a = ast->data.ast_else;
+    return exec_ast(a->then);
 }
 
 int exec_ast_command(struct ast *ast)
 {
-    struct ast_command *a = (struct ast_command *)ast;
+    struct ast_command *a = ast->data.ast_command;
     for (size_t i = 0; i < a->count; i++)
     {
-        if (strcmp("echo", a->cond[i].argv[0]) == 0)
+        if (strcmp("echo", argv[0]) == 0)
             return echo(a->cond[i]);
         else
             return command_exec(a->cond[i]);
@@ -71,10 +88,10 @@ static ast_exec_function ast_exec[] =
 
 void exec_ast(struct ast *ast)
 {
-    ast_exec[ast->type](ast);
+    return ast_exec[ast->type](ast);
 }
 
 void execution(struct ast_main_root *ast)
 {
-    exec_ast(&ast.type);
+    return exec_ast(&ast.type);
 }
