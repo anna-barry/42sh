@@ -1,6 +1,9 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "../lexer/lexer.h"
+#include "../lexer/token.h"
+
 enum ast_type
 {
     NODE_IF, //0
@@ -74,10 +77,12 @@ struct ast_command **create_command();
 struct ast_elif *create_elif();
 struct lexer *ask_entry(void);
 int get_command(struct lexer *lex, struct ast_command **new);
-int get_then(struct lexer *lex, struct ast *new);
+int get_then(struct lexer *lex, struct ast *new, enum ast_type mode);
 int build_if(struct lexer *lex, struct ast_if_root *root);
 int build_else(struct lexer *lex, struct ast_if_root *root);
 int build_elif(struct lexer *lex, struct ast_if_root *root);
 struct ast_if_root *build_ast_if(struct lexer *lex);
-struct ast *build_ast(struct lexer *lex);
+int check_break(enum ast_type mode, enum token_type type);
+struct ast *build_ast(struct lexer *lex, enum ast_type mode);
+
 #endif
