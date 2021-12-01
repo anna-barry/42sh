@@ -9,14 +9,14 @@
 
 int exec_ast_if_root(struct ast *ast)
 {
-  struct ast_if_root *a = ast->data.ast_if_root;
-  for (int i = 0; i < a->nb_children; i++)
+    struct ast_if_root *a = ast->data.ast_if_root;
+    for (int i = 0; i < a->nb_children; i++)
     {
-      a->status = exec_ast(a->children[i]);
-      if (a->status == 0)
-	break;
+        a->status = exec_ast(a->children[i]);
+        if (a->status == 0)
+            break;
     }
-  return a->status;
+    return a->status;
 }
 
 void exec_ast_root(struct ast *ast)
@@ -32,28 +32,28 @@ void exec_ast_root(struct ast *ast)
 
 int exec_ast_if(struct ast *ast)
 {
-  struct ast_if *a = ast->data.ast_if;
-  int res = -1;
-  int i = 0;
-  for (int i = 0; i < a->count_cond; i++)
+    struct ast_if *a = ast->data.ast_if;
+    int res = -1;
+    int i = 0;
+    for (int i = 0; i < a->count_cond; i++)
     {
-      if ((res = exec_ast(a->cond[i])) == 0)
-	i = exec_ast(a->then);
+        if ((res = exec_ast(a->cond[i])) == 0)
+            i = exec_ast(a->then);
     }
-  return res;
+    return res;
 }
 
 int exec_ast_elif(struct ast *ast)
 {
-  struct ast_if *a = ast->data.ast_elif;
-  int res = -1;
-  int i = 0;
-  for (int i = 0; i < a->count_cond; i++)
+    struct ast_if *a = ast->data.ast_elif;
+    int res = -1;
+    int i = 0;
+    for (int i = 0; i < a->count_cond; i++)
     {
-      if ((res = exec_ast(a->cond[i])) == 0)
-	i = exec_ast(a->then);
+        if ((res = exec_ast(a->cond[i])) == 0)
+            i = exec_ast(a->then);
     }
-  return res;
+    return res;
 }
 
 int exec_ast_else(struct ast *ast)
@@ -65,13 +65,10 @@ int exec_ast_else(struct ast *ast)
 int exec_ast_command(struct ast *ast)
 {
     struct ast_command *a = ast->data.ast_command;
-    for (size_t i = 0; i < a->count; i++)
-    {
-        if (strcmp("echo", argv[0]) == 0)
-            return echo(a->cond[i]);
-        else
-            return command_exec(a->cond[i]);
-    }
+    if (strcmp("echo", a->argv[0]) == 0)
+        return echo(a->argv);
+    else
+        return command_exec(a->argv);
 }
 
 typedef void (*ast_exec_function)(struct ast *ast);
@@ -94,4 +91,24 @@ void exec_ast(struct ast *ast)
 void execution(struct ast_main_root *ast)
 {
     return exec_ast(&ast.type);
+}
+
+int main()
+{
+    // struct lexer *lexer = lexer_new("if echo ok; then echo foo bar else echo
+    // b ;fi");
+    struct lexer *lexer =
+        lexer_new("if echo ok ;echo celib then echo foo bar elif echo bebe "
+                  "then echo christian echo anna laime else echo b ;");
+    struct ast *ast = build_ast(lexer, NODE_ROOT);
+    printf("\n build ast with nb %i[ok]\n\n",
+           ast->data.ast_main_root->nb_children);
+    if (ast->type == NODE_ROOT)
+    {
+        printf("node root\n");
+    }
+    printf("before pretty print\n");
+    execution(ast);
+    lexer_free(lexer);
+    return 0;
 }
