@@ -5,28 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 
-void print(struct lexer *lexer)
-{
-    printf("START OF PRINTING ##########\n");
-    char *tab[] = {
-        [TOKEN_IF] = "If", [TOKEN_THEN] = "Then",  [TOKEN_ELIF] = "Elif",
-        [TOKEN_ELSE] = "Else",  [TOKEN_FI] = "Fi", [TOKEN_SEMICOLON] = ";",
-        [TOKEN_LINE_BREAK] = "\n"
-    };
-    size_t i = 0;
-    if (lexer == NULL || lexer[i].current_tok == NULL)
-        return;
-    while (lexer[i].current_tok->type != TOKEN_EOF)
-        {
-            if (lexer[i].current_tok->type == TOKEN_SIMPLE_QUOTE || lexer[i].current_tok->type == TOKEN_WORDS)
-                printf("%s\n", lexer[i].current_tok->value);
-            else
-                printf("%s\n", tab[lexer[i].current_tok->type]);
-            i++;
-        }
-    printf("END OF PRINTING ##########\n");
-}
-
+//####################################################################
+//INITIALIZER OF EVERY STRUCT
+//####################################################################
 struct ast_main_root *create_main_root()
 {
     struct ast_main_root *ast = malloc(sizeof(struct ast_main_root));
@@ -82,17 +63,21 @@ struct lexer *ask_entry(void)
     return lexer_new(buf);
 }
 
-//build the char with conditions and handles error
+//####################################################################
+//GET args
+//####################################################################
+
+//build the command with conditions and handles error
 int get_command(struct lexer *lex, struct ast_command **new)
 {
     if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
-    if (lexer_peek(lex)->type != TOKEN_WORDS)
+    if (lexer_peek(lex)->type != TOKEN_WORDS && lexer_peek(lex)->type != TOKEN_SIMPLE_QUOTE)
         return -1;
     int capy = 30;
     int capi = 30;
     int i = 0;
-    for (; lex && (lexer_peek(lex)->type == TOKEN_WORDS); i++)
+    for (; lex && ((lexer_peek(lex)->type == TOKEN_WORDS || lexer_peek(lex)->type == TOKEN_SIMPLE_QUOTE)); i++)
     {
         if (i != 0)
             new[i] = malloc(sizeof(struct ast_command));
@@ -103,7 +88,7 @@ int get_command(struct lexer *lex, struct ast_command **new)
         }
         new[i]->argv = malloc(sizeof (char *) * 30);
         int y = 0;
-        for (; lex && lexer_peek(lex)->type == TOKEN_WORDS; y++)
+        for (; lex && (lexer_peek(lex)->type == TOKEN_WORDS || lexer_peek(lex)->type == TOKEN_SIMPLE_QUOTE); y++)
         {
             if (y >= capy)
             {
@@ -122,6 +107,7 @@ int get_command(struct lexer *lex, struct ast_command **new)
     return i;
 }
 
+//create the new node and calls build_ast for the struct
 int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
 {
     new->type = NODE_ROOT;
@@ -133,6 +119,9 @@ int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
     return 0;
 }
 
+//####################################################################
+//BUILDING EACH STRUCTURE HANDLING ERRORS
+//####################################################################
 //returns 0 if ok, if error 1
 //builds the if ast with cond ast and then ast
 int build_if(struct lexer *lex, struct ast_if_root *root)
@@ -182,9 +171,9 @@ int build_elif(struct lexer *lex, struct ast_if_root *root)
     new_elif->cond = malloc(sizeof(struct ast *) * test);
     for (int i = 0; i < test; i++)
     {
-        new_elif->cond[i] = malloc(sizeof(struct ast));
-        new_elif->cond[i]->type = NODE_COMMAND;
-        new_elif->cond[i]->data.ast_command = tmp[i];
+            new_elif->cond[i] = malloc(sizeof(struct ast));
+            new_elif->cond[i]->type = NODE_COMMAND;
+            new_elif->cond[i]->data.ast_command = tmp[i];
     }
     if (lexer_peek(lex)->type != TOKEN_THEN)
         return 1;
@@ -193,7 +182,6 @@ int build_elif(struct lexer *lex, struct ast_if_root *root)
         return 1;
     
     int size = sizeof(struct ast) * (root->nb_children + 1);
-    //root->children = realloc(root->children, size);
     new_elif->count_cond = test;
     root->children[root->nb_children] = malloc(sizeof(struct ast));
     root->children[root->nb_children]->type = NODE_ELIF;
@@ -202,7 +190,7 @@ int build_elif(struct lexer *lex, struct ast_if_root *root)
     return 0;
 }
 
-//builds and return ast_if_root if command is if
+//builds global ast_if_root
 struct ast_if_root *build_ast_if(struct lexer *lex)
 {
     //creating the ast_if_root node
@@ -217,8 +205,12 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
         errx(2, "bad args in a wrong place in IF");
     while (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
+    
+    //checking for errors
     if (lex && lexer_peek(lex)->type != TOKEN_ELSE && lexer_peek(lex)->type != TOKEN_ELIF && lexer_peek(lex)->type != TOKEN_FI)
         errx(2, "bad args in a wrong place after if");
+    
+    //if/while elif childs are existing adding them
     while (lexer_peek(lex)->type != TOKEN_EOF && lexer_peek(lex)->type == TOKEN_ELIF)
     {
         if (new_root->nb_children >= cap)
@@ -232,8 +224,10 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
         while (!lex || lexer_peek(lex)->type == TOKEN_EOF)
             lex = ask_entry();
     }
+    //checking for errors
     if (lexer_peek(lex)->type != TOKEN_ELSE && lexer_peek(lex)->type != TOKEN_FI)
         errx(2, "bad args in a wrong place after elif");
+    
     //add else childs if existing
     if (lexer_peek(lex)->type == TOKEN_ELSE)
     {
@@ -244,8 +238,11 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
         }
         build_else(lex, new_root);
     }
+    
     while (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
+    
+    //checking TOKEN FI ends the command
     if (lexer_peek(lex)->type !=  TOKEN_FI)
         errx(2, "needed FI to close de IF condition");
     //remove the FI token
@@ -253,6 +250,45 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
     return new_root;
 }
 
+//################################################################
+//#####EACH FUNCTION TOOL IS HANDLED HERE TO ADD IN THE TREE######
+
+//PROCESS AND ADD CHILD WHEN IF
+void make_if(struct ast_main_root *ast, struct lexer *lex)
+{
+    ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
+    ast->children[ast->nb_children - 1]->type = NODE_IF_ROOT;
+    ast->children[ast->nb_children - 1]->data.ast_if_root = build_ast_if(lex);
+}
+
+//PROCESS AND ADD CHILD WHEN COMMAND
+void make_command(struct ast_main_root *ast, struct lexer *lex, int *count)
+{
+    struct ast_command **new_com = create_command();
+    int test = get_command(lex, new_com);
+    if (test == -1)
+        errx(2, "couldn't get condition");
+    int ind = 0;
+    for (; ind < test; ind++)
+    {
+        ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
+        if (ast->nb_children >= *count)
+        {
+            *count *= 2;
+            ast->children = realloc(ast->children, sizeof(struct ast *) * *count);
+        }
+        ast->children[ast->nb_children - 1]->type = NODE_COMMAND;
+        ast->children[ast->nb_children - 1]->data.ast_command = new_com[ind];
+        ast->nb_children++;
+    }
+    if (ind != 0)
+        ast->nb_children--;
+}
+
+//################################################################
+//#######MAIN ROOT STRUCTURE HANDLING FUNCTIONS###################
+
+//DEPEDENING ON THE ROOT OF THE CALL TO BUILD_AST THE BREAK CASE IS DIFFERENT
 int check_break(enum ast_type mode, enum token_type type)
 {
     if (mode == NODE_ROOT && type == TOKEN_EOF)
@@ -289,34 +325,12 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
             count *= 2;
             ast->children = realloc(ast->children, sizeof(struct ast *) * count);
         }
+        //IF WORD IS IF THEN MAKE IF
         if (lexer_peek(lex)->type == TOKEN_IF)
-        {
-            ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
-            ast->children[ast->nb_children - 1]->type = NODE_IF_ROOT;
-            ast->children[ast->nb_children - 1]->data.ast_if_root = build_ast_if(lex);
-        }
-        else if (lexer_peek(lex)->type == TOKEN_WORDS)
-        {
-            struct ast_command **new_com = create_command();
-            int test = get_command(lex, new_com);
-            if (test == -1)
-                errx(2, "couldn't get condition");
-            int ind = 0;
-            for (; ind < test; ind++)
-            {
-                ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
-                if (ast->nb_children >= count)
-                {
-                    count *= 2;
-                    ast->children = realloc(ast->children, sizeof(struct ast *) * count);
-                }
-                ast->children[ast->nb_children - 1]->type = NODE_COMMAND;
-                ast->children[ast->nb_children - 1]->data.ast_command = new_com[ind];
-                ast->nb_children++;
-            }
-            if (ind != 0)
-                ast->nb_children--;
-        }
+            make_if(ast, lex);
+        //IF WORD IS WORD OR SEMICOLON MAKE COMMAND
+        else if (lexer_peek(lex)->type == TOKEN_WORDS || lexer_peek(lex)->type == TOKEN_SEMICOLON)
+            make_command(ast, lex, &count);
         else
             errx(2, "wrong implementation");
     }
