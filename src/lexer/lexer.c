@@ -38,7 +38,7 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
        * testing else
        */
       else if (current_char == 'e' &&  i + 3 < len && input[i + 1] == 'l'
-                && input[i + 2] == 's' && input[i + 3] == 'l')
+                && input[i + 2] == 's' && input[i + 3] == 'e ')
       {
         new[index - 1].current_tok = token_new(TOKEN_ELSE);
         new[index - 1].current_tok->value = NULL;
