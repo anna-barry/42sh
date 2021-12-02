@@ -16,17 +16,30 @@ int command_exec(char *argv[]) // the command should be as : char *argv[4] = {
                                // "echo", "geoffroy", "geoffroy", NULL };
                                // the NULL argument is nessessary.
 {
-    int pid = fork();
-    if (pid == -1)
-        err(1, NULL);
-    if (pid == 0)
-    {
-        if (execvp(argv[0], argv) == -1) // execute the commande
-            return 127;
-    }
     int wstatus;
-    if (waitpid(pid, &wstatus, 0) == -1)
-        err(1, NULL);
+    int res_exec;
+    int pid = fork();
+    char *command = argv[0];
+    if (pid == 0)
+      {
+	res_exec = execvp(command, argv);
+	if (res_exec == -1)
+	  return 127;
+      }
+    else
+      {  
+        int res_exec = waitpid(pid, &wstatus, 0);
+	if (res_exec == -1)
+	  err(2, "problem in child");
+	if (WIFEXITED(wstatus))
+	  {
+            if (WEXITSTATUS(wstatus) == 127)
+	      {
+                fprintf(stderr, "Error");
+                return 1;
+	      }
+	  }
+      }
     return WEXITSTATUS(wstatus); // return the return value of the command
 }
 
@@ -46,7 +59,7 @@ int command_exec(char *argv[]) // the command should be as : char *argv[4] = {
 //     return command_exec(argv);
 //     return 0;
 // }
-
+/*
 int main(int argc, char const *argv[])
 {
     char *argv0[2] = { "ls", NULL };
@@ -77,3 +90,4 @@ int main(int argc, char const *argv[])
     }
     return 0;
 }
+*/
