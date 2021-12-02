@@ -12,6 +12,9 @@ enum ast_type
     NODE_IF_ROOT,//3
     NODE_ROOT,//4
     NODE_COMMAND,//5
+    NODE_SINGLE_QUOTE,//6
+    NODE_DOUBLE_QUOTE,//7
+    NODE_THEN,
 };
 
 
@@ -23,6 +26,8 @@ union ast_data
     struct ast_elif *ast_elif;
     struct ast_else *ast_else;
     struct ast_main_root *ast_main_root;
+    struct ast_single_quote *ast_single_quote;
+    struct ast_double_quote *ast_double_quote;
 };
 
 struct ast
@@ -44,22 +49,32 @@ struct ast_command
     char **argv;
 };
 
+struct ast_single_quote
+{
+    char *argv;
+};
+
+struct ast_double_quote
+{
+    char *argv;
+};
+
 struct ast_if
 {
     int count_cond;
-    struct ast **cond;
+    struct ast *cond;
     struct ast *then;
 };
- 
+
 struct ast_else
 {
     struct ast *then;
 };
- 
+
 struct ast_elif
 {
     int count_cond;
-    struct ast **cond;
+    struct ast *cond;
     struct ast *then;
 };
 
@@ -73,10 +88,10 @@ struct ast_main_root *create_main_root();
 struct ast_if_root *create_if_root();
 struct ast_else *create_else();
 struct ast_if *create_if();
-struct ast_command **create_command();
+struct ast_command *create_command();
 struct ast_elif *create_elif();
 struct lexer *ask_entry(void);
-int get_command(struct lexer *lex, struct ast_command **new);
+int get_command(struct lexer *lex, struct ast_command *new);
 int get_then(struct lexer *lex, struct ast *new, enum ast_type mode);
 int build_if(struct lexer *lex, struct ast_if_root *root);
 int build_else(struct lexer *lex, struct ast_if_root *root);
