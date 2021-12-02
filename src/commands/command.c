@@ -46,7 +46,7 @@ int command_exec(char *argv[]) // the command should be as : char *argv[4] = {
 //     return command_exec(argv);
 //     return 0;
 // }
-
+/*
 int main(int argc, char const *argv[])
 {
     char *argv0[2] = { "ls", NULL };
@@ -77,3 +77,4 @@ int main(int argc, char const *argv[])
     }
     return 0;
 }
+*/
