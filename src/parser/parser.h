@@ -14,9 +14,17 @@ enum ast_type
     NODE_COMMAND,//5
     NODE_SINGLE_QUOTE,//6
     NODE_DOUBLE_QUOTE,//7
-    NODE_THEN,
+    NODE_THEN,//8
 };
 
+enum option
+{
+    NONE,
+    REDIR_SORTIE, ///< '>' -> 11
+    REDIR_ENTREE, ///< '<' -> 12
+    REDIR_DESCRIPEUR, ///< '>&' -> 13
+    REDIR_FIN_FICHIER,
+};
 
 union ast_data
 {
@@ -47,6 +55,8 @@ struct ast_command
 {
     int count;
     char **argv;
+    enum option option;
+    char *redir;
 };
 
 struct ast_single_quote
