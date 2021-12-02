@@ -38,7 +38,7 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
        * testing else
        */
       else if (current_char == 'e' &&  i + 3 < len && input[i + 1] == 'l'
-                && input[i + 2] == 's' && input[i + 3] == 'e ')
+                && input[i + 2] == 's' && input[i + 3] == 'e')
       {
         new[index - 1].current_tok = token_new(TOKEN_ELSE);
         new[index - 1].current_tok->value = NULL;
@@ -279,8 +279,8 @@ struct lexer *lexer_new(const char *input)
               {
                 nb++;
               }
-              new[index - 1].current_tok->value = strndup(input + i, nb + 2);
-              new[index - 1].current_tok->value[nb + 1] = '\0';
+              new[index - 1].current_tok->value = strndup(input + i + 1, nb - 1);
+              new[index - 1].current_tok->value[nb - 1] = '\0';
               break;
           case ('\"'):
               new[index - 1].current_tok = token_new(TOKEN_DOUBLE_QUOTE);
@@ -290,8 +290,8 @@ struct lexer *lexer_new(const char *input)
               {
                 nb++;
               }
-              new[index - 1].current_tok->value = strndup(input + i, nb + 2);
-              new[index - 1].current_tok->value[nb + 1] = '\0';
+              new[index - 1].current_tok->value = strndup(input + i + 1, nb - 1);
+              new[index - 1].current_tok->value[nb - 1] = '\0';
               break;
           default:
               nb = spe_token(input, index, i, new);
