@@ -39,6 +39,7 @@ union ast_data
     struct ast_simple_quote *ast_simple_quote;
     struct ast_double_quote *ast_double_quote;
     struct ast_pipe *ast_pipe;
+    struct ast_while *ast_while;
 };
 
 struct ast
@@ -85,7 +86,12 @@ struct ast_double_quote
 
 struct ast_if
 {
-    int count_cond;
+    struct ast *cond;
+    struct ast *then;
+};
+
+struct ast_while
+{
     struct ast *cond;
     struct ast *then;
 };
@@ -97,7 +103,6 @@ struct ast_else
 
 struct ast_elif
 {
-    int count_cond;
     struct ast *cond;
     struct ast *then;
 };
