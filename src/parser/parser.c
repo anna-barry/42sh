@@ -13,7 +13,7 @@ void print(struct lexer *lexer)
     char *tab[] = {
         [TOKEN_IF] = "If", [TOKEN_THEN] = "Then",  [TOKEN_ELIF] = "Elif",
         [TOKEN_ELSE] = "Else",  [TOKEN_FI] = "Fi", [TOKEN_SEMICOLON] = ";",
-        [TOKEN_LINE_BREAK] = "\n", [TOKEN_PIPE] = "|"
+        [TOKEN_LINE_BREAK] = "\n", [TOKEN_PIPE] = "|", [TOKEN_AND] = "&&", [TOKEN_OR] = "||"
     };
     size_t i = 0;
     if (lexer == NULL || lexer[i].current_tok == NULL)
@@ -105,6 +105,20 @@ struct ast_pipe *create_pipe()
   return new;
 }
 
+struct ast_and *create_and()
+{
+  struct ast_and *new = malloc(sizeof(struct ast_and));
+  new->right = malloc(sizeof(struct ast));
+  return new;
+}
+
+struct ast_or *create_or()
+{
+  struct ast_or *new = malloc(sizeof(struct ast_or));
+  new->right = malloc(sizeof(struct ast));
+  return new;
+}
+
 // en gros juste ca demande des nouvelles données quoi
 struct lexer *ask_entry(void)
 {
@@ -182,6 +196,7 @@ int get_command(struct lexer *lex, struct ast_command *new)
       }
     return 0;
 }
+
 struct ast_pipe *get_pipe(struct ast *ast, struct lexer *lex);
 // create the new node and calls build_ast for the struct
 int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
@@ -201,6 +216,16 @@ int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
         new->type = NODE_PIPE;
         new->data.ast_pipe = get_pipe(new,lex);
       }
+      else if (lexer_peek(lex)->type == TOKEN_AND)
+      {
+        new->type = NODE_AND;
+        new->data.ast_and = get_and(new,lex);
+      }
+      else if (lexer_peek(lex)->type == TOKEN_OR)
+      {
+        new->type = NODE_OR;
+        new->data.ast_or = get_or(new,lex);
+      }
     }
     return 0;
 }
@@ -213,6 +238,26 @@ struct ast_pipe *get_pipe(struct ast *ast, struct lexer *lex)
   if (get_then(lex, new_pipe->right, NODE_THEN))
     errx(2, "wrong pipe implementation");
   return new_pipe;
+}
+
+struct ast_and *get_and(struct ast *ast, struct lexer *lex)
+{
+  struct ast_and *new_and = create_and();
+  new_and->left = ast;
+  lexer_pop(lex);
+  if (get_then(lex, new_and->right, NODE_THEN))
+    errx(2,"wrong && implementation");
+  return new_and;
+}
+
+struct ast_or *get_or(struct ast *ast, struct lexer *lex)
+{
+  struct ast_or *new_or = create_or();
+  new_or->left = ast;
+  lexer_pop(lex);
+  if (get_then(lex, new_or->right, NODE_THEN))
+    errx(2,"wrong && implementation");
+  return new_or;
 }
 
 //####################################################################
@@ -391,6 +436,8 @@ void make_neg(struct ast_main_root *ast, struct lexer *lex)
 // DEPEDENING ON THE ROOT OF THE CALL TO BUILD_AST THE BREAK CASE IS DIFFERENT
 int check_break(enum ast_type mode, enum token_type type)
 {
+  //ajouter gestion d'erreur ici
+  printf("MODE = %d\n, TYPE = %d\n", mode, type);
     if (mode == NODE_ROOT && type == TOKEN_EOF)
         return 0;
     if (mode == NODE_ROOT && (type == TOKEN_ELSE || type == TOKEN_ELIF))
@@ -400,8 +447,11 @@ int check_break(enum ast_type mode, enum token_type type)
         if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI)
             return 0;
     }
-    if (mode == NODE_THEN && (type == TOKEN_THEN || type == TOKEN_PIPE))
-      return 0;
+    if (mode == NODE_THEN)
+    {
+      if(type == TOKEN_THEN || type == TOKEN_PIPE || type == TOKEN_AND || type == TOKEN_OR)
+        return 0;
+    }
     if (mode == NODE_ELSE && type == TOKEN_FI)
         return 0;
     return 1;

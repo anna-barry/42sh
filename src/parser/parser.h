@@ -17,6 +17,8 @@ enum ast_type
     NODE_THEN,//8
     NODE_NEG,//9
     NODE_PIPE,//10
+    NODE_OR,//11
+    NODE_AND,//12
 };
 
 enum option
@@ -40,6 +42,8 @@ union ast_data
     struct ast_double_quote *ast_double_quote;
     struct ast_pipe *ast_pipe;
     struct ast_while *ast_while;
+    struct ast_and *ast_and;
+    struct ast_or *ast_or;
 };
 
 struct ast
@@ -66,6 +70,18 @@ struct ast_command
 struct ast_neg
 {
   struct ast *node;
+};
+
+struct ast_and
+{
+  struct ast *right;
+  struct ast *left;
+};
+
+struct ast_or
+{
+  struct ast *right;
+  struct ast *left;
 };
 
 struct ast_pipe
@@ -120,6 +136,9 @@ struct ast_if *create_if();
 struct ast_command *create_command();
 struct ast_elif *create_elif();
 struct lexer *ask_entry(void);
+struct ast_pipe *get_pipe(struct ast *ast, struct lexer *lex);
+struct ast_and *get_and(struct ast *ast, struct lexer *lex);
+struct ast_or *get_or(struct ast *ast, struct lexer *lex);
 int get_command(struct lexer *lex, struct ast_command *new);
 int get_then(struct lexer *lex, struct ast *new, enum ast_type mode);
 int build_if(struct lexer *lex, struct ast_if_root *root);
