@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int echo(char *argv[])
+int echo(char *argv[], int count)
 {
     int flag = 0;
     if (argv[1] == NULL)
@@ -19,7 +19,7 @@ int echo(char *argv[])
     int i = 1;
     if (flag > 0)
         i = 2;
-    for (; argv[i]; i++)
+    for (; i < count; i++)
     {
         for (int j = 0; argv[i][j]; j++)
         {
@@ -44,13 +44,19 @@ int echo(char *argv[])
                     j++;
                 }
                 else
+                {
                     printf("%c", argv[i][j]);
+                }
             }
             else
+            {
                 printf("%c", argv[i][j]);
+            }
         }
-        if (argv[i + 1] != NULL)
+        if (i != count - 1)
+        {
             printf(" ");
+        }
     }
     if (flag < 2)
         printf("\n");
@@ -73,7 +79,7 @@ int echo(char *argv[])
 //     return echo(argv);
 //     return 0;
 // }
-
+/*
 int main(int argc, char const *argv[])
 {
     char *argv0[2] = { "echo", NULL };
@@ -103,3 +109,4 @@ int main(int argc, char const *argv[])
     }
     return 0;
 }
+*/

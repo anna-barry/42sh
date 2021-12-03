@@ -21,28 +21,27 @@ int command_exec(char *argv[]) // the command should be as : char *argv[4] = {
     int pid = fork();
     char *command = argv[0];
     if (pid == 0)
-      {
-	res_exec = execvp(command, argv);
-	if (res_exec == -1)
-	  return 127;
-      }
+    {
+        res_exec = execvp(command, argv);
+        if (res_exec == -1)
+            return 127;
+    }
     else
-      {  
+    {
         int res_exec = waitpid(pid, &wstatus, 0);
-	if (res_exec == -1)
-	  err(2, "problem in child");
-	if (WIFEXITED(wstatus))
-	  {
+        if (res_exec == -1)
+            err(2, "problem in child");
+        if (WIFEXITED(wstatus))
+        {
             if (WEXITSTATUS(wstatus) == 127)
-	      {
+            {
                 fprintf(stderr, "Error");
                 return 1;
-	      }
-	  }
-      }
+            }
+        }
+    }
     return WEXITSTATUS(wstatus); // return the return value of the command
 }
-
 // int main(int argc, char *argv[])
 // {
 //     if (argc == 0)
