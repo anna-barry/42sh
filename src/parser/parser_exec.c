@@ -12,7 +12,6 @@ int exec_ast(struct ast *ast);
 int exec_ast_if_root(struct ast *ast)
 {
     struct ast_if_root *a = ast->data.ast_if_root;
-    printf("ici\n");
     for (int i = 0; i < a->nb_children; i++)
     {
         a->status = exec_ast(a->children[i]);
@@ -25,7 +24,6 @@ int exec_ast_if_root(struct ast *ast)
 int exec_ast_root(struct ast *ast)
 {
     struct ast_main_root *a = ast->data.ast_main_root;
-    printf("la\n");
     int res = -1;
     for (int i = 0; i < a->nb_children; i++)
     {
@@ -37,9 +35,7 @@ int exec_ast_root(struct ast *ast)
 int exec_ast_if(struct ast *ast)
 {
     struct ast_if *a = ast->data.ast_if;
-    printf("maintenant\n");
     int res = exec_ast(a->cond);
-    printf("maintenant\n");
     int inter = 0;
     if (res == 0)
     {
@@ -51,7 +47,6 @@ int exec_ast_if(struct ast *ast)
 int exec_ast_elif(struct ast *ast)
 {
     struct ast_elif *a = ast->data.ast_elif;
-    printf("elif\n");
     int res = exec_ast(a->cond);
     int inter = 0;
     if (res == 0)
@@ -64,17 +59,15 @@ int exec_ast_elif(struct ast *ast)
 int exec_ast_else(struct ast *ast)
 {
     struct ast_else *a = ast->data.ast_else;
-    printf("else\n");
     return exec_ast(a->then);
 }
 
 int exec_ast_command(struct ast *ast)
 {
     struct ast_command *a = ast->data.ast_command;
-    printf("command\n");
     if (strcmp("echo", a->argv[0]) == 0)
     {
-        int inter = echo(a->argv);
+        int inter = echo(a->argv, a->count);
         return inter;
     }
     else
@@ -103,9 +96,8 @@ int execution(struct ast *ast)
 
 int main()
 {
-    struct lexer *lexer = lexer_new(
-        "if echo a then echo foo bar elif echo bebe then echo christian "
-        "echo anna laime; else echo b ; fi");
+    struct lexer *lexer =
+        lexer_new("if echo a then ls elif echo bebe then echo anna; fi");
     struct ast *ast = build_ast(lexer, NODE_ROOT);
     printf("\n build ast with nb %i[ok]\n\n",
            ast->data.ast_main_root->nb_children);
