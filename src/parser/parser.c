@@ -119,6 +119,16 @@ struct ast_or *create_or()
   return new;
 }
 
+struct ast_while *create_while()
+{
+  struct ast_while *new = malloc(sizeof(struct ast_while));
+  new->cond = malloc(sizeof(struct ast));
+  new->then = malloc(sizeof(struct ast));
+  return new;
+}
+//####################################################################
+// GET args
+//####################################################################
 // en gros juste ca demande des nouvelles données quoi
 struct lexer *ask_entry(void)
 {
@@ -128,15 +138,12 @@ struct lexer *ask_entry(void)
     return lexer_new(buf);
 }
 
-//####################################################################
-// GET args
-//####################################################################
 int get_option(struct lexer *lex, struct ast_command *new)
 {
   enum token_type type = lexer_peek(lex)->type;
     if (!lex || type == TOKEN_EOF)
       return 0;
-    if (type == TOKEN_REDIR_ENTREE && type >= TOKEN_REDIR_FIN_FICHIER)
+    if (type >= TOKEN_REDIR_ENTREE && type >= TOKEN_REDIR_RW)
         new->option = REDIR_ENTREE;
     else if (type == TOKEN_REDIR_DESCRIPEUR)
         new->option = REDIR_DESCRIPEUR;
@@ -144,6 +151,10 @@ int get_option(struct lexer *lex, struct ast_command *new)
         new->option = REDIR_SORTIE;
     else if (type == TOKEN_REDIR_FIN_FICHIER)
         new->option = REDIR_FIN_FICHIER;
+    else if (type == TOKEN_REDIR_RW)
+        new->option = REDIR_RW;
+    else if (type == TOKEN_REDIR_INPUT_DESCRIPEUR)
+        new->option = REDIR_INPUT_DESCRIPEUR;
     else
         return 1;
     new->redir = strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
@@ -208,7 +219,7 @@ int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
     //printf("\n\n\n\nGET COND : %d\n\n\n",new->data.ast_main_root->children[0]->type);
     print(lex);
     printf("\n\n\nTOKEN MODE IS : %d\n\n\n\n", mode);
-    if (mode == NODE_THEN)
+    if (mode == NODE_THEN || mode == NODE_DO)
     {
       printf("\n\n\n\nTOKEN THEN\n\n\n\n");
       if (lexer_peek(lex)->type == TOKEN_PIPE)
@@ -374,6 +385,25 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
     return new_root;
 }
 
+struct ast_while *build_ast_while(struct lexer *lex)
+{
+    struct ast_while *new_root = create_while();
+    // here getting if out of the lexer
+    lexer_pop(lex);
+
+    if (get_then(lex, new_root->cond, NODE_WHILE))
+      errx(2, "couldn't get cond in while");
+    lexer_pop(lex);
+
+    if (lexer_peek(lex)->type == TOKEN_EOF)
+      lex = ask_entry();
+
+    if (get_then(lex, new_root->then, NODE_DO))
+        errx(2, "couldn't get commands in while");
+    return new_root;
+
+}
+
 //################################################################
 //#####EACH FUNCTION TOOL IS HANDLED HERE TO ADD IN THE TREE######
 
@@ -383,6 +413,14 @@ void make_if(struct ast_main_root *ast, struct lexer *lex)
     ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
     ast->children[ast->nb_children - 1]->type = NODE_IF_ROOT;
     ast->children[ast->nb_children - 1]->data.ast_if_root = build_ast_if(lex);
+}
+
+//PROCESS AND ADD CHILD WHEN while
+void make_while(struct ast_main_root *ast, struct lexer *lex)
+{
+  ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
+  ast->children[ast->nb_children - 1]->type = NODE_WHILE;
+  ast->children[ast->nb_children - 1]->data.ast_while = build_ast_while(lex);
 }
 
 // PROCESS AND ADD CHILD WHEN COMMAND
@@ -436,20 +474,24 @@ void make_neg(struct ast_main_root *ast, struct lexer *lex)
 // DEPEDENING ON THE ROOT OF THE CALL TO BUILD_AST THE BREAK CASE IS DIFFERENT
 int check_break(enum ast_type mode, enum token_type type)
 {
-  //ajouter gestion d'erreur ici
+  //ajouter gestion d'erreur ici avec les ; et les double pipe etc
   printf("MODE = %d\n, TYPE = %d\n", mode, type);
-    if (mode == NODE_ROOT && type == TOKEN_EOF)
+    if (type == TOKEN_EOF)
         return 0;
-    if (mode == NODE_ROOT && (type == TOKEN_ELSE || type == TOKEN_ELIF))
+    if (mode == NODE_ROOT && (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_DONE || type == TOKEN_DO))
         errx(2, "wrong implementation in node root");
     if (mode == NODE_IF || mode == NODE_ELIF)
     {
-        if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI)
+        if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI || type == TOKEN_SEMICOLON)
             return 0;
     }
+    if (mode == NODE_WHILE && type == TOKEN_DO)
+        return 0;
+    if (mode == NODE_DO && type == TOKEN_DONE)
+        return 0;
     if (mode == NODE_THEN)
     {
-      if(type == TOKEN_THEN || type == TOKEN_PIPE || type == TOKEN_AND || type == TOKEN_OR)
+      if(type == TOKEN_THEN || type == TOKEN_PIPE || type == TOKEN_AND || type == TOKEN_OR || type == TOKEN_SEMICOLON)
         return 0;
     }
     if (mode == NODE_ELSE && type == TOKEN_FI)
@@ -488,7 +530,7 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
             make_if(ast, lex);
         }
         // IF WORD IS WORD OR SEMICOLON MAKE COMMAND
-        else if (type == TOKEN_WORDS || type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
+        else if (type == TOKEN_WORDS || (command && type == TOKEN_SEMICOLON) || type == TOKEN_LINE_BREAK)
         {
             command = 1;
             make_command(ast, lex);
@@ -507,8 +549,6 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
         else
             errx(2, "wrong implementation");
         type = lexer_peek(lex)->type;
-        printf("TYPE = %d\n", type);
-        print(lex);
     }
     struct ast *new_ast = malloc(sizeof(struct ast));
     new_ast->data.ast_main_root = ast;

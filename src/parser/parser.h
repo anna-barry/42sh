@@ -19,6 +19,8 @@ enum ast_type
     NODE_PIPE,//10
     NODE_OR,//11
     NODE_AND,//12
+    NODE_WHILE,//13
+    NODE_DO,//14
 };
 
 enum option
@@ -28,6 +30,8 @@ enum option
     REDIR_ENTREE, ///< '<' -> 12
     REDIR_DESCRIPEUR, ///< '>&' -> 13
     REDIR_FIN_FICHIER,
+    REDIR_INPUT_DESCRIPEUR,
+    REDIR_RW,
 };
 
 union ast_data
