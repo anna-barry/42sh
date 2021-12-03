@@ -15,6 +15,8 @@ enum ast_type
     NODE_SIMPLE_QUOTE,//6
     NODE_DOUBLE_QUOTE,//7
     NODE_THEN,//8
+    NODE_NEG,//9
+    NODE_PIPE,//10
 };
 
 enum option
@@ -36,6 +38,7 @@ union ast_data
     struct ast_main_root *ast_main_root;
     struct ast_simple_quote *ast_simple_quote;
     struct ast_double_quote *ast_double_quote;
+    struct ast_pipe *ast_pipe;
 };
 
 struct ast
@@ -64,7 +67,7 @@ struct ast_neg
   struct ast *node;
 };
 
-struct ast_pipeline
+struct ast_pipe
 {
   struct ast *right;
   struct ast *left;

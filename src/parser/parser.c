@@ -94,6 +94,15 @@ struct ast_double_quote *create_double_quote()
     return new_c;
 }
 
+struct ast_pipe *create_pipe()
+{
+  struct ast_pipe *new = malloc(sizeof(struct ast_pipe));
+  //no needed caus when added it has already been allocated;
+  //new->left = malloc(sizeof(struct ast));
+  new->right = malloc(sizeof(struct ast));
+  return new;
+}
+
 // en gros juste ca demande des nouvelles données quoi
 struct lexer *ask_entry(void)
 {
@@ -171,7 +180,7 @@ int get_command(struct lexer *lex, struct ast_command *new)
       }
     return 0;
 }
-
+struct ast_pipe *get_pipe(struct ast *ast, struct lexer *lex);
 // create the new node and calls build_ast for the struct
 int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
 {
@@ -180,7 +189,25 @@ int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
         lex = ask_entry();
     new->data.ast_main_root = build_ast(lex, mode)->data.ast_main_root;
     //printf("\n\n\n\nGET COND : %d\n\n\n",new->data.ast_main_root->children[0]->type);
+    if (mode == TOKEN_THEN)
+    {
+      if (lexer_peek(lex)->type == TOKEN_PIPE)
+      {
+        new->type = NODE_PIPE;
+        new->data.ast_pipe = get_pipe(new,lex);
+      }
+    }
     return 0;
+}
+
+struct ast_pipe *get_pipe(struct ast *ast, struct lexer *lex)
+{
+  struct ast_pipe *new_pipe = create_pipe();
+  new_pipe->left = ast;
+  lexer_pop(lex);
+  if (get_then(lex, new_pipe->right, NODE_THEN))
+    errx(2, "wrong pipe implementation");
+  return new_pipe;
 }
 
 //####################################################################
@@ -316,8 +343,9 @@ void make_command(struct ast_main_root *ast, struct lexer *lex)
         errx(2, "couldn't get condition");
     int rank = ast->nb_children - 1;
     ast->children[rank] = malloc(sizeof(struct ast));
-    ast->children[rank]->type = NODE_COMMAND;
-    ast->children[rank]->data.ast_command = new_com;
+    //to be tested
+      ast->children[rank]->type = NODE_COMMAND;
+      ast->children[rank]->data.ast_command = new_com;
 }
 
 //make single quote
@@ -344,6 +372,13 @@ void make_double_quote(struct ast_main_root *ast, struct lexer *lex)
     lexer_pop(lex);
 }
 
+void make_neg(struct ast_main_root *ast, struct lexer *lex)
+{
+  int rank = ast->nb_children - 1;
+  ast->children[rank] = malloc(sizeof(struct ast));
+  ast->children[rank] = build_ast(lex, NODE_NEG);
+  lexer_pop(lex);
+}
 
 //################################################################
 //#######MAIN ROOT STRUCTURE HANDLING FUNCTIONS###################
@@ -357,7 +392,7 @@ int check_break(enum ast_type mode, enum token_type type)
         errx(2, "wrong implementation in node root");
     if (mode == NODE_IF || mode == NODE_ELIF)
     {
-        if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI)
+        if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI || type == TOKEN_PIPE)
             return 0;
     }
     if (mode == NODE_THEN && type == TOKEN_THEN)
@@ -401,8 +436,12 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
             make_simple_quote(ast, lex);
         else if (type == TOKEN_DOUBLE_QUOTE)
             make_double_quote(ast, lex);
-        else if (type == TOKEN_PIPE)
-            make_double_quote(ast, lex);
+        else if (type == TOKEN_NEG)
+        {
+            make_neg(ast, lex);
+            //negation must break when the command was treated
+            break;
+        }
         else
             errx(2, "wrong implementation");
         type = lexer_peek(lex)->type;
