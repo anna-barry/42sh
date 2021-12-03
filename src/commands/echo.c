@@ -44,14 +44,10 @@ int echo(char *argv[], int count)
                     j++;
                 }
                 else
-                {
                     printf("%c", argv[i][j]);
-                }
             }
             else
-            {
                 printf("%c", argv[i][j]);
-            }
         }
         if (i != count - 1)
         {
