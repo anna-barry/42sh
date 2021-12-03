@@ -60,8 +60,18 @@ struct ast_if *create_if()
 {
     struct ast_if *new_if = malloc(sizeof(struct ast_if));
     new_if->count_cond = 0;
+    new_if->cond = malloc(sizeof(struct ast));
     new_if->then = malloc(sizeof(struct ast));
     return new_if;
+}
+
+struct ast_elif *create_elif()
+{
+    struct ast_elif *new_elif = malloc(sizeof(struct ast_elif));
+    new_elif->count_cond = 0;
+    new_elif->cond = malloc(sizeof(struct ast));
+    new_elif->then = malloc(sizeof(struct ast));
+    return new_elif;
 }
 
 struct ast_command *create_command()
@@ -72,9 +82,9 @@ struct ast_command *create_command()
     return new_c;
 }
 
-struct ast_single_quote *create_single_quote()
+struct ast_simple_quote *create_simple_quote()
 {
-    struct ast_single_quote *new_c = malloc(sizeof(struct ast_single_quote) * 30);
+    struct ast_simple_quote *new_c = malloc(sizeof(struct ast_simple_quote) * 30);
     return new_c;
 }
 
@@ -84,13 +94,6 @@ struct ast_double_quote *create_double_quote()
     return new_c;
 }
 
-struct ast_elif *create_elif()
-{
-    struct ast_elif *new_elif = malloc(sizeof(struct ast_elif));
-    new_elif->count_cond = 0;
-    new_elif->then = malloc(sizeof(struct ast));
-    return new_elif;
-}
 // en gros juste ca demande des nouvelles données quoi
 struct lexer *ask_entry(void)
 {
@@ -172,12 +175,11 @@ int get_command(struct lexer *lex, struct ast_command *new)
 // create the new node and calls build_ast for the struct
 int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
 {
-    new = malloc(sizeof(struct ast));
     new->type = NODE_ROOT;
     if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
-    enum token_type trans = lexer_peek(lex)->type;
     new->data.ast_main_root = build_ast(lex, mode)->data.ast_main_root;
+    //printf("\n\n\n\nGET COND : %d\n\n\n",new->data.ast_main_root->children[0]->type);
     return 0;
 }
 
@@ -189,10 +191,8 @@ int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
 int build_if(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_if *new_if = create_if();
-
     if (get_then(lex, new_if->cond, NODE_THEN))
       return 1;
-
     lexer_pop(lex);
     // if one of them is an error, then 1
     if (get_then(lex, new_if->then, NODE_IF))
@@ -201,7 +201,6 @@ int build_if(struct lexer *lex, struct ast_if_root *root)
     root->children[0] = malloc(sizeof(struct ast));
     root->children[0]->type = NODE_IF;
     root->children[0]->data.ast_if = new_if;
-    printf("IF BUILT\n");
     return 0;
 }
 
@@ -223,16 +222,11 @@ int build_else(struct lexer *lex, struct ast_if_root *root)
 int build_elif(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_elif *new_elif = create_elif();
-
     if (get_then(lex, new_elif->cond, NODE_THEN))
       return 1;
-
     lexer_pop(lex);
-
     if (get_then(lex, new_elif->then, NODE_ELIF)) // if one of them is an error, then 1
         return 1;
-
-    int size = sizeof(struct ast) * (root->nb_children + 1);
     root->children[root->nb_children] = malloc(sizeof(struct ast));
     root->children[root->nb_children]->type = NODE_ELIF;
     root->children[root->nb_children]->data.ast_elif = new_elif;
@@ -247,24 +241,21 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
     struct ast_if_root *new_root = create_if_root();
     int cap = 30;
     new_root->children = malloc(sizeof(struct ast_if) * cap);
+    enum token_type type = lexer_peek(lex)->type;
     // here getting if out of the lexer
     lexer_pop(lex);
     // add if
     if (build_if(lex, new_root))
         errx(2, "bad args in a wrong place in IF");
-    enum token_type type = lexer_peek(lex)->type;
     while (!lex || type == TOKEN_EOF)
         lex = ask_entry();
-printf("okayyy\n");
     // checking for errors
-    if (lex && type != TOKEN_ELSE
-        && type != TOKEN_ELIF
-        && type != TOKEN_FI)
+    type = lexer_peek(lex)->type;
+    if (lex && type != TOKEN_ELSE && type != TOKEN_ELIF && type != TOKEN_FI)
         errx(2, "bad args in a wrong place after if");
 
     // if/while elif childs are existing adding them
-    while (type != TOKEN_EOF
-           && type == TOKEN_ELIF)
+    while (type != TOKEN_EOF && type == TOKEN_ELIF)
     {
         if (new_root->nb_children >= cap)
         {
@@ -280,8 +271,7 @@ printf("okayyy\n");
         type = lexer_peek(lex)->type;
     }
     // checking for errors
-    if (type != TOKEN_ELSE
-        && type != TOKEN_FI)
+    if (type != TOKEN_ELSE && type != TOKEN_FI)
         errx(2, "bad args in a wrong place after elif");
 
     // add else childs if existing
@@ -316,7 +306,6 @@ void make_if(struct ast_main_root *ast, struct lexer *lex)
     ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
     ast->children[ast->nb_children - 1]->type = NODE_IF_ROOT;
     ast->children[ast->nb_children - 1]->data.ast_if_root = build_ast_if(lex);
-    printf("okayyyIF ENDED\n");
 }
 
 // PROCESS AND ADD CHILD WHEN COMMAND
@@ -336,9 +325,9 @@ void make_simple_quote(struct ast_main_root *ast, struct lexer *lex)
 {
     int rank = ast->nb_children - 1;
     ast->children[rank] = malloc(sizeof(struct ast));
-    ast->children[rank]->type = NODE_SINGLE_QUOTE;
-    ast->children[rank]->data.ast_single_quote = malloc(sizeof(struct ast_single_quote));
-    ast->children[rank]->data.ast_single_quote->argv =
+    ast->children[rank]->type = NODE_SIMPLE_QUOTE;
+    ast->children[rank]->data.ast_simple_quote = malloc(sizeof(struct ast_simple_quote));
+    ast->children[rank]->data.ast_simple_quote->argv =
     strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
     lexer_pop(lex);
 }
@@ -349,7 +338,7 @@ void make_double_quote(struct ast_main_root *ast, struct lexer *lex)
     int rank = ast->nb_children - 1;
     ast->children[rank] = malloc(sizeof(struct ast));
     ast->children[rank]->type = NODE_DOUBLE_QUOTE;
-    ast->children[rank]->data.ast_single_quote = malloc(sizeof(struct ast_double_quote));
+    ast->children[rank]->data.ast_simple_quote = malloc(sizeof(struct ast_double_quote));
     ast->children[rank]->data.ast_double_quote->argv =
     strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
     lexer_pop(lex);
@@ -383,7 +372,6 @@ int check_break(enum ast_type mode, enum token_type type)
 // for now only handles IF and commands (for now echo)
 struct ast *build_ast(struct lexer *lex, enum ast_type mode)
 {
-    struct ast *new_ast = malloc(sizeof(struct ast));
     struct ast_main_root *ast = create_main_root();
     enum token_type type = lexer_peek(lex)->type;
     if (!lex || type == TOKEN_EOF)
@@ -413,10 +401,15 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
             make_simple_quote(ast, lex);
         else if (type == TOKEN_DOUBLE_QUOTE)
             make_double_quote(ast, lex);
+        else if (type == TOKEN_PIPE)
+            make_double_quote(ast, lex);
         else
             errx(2, "wrong implementation");
         type = lexer_peek(lex)->type;
+        printf("TYPE = %d\n", type);
+        print(lex);
     }
+    struct ast *new_ast = malloc(sizeof(struct ast));
     new_ast->data.ast_main_root = ast;
     new_ast->type = NODE_ROOT;
     return new_ast;

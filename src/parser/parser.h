@@ -12,7 +12,7 @@ enum ast_type
     NODE_IF_ROOT,//3
     NODE_ROOT,//4
     NODE_COMMAND,//5
-    NODE_SINGLE_QUOTE,//6
+    NODE_SIMPLE_QUOTE,//6
     NODE_DOUBLE_QUOTE,//7
     NODE_THEN,//8
 };
@@ -34,7 +34,7 @@ union ast_data
     struct ast_elif *ast_elif;
     struct ast_else *ast_else;
     struct ast_main_root *ast_main_root;
-    struct ast_single_quote *ast_single_quote;
+    struct ast_simple_quote *ast_simple_quote;
     struct ast_double_quote *ast_double_quote;
 };
 
@@ -59,7 +59,18 @@ struct ast_command
     char *redir;
 };
 
-struct ast_single_quote
+struct ast_neg
+{
+  struct ast *node;
+};
+
+struct ast_pipeline
+{
+  struct ast *right;
+  struct ast *left;
+};
+
+struct ast_simple_quote
 {
     char *argv;
 };

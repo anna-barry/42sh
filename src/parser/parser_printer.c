@@ -33,10 +33,10 @@ void print_ast_if(struct ast *ast)
 {
     struct ast_if *a = ast->data.ast_if;
     printf("if { ");
-    for (int i = 0; i < a->count_cond; i++)
-    {
-        print_ast(a->cond[i]);
-    }
+
+
+    print_ast(a->cond);
+
     printf("}; then {");
     print_ast(a->then);
     printf("; }");
@@ -46,10 +46,9 @@ void print_ast_elif(struct ast *ast)
 {
     struct ast_elif *a = ast->data.ast_elif;
     printf("elif { ");
-    for (int i = 0; i < a->count_cond; i++)
-    {
-        print_ast(a->cond[i]);
-    }
+
+    print_ast(a->cond);
+
     printf("}; then {");
     print_ast(a->then);
     printf(" }");
@@ -75,7 +74,7 @@ void print_ast_command(struct ast *ast)
 
 typedef void (*ast_print_function)(struct ast *ast);
 
-static ast_print_function ast_printers[] = 
+static ast_print_function ast_printers[] =
 {
     [NODE_IF] = print_ast_if,
     [NODE_ELIF] = print_ast_elif,
@@ -87,7 +86,6 @@ static ast_print_function ast_printers[] =
 
 void print_ast(struct ast *ast) {
     printf("ast printing\n");
-    //printf("null = %d\n", ast == NULL);
     ast_printers[ast->type](ast);
     free(ast);
 }
@@ -101,7 +99,7 @@ void pretty_print(struct ast *ast)
 int main()
 {
     //struct lexer *lexer = lexer_new("if echo ok; then echo foo bar else echo b ;fi");
-    struct lexer *lexer = lexer_new("if echo ok ;echo celib then echo foo bar elif echo bebe then echo christian echo anna laime else echo b ;");
+    struct lexer *lexer = lexer_new("if echo ok ;echo celib then echo 'foo bar'; echo okay; elif echo bebe then echo christian; echo anna laime; fi");
     struct ast *ast = build_ast(lexer, NODE_ROOT);
     printf("\n build ast with nb %i[ok]\n\n", ast->data.ast_main_root->nb_children);
     if (ast->type == NODE_ROOT)
