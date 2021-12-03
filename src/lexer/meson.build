@@ -1,9 +1,5 @@
-incdirs = [
-  include_directories('.')
-]
-
-common = [
-  './lexer.c',
-  './token.c',
-  './token_printer.c'
-]
+all_sources += files(
+    'lexer.c',
+    'token.c',
+    'for_lexer.c'
+)

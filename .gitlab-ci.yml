@@ -21,11 +21,16 @@ build:
       - builddir/42sh
     expose_as: 42sh
 
-test_shell:
+Anna_test_lexer:
   stage: test
   script:
     - tests/run_tests_2
   
+Anna_test_for:
+  stage: test
+  script:
+    - tests/run_tests_lexer_for
+
 test:
   stage: test
   dependencies:

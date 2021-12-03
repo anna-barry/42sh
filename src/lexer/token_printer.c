@@ -8,6 +8,8 @@ char *tab[] = {
     [TOKEN_LINE_BREAK] = "\n", [TOKEN_PIPE] = "|", [TOKEN_NEG] = "!", 
     [TOKEN_WHILE] = "While", [TOKEN_DO] = "Do", [TOKEN_DONE] = "Done",
     [TOKEN_UNTIL] = "Until", [TOKEN_AND] = "&&", [TOKEN_OR] = "||",
+    [TOKEN_FOR] = "For", [TOKEN_IN] = "In", [TOKEN_REDIR_INPUT_DESCRIPEUR] = "<&",
+    [TOKEN_REDIR_RW] = "<>",
 };
 
 int main(int argc, char *argv[])
@@ -25,7 +27,11 @@ int main(int argc, char *argv[])
         || token->type == TOKEN_REDIR_ENTREE 
         || token->type == TOKEN_REDIR_DESCRIPEUR
         || token->type == TOKEN_REDIR_FIN_FICHIER
-        || token->type == TOKEN_DOUBLE_QUOTE)
+        || token->type == TOKEN_DOUBLE_QUOTE
+        || token->type == TOKEN_FOR_WORD
+        || token->type == TOKEN_FOR_SINGLE_QUOTE
+        || token->type == TOKEN_FOR_DOUBLE_QUOTE
+        || token->type == TOKEN_FOR_INT)
             printf("%s\n", token->value);
         else
             printf("%s\n", tab[token->type]);

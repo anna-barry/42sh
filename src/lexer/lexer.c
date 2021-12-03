@@ -16,7 +16,7 @@ int is_end(char c)
   return c == ';' || c == '\n' || c == ' ' || c == '\t' || c == '[' || c == ']';
 }
 
-size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
+size_t spe_token(const char *input, size_t *index, size_t i, struct lexer *new)
 {
   size_t nb = 0;
   size_t len = strlen(input);
@@ -30,8 +30,8 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
      */
       if (current_char == 'i' &&  i + 1 < len && input[i + 1] == 'f')
       {
-        new[index - 1].current_tok = token_new(TOKEN_IF);
-        new[index - 1].current_tok->value = NULL;
+        new[*index - 1].current_tok = token_new(TOKEN_IF);
+        new[*index - 1].current_tok->value = NULL;
         nb = 1;
       }
       /*
@@ -40,8 +40,8 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
       else if (current_char == 'e' &&  i + 3 < len && input[i + 1] == 'l'
                 && input[i + 2] == 's' && input[i + 3] == 'e')
       {
-        new[index - 1].current_tok = token_new(TOKEN_ELSE);
-        new[index - 1].current_tok->value = NULL;
+        new[*index - 1].current_tok = token_new(TOKEN_ELSE);
+        new[*index - 1].current_tok->value = NULL;
         nb = 3;
       }
       /*
@@ -50,8 +50,8 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
       else if (current_char == 'e' &&  i + 3 < len && input[i + 1] == 'l'
                 && input[i + 2] == 'i' && input[i + 3] == 'f')
       {
-        new[index - 1].current_tok = token_new(TOKEN_ELIF);
-        new[index - 1].current_tok->value = NULL;
+        new[*index - 1].current_tok = token_new(TOKEN_ELIF);
+        new[*index - 1].current_tok->value = NULL;
         nb = 3;
       }
       /*
@@ -60,8 +60,8 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
        else if (current_char == 't' &&  i + 3 < len && input[i + 1] == 'h'
                  && input[i + 2] == 'e' && input[i + 3] == 'n')
        {
-         new[index - 1].current_tok = token_new(TOKEN_THEN);
-         new[index - 1].current_tok->value = NULL;
+         new[*index - 1].current_tok = token_new(TOKEN_THEN);
+         new[*index - 1].current_tok->value = NULL;
          nb = 3;
        }
        /*
@@ -69,9 +69,35 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
         */
         else if (current_char == 'f' &&  i + 1 < len && input[i + 1] == 'i')
         {
-          new[index - 1].current_tok = token_new(TOKEN_FI);
-          new[index - 1].current_tok->value = NULL;
+          new[*index - 1].current_tok = token_new(TOKEN_FI);
+          new[*index - 1].current_tok->value = NULL;
           nb = 1;
+        }
+       /*
+        * testing for
+        */
+        else if (current_char == 'f' &&  i + 2 < len && input[i + 1] == 'o' && input[i + 2] == 'r')
+        {
+          new[*index - 1].current_tok = token_new(TOKEN_FOR);
+          new[*index - 1].current_tok->value = NULL;
+          nb = 2;
+        }
+       /*
+        * testing in
+        */
+        else if (current_char == 'i' &&  i + 1 < len && input[i + 1] == 'n')
+        {
+          new[*index - 1].current_tok = token_new(TOKEN_IN);
+          new[*index - 1].current_tok->value = NULL;
+          *index = *index + 1;
+          i += 2;
+          get_for(input, i, index, new);
+          nb = 0;
+          while (i + nb < strlen(input) && !(input[i + nb] == ';' || input[i + nb] == '\n'))
+          {
+            nb++;
+          }
+          nb++;
         }
        /*
         * testing Until
@@ -79,8 +105,8 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
        else if (current_char == 'u' &&  i + 4 < len && input[i + 1] == 'n' && input[i + 2] == 't'
        && input[i + 3] == 'i' && input[i + 4] == 'l')
         {
-          new[index - 1].current_tok = token_new(TOKEN_UNTIL);
-          new[index - 1].current_tok->value = NULL;
+          new[*index - 1].current_tok = token_new(TOKEN_UNTIL);
+          new[*index - 1].current_tok->value = NULL;
           nb = 4;
         }
        /*
@@ -89,8 +115,8 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
        else if (current_char == 'd' &&  i + 3 < len && input[i + 1] == 'o' && input[i + 2] == 'n'
        && input[i + 3] == 'e')
         {
-          new[index - 1].current_tok = token_new(TOKEN_DONE);
-          new[index - 1].current_tok->value = NULL;
+          new[*index - 1].current_tok = token_new(TOKEN_DONE);
+          new[*index - 1].current_tok->value = NULL;
           nb = 3;
         }
        /*
@@ -98,8 +124,8 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
         */
        else if (current_char == 'd' &&  i + 1 < len && input[i + 1] == 'o' )
         {
-          new[index - 1].current_tok = token_new(TOKEN_DO);
-          new[index - 1].current_tok->value = NULL;
+          new[*index - 1].current_tok = token_new(TOKEN_DO);
+          new[*index - 1].current_tok->value = NULL;
           nb = 1;
         }
        /*
@@ -108,8 +134,8 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
        else if (current_char == 'w' &&  i + 4 < len && input[i + 1] == 'h' && input[i + 2] == 'i'
        && input[i + 3] == 'l' && input[i + 4] == 'e')
         {
-          new[index - 1].current_tok = token_new(TOKEN_WHILE);
-          new[index - 1].current_tok->value = NULL;
+          new[*index - 1].current_tok = token_new(TOKEN_WHILE);
+          new[*index - 1].current_tok->value = NULL;
           nb = 4;
         }
         else
@@ -117,7 +143,7 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
           /*
            * testing word
            */
-          new[index - 1].current_tok = token_new(TOKEN_WORDS);
+          new[*index - 1].current_tok = token_new(TOKEN_WORDS);
           nb = 0;
           while (i + nb < strlen(input) && ((input[i + nb] >= 'a'
                 && input[i + nb] <= 'z') ||
@@ -125,8 +151,8 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
           {
               nb++;
           }
-          new[index - 1].current_tok->value = strndup(input + i, nb);
-          new[index - 1].current_tok->value[nb] = '\0';
+          new[*index - 1].current_tok->value = strndup(input + i, nb);
+          new[*index - 1].current_tok->value[nb] = '\0';
           if (nb > 0) {
             nb--;
           }
@@ -138,26 +164,26 @@ size_t spe_token(const char *input, size_t index, size_t i, struct lexer *new)
     {
       if(input[i] == '&' && i + 1 < strlen(input) && input[i + 1] == '&')
       {
-        new[index - 1].current_tok = token_new(TOKEN_AND);
-        new[index - 1].current_tok->value = NULL;
+        new[*index - 1].current_tok = token_new(TOKEN_AND);
+        new[*index - 1].current_tok->value = NULL;
         nb++;
       }
       else
       {
-        new[index - 1].current_tok = token_new(TOKEN_WORDS);
+        new[*index - 1].current_tok = token_new(TOKEN_WORDS);
         nb = 0;
         while (i + nb < strlen(input) && !is_end(input[i + nb]))
         {
           nb++;
         }
-        new[index - 1].current_tok->value = strndup(input + i, nb);
-        new[index - 1].current_tok->value[nb] = '\0';
+        new[*index - 1].current_tok->value = strndup(input + i, nb);
+        new[*index - 1].current_tok->value[nb] = '\0';
         if (nb > 0) {
           nb--;
         }
       }
     }
-    //new[index - 1].current_tok = token_new(TOKEN_ERROR);
+    //new[*index - 1].current_tok = token_new(TOKEN_ERROR);
     //fprintf(stderr, "error in token\n");
   }
   return nb;
@@ -168,14 +194,15 @@ struct lexer *lexer_new(const char *input)
     size_t cap = 20;
     struct lexer *new = malloc(20 * sizeof(struct lexer));
     size_t i = 0;
-    size_t index = 1;
+    size_t *index = malloc(sizeof(size_t));
+    *index = 1;
     size_t nb = 0;
     for (; i <= strlen(input); i++)
     {
       nb = 0;
       if (is_space(input[i]) || input[i] == '[' || input[i] == ']')
         continue;
-      if (cap < (i + 1))
+      if (cap < (*index + 2))
       {
           cap *= 2;
           new = realloc(new, cap * sizeof(struct lexer));
@@ -183,20 +210,20 @@ struct lexer *lexer_new(const char *input)
       switch (input[i])
       {
           case ('\n'):
-              new[index - 1].current_tok = token_new(TOKEN_LINE_BREAK);
-              new[index - 1].current_tok->value = NULL;
+              new[*index - 1].current_tok = token_new(TOKEN_LINE_BREAK);
+              new[*index - 1].current_tok->value = NULL;
               break;
              /*
                * Testing for end of file
                */
           case ('\0'):
-              new[index - 1].current_tok = token_new(TOKEN_EOF);
-              new[index - 1].current_tok->value = NULL;
+              new[*index - 1].current_tok = token_new(TOKEN_EOF);
+              new[*index - 1].current_tok->value = NULL;
               //printf("end of file \n");
               break;
           case (';'):
-              new[index - 1].current_tok = token_new(TOKEN_SEMICOLON);
-              new[index - 1].current_tok->value = NULL;
+              new[*index - 1].current_tok = token_new(TOKEN_SEMICOLON);
+              new[*index - 1].current_tok->value = NULL;
               //printf("lol;;;;;lol\n");
               break;
               /*
@@ -205,103 +232,163 @@ struct lexer *lexer_new(const char *input)
           case ('|'):
               if (i + 1 < strlen(input) && input[i + 1] == '|')
               {
-                new[index - 1].current_tok = token_new(TOKEN_OR);
-                new[index - 1].current_tok->value = NULL;
+                new[*index - 1].current_tok = token_new(TOKEN_OR);
+                new[*index - 1].current_tok->value = NULL;
                 nb++;
               }
               else
               {
-                new[index - 1].current_tok = token_new(TOKEN_PIPE);
-                new[index - 1].current_tok->value = NULL;
+                new[*index - 1].current_tok = token_new(TOKEN_PIPE);
+                new[*index - 1].current_tok->value = NULL;
               }
               break;
           case ('!'):
-              new[index - 1].current_tok = token_new(TOKEN_NEG);
-              new[index - 1].current_tok->value = NULL;
+              new[*index - 1].current_tok = token_new(TOKEN_NEG);
+              new[*index - 1].current_tok->value = NULL;
               break;
               /*
                * Testing for Redirections
                */
           case ('<'):
-              new[index - 1].current_tok = token_new(TOKEN_REDIR_ENTREE);
-              nb = 1;
-              while (i + nb < strlen(input) && !is_end(input[i + nb]))
-              {
-                nb++;
-              }
-              new[index - 1].current_tok->value = strndup(input + i + 1, nb);
-              new[index - 1].current_tok->value[nb - 1] = '\0';
-              nb--;
-              break;
-          case ('>'):
               if (i + 1 < strlen(input) && input[i + 1] == '&')
               {
-                new[index - 1].current_tok = token_new(TOKEN_REDIR_DESCRIPEUR);
+                new[*index - 1].current_tok = token_new(TOKEN_REDIR_INPUT_DESCRIPEUR);
                 nb = 2;
+                while (input[i + nb] == ' ')
+                {
+                  nb++;
+                }
+                size_t tmp = nb;
                 while (i + nb < strlen(input) && !is_end(input[i + nb]))
                 {
                   nb++;
                 }
-                new[index - 1].current_tok->value = strndup(input + i + 2, nb);
-                new[index - 1].current_tok->value[nb - 2] = '\0';
+                new[*index - 1].current_tok->value = strndup(input + i + tmp, nb);
+                new[*index - 1].current_tok->value[nb - tmp] = '\0';
                 nb--;
               }
               else if (i + 1 < strlen(input) && input[i + 1] == '>')
               {
-                new[index - 1].current_tok = token_new(TOKEN_REDIR_FIN_FICHIER);
+                printf("in <> one\n");
+                new[*index - 1].current_tok = token_new(TOKEN_REDIR_RW);
                 nb = 2;
+                while (input[i + nb] == ' ')
+                {
+                  nb++;
+                }
+                size_t tmp = nb;
                 while (i + nb < strlen(input) && !is_end(input[i + nb]))
                 {
                   nb++;
                 }
-                new[index - 1].current_tok->value = strndup(input + i + 2, nb);
-                new[index - 1].current_tok->value[nb - 2] = '\0';
+                new[*index - 1].current_tok->value = strndup(input + i + tmp, nb);
+                new[*index - 1].current_tok->value[nb - tmp] = '\0';
                 nb--;
               }
               else
               {
-                new[index - 1].current_tok = token_new(TOKEN_REDIR_SORTIE);
+                new[*index - 1].current_tok = token_new(TOKEN_REDIR_ENTREE);
                 nb = 1;
+                while (input[i + nb] == ' ')
+                {
+                  nb++;
+                }
+                size_t tmp = nb;
                 while (i + nb < strlen(input) && !is_end(input[i + nb]))
                 {
                   nb++;
                 }
-                new[index - 1].current_tok->value = strndup(input + i + 1, nb);
-                new[index - 1].current_tok->value[nb - 1] = '\0';
+                new[*index - 1].current_tok->value = strndup(input + i + tmp, nb);
+                new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                nb--;
+              }
+              break;
+              break;
+          case ('>'):
+              if (i + 1 < strlen(input) && input[i + 1] == '&')
+              {
+                new[*index - 1].current_tok = token_new(TOKEN_REDIR_DESCRIPEUR);
+                nb = 2;
+                while (input[i + nb] == ' ')
+                {
+                  nb++;
+                }
+                size_t tmp = nb;
+                while (i + nb < strlen(input) && !is_end(input[i + nb]))
+                {
+                  nb++;
+                }
+                new[*index - 1].current_tok->value = strndup(input + i + tmp, nb);
+                new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                nb--;
+              }
+              else if (i + 1 < strlen(input) && input[i + 1] == '>')
+              {
+                new[*index - 1].current_tok = token_new(TOKEN_REDIR_FIN_FICHIER);
+                nb = 2;
+                while (input[i + nb] == ' ')
+                {
+                  nb++;
+                }
+                size_t tmp = nb;
+                while (i + nb < strlen(input) && !is_end(input[i + nb]))
+                {
+                  nb++;
+                }
+                new[*index - 1].current_tok->value = strndup(input + i + tmp, nb);
+                new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                nb--;
+              }
+              else
+              {
+                new[*index - 1].current_tok = token_new(TOKEN_REDIR_SORTIE);
+                nb = 1;
+                while (input[i + nb] == ' ')
+                {
+                  nb++;
+                }
+                size_t tmp = nb;
+                while (i + nb < strlen(input) && !is_end(input[i + nb]))
+                {
+                  nb++;
+                }
+                new[*index - 1].current_tok->value = strndup(input + i + tmp, nb);
+                new[*index - 1].current_tok->value[nb - tmp] = '\0';
                 nb--;
               }
               break;
           case ('\''):
-              new[index - 1].current_tok = token_new(TOKEN_SIMPLE_QUOTE);
+              new[*index - 1].current_tok = token_new(TOKEN_SIMPLE_QUOTE);
               nb = 1;
               while (i + nb < strlen(input) && input[i + nb] != '\0'
               && input[i + nb] != '\'')
               {
                 nb++;
               }
-              new[index - 1].current_tok->value = strndup(input + i + 1, nb - 1);
-              new[index - 1].current_tok->value[nb - 1] = '\0';
+              new[*index - 1].current_tok->value = strndup(input + i + 1, nb - 1);
+              new[*index - 1].current_tok->value[nb - 1] = '\0';
               break;
           case ('\"'):
-              new[index - 1].current_tok = token_new(TOKEN_DOUBLE_QUOTE);
+              new[*index - 1].current_tok = token_new(TOKEN_DOUBLE_QUOTE);
               nb = 1;
               while (i + nb < strlen(input) && input[i + nb] != '\0'
               && input[i + nb] != '\"')
               {
                 nb++;
               }
-              new[index - 1].current_tok->value = strndup(input + i + 1, nb - 1);
-              new[index - 1].current_tok->value[nb - 1] = '\0';
+              new[*index - 1].current_tok->value = strndup(input + i + 1, nb - 1);
+              new[*index - 1].current_tok->value[nb - 1] = '\0';
               break;
           default:
               nb = spe_token(input, index, i, new);
               break;
         }
-        new[index].input = input;
-        new[index].pos = i;
+        new[*index].input = input;
+        new[*index].pos = i;
         i += nb;
-        index++;
+        *index = *index + 1;
     }
+    free(index);
     return new;
 }
 
@@ -335,7 +422,12 @@ struct token *lexer_pop(struct lexer *lexer)
     enum token_type t = lexer->current_tok->type;
     char *test = NULL;
     if (t == TOKEN_SIMPLE_QUOTE || t == TOKEN_WORDS || t == TOKEN_REDIR_SORTIE || t == TOKEN_REDIR_ENTREE 
-    || t == TOKEN_REDIR_DESCRIPEUR || t == TOKEN_REDIR_FIN_FICHIER || t == TOKEN_DOUBLE_QUOTE)
+    || t == TOKEN_REDIR_DESCRIPEUR || t == TOKEN_REDIR_FIN_FICHIER || t == TOKEN_DOUBLE_QUOTE
+    || t == TOKEN_FOR_WORD
+        || t == TOKEN_FOR_SINGLE_QUOTE
+        || t == TOKEN_FOR_DOUBLE_QUOTE
+        || t == TOKEN_FOR_INT
+    )
     {
       test = strndup( lexer->current_tok->value,
         strlen(lexer->current_tok->value));
@@ -353,7 +445,11 @@ struct token *lexer_pop(struct lexer *lexer)
         || lexer[j + 1].current_tok->type == TOKEN_REDIR_ENTREE 
         || lexer[j + 1].current_tok->type == TOKEN_REDIR_DESCRIPEUR
         || lexer[j + 1].current_tok->type == TOKEN_REDIR_FIN_FICHIER
-        || lexer[j + 1].current_tok->type == TOKEN_DOUBLE_QUOTE)
+        || lexer[j + 1].current_tok->type == TOKEN_DOUBLE_QUOTE
+        || lexer[j + 1].current_tok->type == TOKEN_FOR_WORD
+        || lexer[j + 1].current_tok->type == TOKEN_FOR_SINGLE_QUOTE
+        || lexer[j + 1].current_tok->type == TOKEN_FOR_DOUBLE_QUOTE
+        || lexer[j + 1].current_tok->type == TOKEN_FOR_INT)
       {
         if (lexer[j].current_tok->value != NULL) {
           free(lexer[j].current_tok->value);
@@ -365,7 +461,11 @@ struct token *lexer_pop(struct lexer *lexer)
       j++;
     }
     if (t == TOKEN_SIMPLE_QUOTE || t == TOKEN_WORDS || t == TOKEN_REDIR_SORTIE || t == TOKEN_REDIR_ENTREE 
-    || t == TOKEN_REDIR_DESCRIPEUR || t == TOKEN_REDIR_FIN_FICHIER || t == TOKEN_DOUBLE_QUOTE)
+    || t == TOKEN_REDIR_DESCRIPEUR || t == TOKEN_REDIR_FIN_FICHIER || t == TOKEN_DOUBLE_QUOTE
+    || t == TOKEN_FOR_WORD
+    || t == TOKEN_FOR_SINGLE_QUOTE
+    || t == TOKEN_FOR_DOUBLE_QUOTE
+    || t == TOKEN_FOR_INT)
     {
       if (lexer[j].current_tok->value != NULL) {
         free(lexer[j].current_tok->value);

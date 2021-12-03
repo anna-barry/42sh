@@ -27,6 +27,14 @@ enum token_type
     TOKEN_DOUBLE_QUOTE, ///< '"' -> 20
     TOKEN_AND, ///< '&&' -> 21
     TOKEN_OR, ///< '||' -> 22
+    TOKEN_FOR, ///< 'For' -> 23  carreful: next word is variable 
+    TOKEN_IN, ///< 'In' -> 24 carreful: next word is sequence (1..10..2)
+    TOKEN_REDIR_INPUT_DESCRIPEUR, ///< '<&' -> 25
+    TOKEN_FOR_WORD, ///< 'WORD+' -> 26
+    TOKEN_FOR_SINGLE_QUOTE, ///< ''WORD+'' -> 27
+    TOKEN_FOR_DOUBLE_QUOTE, ///< '"WORD+"' -> 28
+    TOKEN_FOR_INT, ///< 'WORD+' with for {1..10..2}-> 29
+    TOKEN_REDIR_RW, ///< '<>' -> 30
     TOKEN_ERROR ///< tt's not a real token, it's returned in case of invalid
                 ///< input
 };

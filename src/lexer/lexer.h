@@ -24,6 +24,13 @@ struct lexer
     struct token *current_tok; ///< The next token, if processed
 };
 
+struct read_for_int
+{
+    size_t step; ///< Step
+    size_t start; ///< Start
+    size_t end; ///< End
+};
+
 /**
  * \brief Creates a new lexer given an input string.
  */
@@ -46,3 +53,13 @@ struct token *lexer_peek(struct lexer *lexer);
  *   calling lexer_pop in a loop will iterate over all tokens until EOF.
  */
 struct token *lexer_pop(struct lexer *lexer);
+
+/**
+ * \brief Get condition for for loop
+ */
+size_t get_for(const char *input, size_t i, size_t *index, struct lexer *new);
+
+/**
+ * \brief Get condition Structure for for loop for execution purposes
+ */
+struct read_for_int* get_structure(char *input);
