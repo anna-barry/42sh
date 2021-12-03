@@ -32,6 +32,26 @@ int exec_ast_root(struct ast *ast)
     return res;
 }
 
+int exec_ast_and(struct ast *ast)
+{
+    struct ast_and *a = ast->data.ast_and;
+    if ((exec_ast(a->right) == 0) && (exec_ast(a->left) == 0))
+    {
+        return exec_ast(a->then);
+    }
+    return 1;
+}
+
+int exec_ast_or(struct ast *ast)
+{
+    struct ast_and *a = ast->data.ast_or;
+    if ((exec_ast(a->right) == 0) || (exec_ast(a->left) == 0))
+    {
+        return exec_ast(a->then);
+    }
+    return 1;
+}
+
 int exec_ast_if(struct ast *ast)
 {
     struct ast_if *a = ast->data.ast_if;

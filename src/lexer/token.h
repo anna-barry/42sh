@@ -19,22 +19,22 @@ enum token_type
     TOKEN_REDIR_ENTREE, ///< '<' -> 12
     TOKEN_REDIR_DESCRIPEUR, ///< '>&' -> 13
     TOKEN_REDIR_FIN_FICHIER, ///< '>>' -> 14
-    TOKEN_UNTIL, ///< 'Until' -> 15
-    TOKEN_DONE, ///< 'Done' -> 16
-    TOKEN_DO, ///< 'Do' -> 17
-    TOKEN_WHILE, ///< 'While' -> 18
-    TOKEN_NEG, ///< '!' -> 19
-    TOKEN_DOUBLE_QUOTE, ///< '"' -> 20
-    TOKEN_AND, ///< '&&' -> 21
-    TOKEN_OR, ///< '||' -> 22
-    TOKEN_FOR, ///< 'For' -> 23  carreful: next word is variable 
-    TOKEN_IN, ///< 'In' -> 24 carreful: next word is sequence (1..10..2)
-    TOKEN_REDIR_INPUT_DESCRIPEUR, ///< '<&' -> 25
-    TOKEN_FOR_WORD, ///< 'WORD+' -> 26
-    TOKEN_FOR_SINGLE_QUOTE, ///< ''WORD+'' -> 27
-    TOKEN_FOR_DOUBLE_QUOTE, ///< '"WORD+"' -> 28
+    TOKEN_REDIR_INPUT_DESCRIPEUR, ///< '<&' -> 15
+    TOKEN_REDIR_RW, ///< '<>' -> 16
+    TOKEN_UNTIL, ///< 'Until' -> 17
+    TOKEN_DONE, ///< 'Done' -> 18
+    TOKEN_DO, ///< 'Do' -> 19
+    TOKEN_WHILE, ///< 'While' -> 20
+    TOKEN_NEG, ///< '!' -> 21
+    TOKEN_DOUBLE_QUOTE, ///< '"' -> 22
+    TOKEN_AND, ///< '&&' -> 23
+    TOKEN_OR, ///< '||' -> 24
+    TOKEN_FOR, ///< 'For' -> 25  carreful: next word is variable 
+    TOKEN_IN, ///< 'In' -> 26 carreful: next word is sequence (1..10..2)
+    TOKEN_FOR_WORD, ///< 'WORD+' -> 28
+    TOKEN_FOR_SINGLE_QUOTE, ///< ''WORD+'' -> 29
+    TOKEN_FOR_DOUBLE_QUOTE, ///< '"WORD+"' -> 30
     TOKEN_FOR_INT, ///< 'WORD+' with for {1..10..2}-> 29
-    TOKEN_REDIR_RW, ///< '<>' -> 30
     TOKEN_ERROR ///< tt's not a real token, it's returned in case of invalid
                 ///< input
 };
