@@ -10,4 +10,4 @@ then
 echo "error"
 exit 1;
 fi
-"done [ok] "
+echo "done [ok] "

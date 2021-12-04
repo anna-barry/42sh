@@ -14,7 +14,8 @@ echo
 ;
 Done
 <>
-EOF")
+EOF
+")
 var1=$?
 #rm ./token_printer
 if [ $var1 -ne 0 ]; 
