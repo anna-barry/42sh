@@ -37,7 +37,8 @@ echo
 \$i
 ;
 Done
-EOF")
+EOF
+")
 var2=$?
 if [ $var2 -ne 0 ]; 
 then
@@ -83,6 +84,33 @@ echo
 ;
 Done
 hi
+EOF
+")
+var2=$?
+if [ $var2 -ne 0 ]; 
+then
+echo "error"
+rm ./token_printer
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Lexer For 5 ***********"
+diff <(./token_printer "for named in namesss hi a {1..2};do; echo \$name;done <> hi") <(printf "For
+named
+In
+namesss
+hi
+a
+1..2..1
+;
+Do
+;
+echo
+\$name
+;
+Done
+<>
 EOF
 ")
 var2=$?
