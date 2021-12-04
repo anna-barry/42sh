@@ -14,7 +14,7 @@ void print(struct lexer *lexer)
         [TOKEN_IF] = "If", [TOKEN_THEN] = "Then",  [TOKEN_ELIF] = "Elif",
         [TOKEN_ELSE] = "Else",  [TOKEN_FI] = "Fi", [TOKEN_SEMICOLON] = ";",
         [TOKEN_LINE_BREAK] = "\n", [TOKEN_PIPE] = "|", [TOKEN_AND] = "&&", [TOKEN_OR] = "||",
-        [TOKEN_WHILE] = "While", [TOKEN_DO] = "Do", [TOKEN_DONE] = "Done"
+        [TOKEN_WHILE] = "While", [TOKEN_DO] = "Do", [TOKEN_DONE] = "Done", [TOKEN_UNTIL] = "Until",
     };
     size_t i = 0;
     if (lexer == NULL || lexer[i].current_tok == NULL)
@@ -429,6 +429,17 @@ void make_while(struct ast_main_root *ast, struct lexer *lex)
   ast->children[ast->nb_children - 1]->data.ast_while = build_ast_while(lex);
 }
 
+void make_until(struct ast_main_root *ast, struct lexer *lex)
+{
+  int nb = ast->nb_children - 1;
+  ast->children[nb] = malloc(sizeof(struct ast));
+  ast->children[nb]->type = NODE_NEG;
+  ast->children[nb]->data.ast_neg = malloc(sizeof(struct ast));
+  ast->children[nb]->data.ast_neg->node = malloc(sizeof(struct ast));
+  ast->children[nb]->data.ast_neg->node->type = NODE_WHILE;
+  ast->children[nb]->data.ast_neg->node->data.ast_while = build_ast_while(lex);
+}
+
 // PROCESS AND ADD CHILD WHEN COMMAND
 void make_command(struct ast_main_root *ast, struct lexer *lex)
 {
@@ -553,7 +564,15 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
             break;
         }
         else if (type == TOKEN_WHILE)
+        {
+            command = 0;
             make_while(ast, lex);
+        }
+        else if (type == TOKEN_UNTIL)
+        {
+            command = 0;
+            make_until(ast,lex);
+        }
         else
             errx(2, "wrong implementation");
         type = lexer_peek(lex)->type;

@@ -48,6 +48,7 @@ union ast_data
     struct ast_while *ast_while;
     struct ast_and *ast_and;
     struct ast_or *ast_or;
+    struct ast_neg *ast_neg;
 };
 
 struct ast
