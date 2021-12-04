@@ -94,7 +94,7 @@ int command_redir_r_and(/*char *command, int count, char *file*/ int out,
     return 0;
 }
 
-int command_redir_r_and(/*char *command, int count, char *file*/ int out,
+int command_redir_l_and(/*char *command, int count, char *file*/ int out,
                         int in) // basic case 1 for out if NULL
 {
     // int n;
@@ -127,7 +127,7 @@ int main()
     char *file = "tester.txt";
     printf("recieve\n");
     // fprintf(fd, "new file descriptor\n");
-    command_redir(argv, 2, file);
+    command_redir_r(argv, 2, file);
     // fprintf(fd, "old file descriptor\n");
     printf("lounch\n");
     return 0;
