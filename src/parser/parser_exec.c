@@ -85,15 +85,7 @@ int exec_ast_else(struct ast *ast)
 int exec_ast_command(struct ast *ast)
 {
     struct ast_command *a = ast->data.ast_command;
-    if (strcmp("echo", a->argv[0]) == 0)
-    {
-        int inter = echo(a->argv, a->count);
-        return inter;
-    }
-    else
-    {
-        return command_exec(a->argv);
-    }
+    return command_exec(a->argv, a->count);
 }
 
 typedef int (*ast_exec_function)(struct ast *ast);
