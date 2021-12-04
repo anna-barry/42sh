@@ -13,7 +13,8 @@ void print(struct lexer *lexer)
     char *tab[] = {
         [TOKEN_IF] = "If", [TOKEN_THEN] = "Then",  [TOKEN_ELIF] = "Elif",
         [TOKEN_ELSE] = "Else",  [TOKEN_FI] = "Fi", [TOKEN_SEMICOLON] = ";",
-        [TOKEN_LINE_BREAK] = "\n", [TOKEN_PIPE] = "|", [TOKEN_AND] = "&&", [TOKEN_OR] = "||"
+        [TOKEN_LINE_BREAK] = "\n", [TOKEN_PIPE] = "|", [TOKEN_AND] = "&&", [TOKEN_OR] = "||",
+        [TOKEN_WHILE] = "While", [TOKEN_DO] = "Do", [TOKEN_DONE] = "Done"
     };
     size_t i = 0;
     if (lexer == NULL || lexer[i].current_tok == NULL)
@@ -400,6 +401,11 @@ struct ast_while *build_ast_while(struct lexer *lex)
 
     if (get_then(lex, new_root->then, NODE_DO))
         errx(2, "couldn't get commands in while");
+    if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
+        lex = ask_entry();
+    if (lexer_peek(lex)->type != TOKEN_DONE)
+      errx(2, "couldn't close while condition");
+    lexer_pop(lex);
     return new_root;
 
 }
@@ -546,6 +552,8 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
             //negation must break when the command was treated
             break;
         }
+        else if (type == TOKEN_WHILE)
+            make_while(ast, lex);
         else
             errx(2, "wrong implementation");
         type = lexer_peek(lex)->type;

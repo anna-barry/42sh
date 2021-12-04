@@ -4,16 +4,16 @@
 
 enum token_type
 {
-    TOKEN_IF, ///< 'if' -> 1
-    TOKEN_THEN, ///< 'then' -> 2
-    TOKEN_ELIF, ///< 'elif' -> 3
-    TOKEN_ELSE, ///< 'else' -> 4
-    TOKEN_FI, ///< "fi" -> 5
-    TOKEN_SEMICOLON, ///< ';' -> 6
-    TOKEN_LINE_BREAK, ///< '\n' -> 7
-    TOKEN_SIMPLE_QUOTE, ///< ''' -> 8
-    TOKEN_WORDS, ///< 'WORD+' -> 9
-    TOKEN_EOF, ///< 'EOF' -> 10
+    TOKEN_IF, ///< 'if' -> 0
+    TOKEN_THEN, ///< 'then' -> 1
+    TOKEN_ELIF, ///< 'elif' -> 2
+    TOKEN_ELSE, ///< 'else' -> 3
+    TOKEN_FI, ///< "fi" -> 4
+    TOKEN_SEMICOLON, ///< ';' -> 5
+    TOKEN_LINE_BREAK, ///< '\n' -> 6
+    TOKEN_SIMPLE_QUOTE, ///< ''' -> 7
+    TOKEN_WORDS, ///< 'WORD+' -> 8
+    TOKEN_EOF, ///< 'EOF' -> 9
     TOKEN_PIPE, ///< '|' -> 10
     TOKEN_REDIR_SORTIE, ///< '>' -> 11
     TOKEN_REDIR_ENTREE, ///< '<' -> 12
@@ -29,7 +29,7 @@ enum token_type
     TOKEN_DOUBLE_QUOTE, ///< '"' -> 22
     TOKEN_AND, ///< '&&' -> 23
     TOKEN_OR, ///< '||' -> 24
-    TOKEN_FOR, ///< 'For' -> 25  carreful: next word is variable 
+    TOKEN_FOR, ///< 'For' -> 25  carreful: next word is variable
     TOKEN_IN, ///< 'In' -> 26 carreful: next word is sequence (1..10..2)
     TOKEN_FOR_WORD, ///< 'WORD+' -> 28
     TOKEN_FOR_SINGLE_QUOTE, ///< ''WORD+'' -> 29
