@@ -263,14 +263,25 @@ struct lexer *lexer_new(const char *input)
                 {
                   nb++;
                 }
-                size_t tmp = nb;
-                while (*i + nb < strlen(input) && !is_end(input[*i + nb]))
+                if (input[*i + 2] >= '0' && input[*i + 2] <= '9')
                 {
-                  nb++;
+                  size_t tmp = nb;
+                  while (*i + nb < strlen(input) && !is_end(input[*i + nb]))
+                  {
+                    nb++;
+                  }
+                  new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
+                  new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                  nb--;
                 }
-                new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
-                new[*index - 1].current_tok->value[nb - tmp] = '\0';
-                nb--;
+                else
+                {
+                  char *tmp = malloc(2 * sizeof(char));
+                  tmp[0] = '0';
+                  tmp[1] = '\0';
+                  new[*index - 1].current_tok->value = tmp;
+                  nb--;
+                }
               }
               else if (*i + 1 < strlen(input) && input[*i + 1] == '>')
               {
@@ -317,14 +328,25 @@ struct lexer *lexer_new(const char *input)
                 {
                   nb++;
                 }
-                size_t tmp = nb;
-                while (*i + nb < strlen(input) && !is_end(input[*i + nb]))
+                if (input[*i + nb] >= '0' && input[*i + nb] <= '9')
                 {
-                  nb++;
+                  size_t tmp = nb;
+                  while (*i + nb < strlen(input) && !is_end(input[*i + nb]))
+                  {
+                    nb++;
+                  }
+                  new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
+                  new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                  nb--;
                 }
-                new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
-                new[*index - 1].current_tok->value[nb - tmp] = '\0';
-                nb--;
+                else
+                {
+                  char *tmp = malloc(2 * sizeof(char));
+                  tmp[0] = '1';
+                  tmp[1] = '\0';
+                  new[*index - 1].current_tok->value = tmp;
+                  nb--;
+                }
               }
               else if (*i + 1 < strlen(input) && input[*i + 1] == '>')
               {
@@ -424,7 +446,6 @@ struct lexer *lexer_new(const char *input)
         new[*index].input = input;
         new[*index].pos = *i;
         *i = *i + nb;
-        //printf("here %c\n", input[*i]);
         *index = *index + 1;
     }
     free(index);
