@@ -343,6 +343,23 @@ struct lexer *lexer_new(const char *input)
                 new[*index - 1].current_tok->value[nb - tmp] = '\0';
                 nb--;
               }
+              else if (*i + 1 < strlen(input) && input[*i + 1] == '|')
+              {
+                new[*index - 1].current_tok = token_new(TOKEN_REDIR_PIPE);
+                nb = 2;
+                while (input[*i + nb] == ' ')
+                {
+                  nb++;
+                }
+                size_t tmp = nb;
+                while (*i + nb < strlen(input) && !is_end(input[*i + nb]))
+                {
+                  nb++;
+                }
+                new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
+                new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                nb--;
+              }
               else
               {
                 new[*index - 1].current_tok = token_new(TOKEN_REDIR_SORTIE);
@@ -446,10 +463,11 @@ struct token *lexer_pop(struct lexer *lexer)
     char *test = NULL;
     if (t == TOKEN_SIMPLE_QUOTE || t == TOKEN_WORDS || t == TOKEN_REDIR_SORTIE || t == TOKEN_REDIR_ENTREE 
     || t == TOKEN_REDIR_DESCRIPEUR || t == TOKEN_REDIR_FIN_FICHIER || t == TOKEN_DOUBLE_QUOTE
-    || t == TOKEN_FOR_WORD
-        || t == TOKEN_FOR_SINGLE_QUOTE
+    || t == TOKEN_FOR_WORD || t == TOKEN_REDIR_PIPE
+        || t == TOKEN_FOR_SINGLE_QUOTE 
         || t == TOKEN_FOR_DOUBLE_QUOTE
-        || t == TOKEN_FOR_INT
+        || t == TOKEN_FOR_INT || t == TOKEN_REDIR_INPUT_DESCRIPEUR
+        || t == TOKEN_REDIR_RW
     )
     {
       test = strndup( lexer->current_tok->value,
@@ -469,10 +487,13 @@ struct token *lexer_pop(struct lexer *lexer)
         || lexer[j + 1].current_tok->type == TOKEN_REDIR_DESCRIPEUR
         || lexer[j + 1].current_tok->type == TOKEN_REDIR_FIN_FICHIER
         || lexer[j + 1].current_tok->type == TOKEN_DOUBLE_QUOTE
+        || lexer[j + 1].current_tok->type == TOKEN_REDIR_INPUT_DESCRIPEUR
+        || lexer[j + 1].current_tok->type == TOKEN_REDIR_RW
         || lexer[j + 1].current_tok->type == TOKEN_FOR_WORD
         || lexer[j + 1].current_tok->type == TOKEN_FOR_SINGLE_QUOTE
         || lexer[j + 1].current_tok->type == TOKEN_FOR_DOUBLE_QUOTE
-        || lexer[j + 1].current_tok->type == TOKEN_FOR_INT)
+        || lexer[j + 1].current_tok->type == TOKEN_FOR_INT
+        || lexer[j + 1].current_tok->type == TOKEN_REDIR_PIPE)
       {
         if (lexer[j].current_tok->value != NULL) {
           free(lexer[j].current_tok->value);
@@ -485,7 +506,9 @@ struct token *lexer_pop(struct lexer *lexer)
     }
     if (t == TOKEN_SIMPLE_QUOTE || t == TOKEN_WORDS || t == TOKEN_REDIR_SORTIE || t == TOKEN_REDIR_ENTREE 
     || t == TOKEN_REDIR_DESCRIPEUR || t == TOKEN_REDIR_FIN_FICHIER || t == TOKEN_DOUBLE_QUOTE
-    || t == TOKEN_FOR_WORD
+    || t == TOKEN_FOR_WORD || t == TOKEN_REDIR_PIPE
+    || t == TOKEN_REDIR_INPUT_DESCRIPEUR
+    || t == TOKEN_REDIR_RW
     || t == TOKEN_FOR_SINGLE_QUOTE
     || t == TOKEN_FOR_DOUBLE_QUOTE
     || t == TOKEN_FOR_INT)

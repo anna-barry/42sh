@@ -14,7 +14,17 @@ fi
 echo "done [ok] "
 
 echo "********* Testing Lexer 2 ***********"
-diff <(./token_printer "if echo b; then echo a; fi") <(printf "If\necho\nb\n;\nThen\necho\na\n;\nFi\nEOF\n")
+diff <(./token_printer "if echo b; then echo a; fi") <(printf "If
+echo
+b
+;
+Then
+echo
+a
+;
+Fi
+EOF
+")
 var2=$?
 if [ $var2 -ne 0 ]; 
 then

@@ -26,12 +26,14 @@ int main(int argc, char *argv[])
         || token->type == TOKEN_REDIR_SORTIE 
         || token->type == TOKEN_REDIR_ENTREE 
         || token->type == TOKEN_REDIR_DESCRIPEUR
-        || token->type == TOKEN_REDIR_FIN_FICHIER
+        || token->type == TOKEN_REDIR_INPUT_DESCRIPEUR
+        || token->type == TOKEN_REDIR_RW
         || token->type == TOKEN_DOUBLE_QUOTE
         || token->type == TOKEN_FOR_WORD
         || token->type == TOKEN_FOR_SINGLE_QUOTE
         || token->type == TOKEN_FOR_DOUBLE_QUOTE
-        || token->type == TOKEN_FOR_INT)
+        || token->type == TOKEN_FOR_INT
+        || token->type == TOKEN_REDIR_PIPE)
             printf("%s\n", token->value);
         else
             printf("%s\n", tab[token->type]);
