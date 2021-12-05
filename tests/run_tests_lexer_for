@@ -134,7 +134,8 @@ a
 ;
 Fi
 1
-EOF")
+EOF
+")
 var2=$?
 if [ $var2 -ne 0 ]; 
 then
