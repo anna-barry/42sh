@@ -13,7 +13,7 @@ echo
 \$name
 ;
 Done
-<>
+hi
 EOF
 ")
 var1=$?
