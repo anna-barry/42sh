@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "../commands/command.h"
-#include "../commands/echo.h"
+#include "../commands/command_redir.h"
 #include "parser.h"
 
 int exec_ast(struct ast *ast);
@@ -85,7 +85,32 @@ int exec_ast_else(struct ast *ast)
 int exec_ast_command(struct ast *ast)
 {
     struct ast_command *a = ast->data.ast_command;
-    return command_exec(a->argv, a->count);
+    enum option flag = a->option;
+    int return_value = -1;
+    switch (flag)
+    {
+    case REDIR_SORTIE: // '>'
+        return_value = command_redir_r(a->argv, a->count, a->redir);
+        break;
+    case REDIR_ENTREE: // '<'
+        return_value = command_redir_l(a->argv, a->count, a->redir);
+        break;
+    case REDIR_FIN_FICHIER: // '>>'
+        return_value = command_redir_rr(a->argv, a->count, a->redir);
+        break;
+    case REDIR_RW: // '<>'
+        return_value = command_redir_l(a->argv, a->count, a->redir);
+        break;
+    case REDIR_DESCRIPEUR: // '>&'
+        return_value = command_redir_r_and(a->argv[0], a->redir);
+        break;
+    case REDIR_INPUT_DESCRIPEUR: // '<&'
+        return_value = command_redir_r_and(a->argv[0], a->redir);
+        break;
+    default:
+        return_value = command_exec(a->argv, a->count);
+    }
+    return return_value;
 }
 
 typedef int (*ast_exec_function)(struct ast *ast);

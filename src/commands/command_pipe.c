@@ -26,8 +26,10 @@ int exec_pipe(char *argv_left[], char *argv_right[], int count_left,
     // }
     // if (pid == 0)
     // {
-    dup2(fd[1], STDOUT_FILENO);
-    close(fd[0]);
+    int old_fd = dup(STDOUT_FILENO);
+    if (dup2(fd[1], STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2 for fd1");
+    // close(fd[0]);
     close(fd[1]);
     // if (execvp(nb, argv_left) == -1)
     //     return 127;
@@ -39,26 +41,34 @@ int exec_pipe(char *argv_left[], char *argv_right[], int count_left,
     //     return 3;
     // if (pid2 == 0)
     // {
-    dup2(fd[0], STDIN_FILENO);
+    // if (dup2(STDIN_FILENO, fd[1]) == -1)
+    //     fprintf(stderr, "Error with dup2");
+    if (dup2(fd[0], STDIN_FILENO) == -1)
+        fprintf(stderr, "Error with dup2 for fd0");
     close(fd[0]);
     close(fd[1]);
-    return command_exec(argv_right, count_right);
+    command_exec(argv_right, count_right);
     // if (execvp(nb2, argv_right) == -1)
     //     return 127;
     // }
-    close(fd[0]);
-    close(fd[1]);
+    // close(fd[0]);
+    // close(fd[1]);
+    if (dup2(old_fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+
     // waitpid(pid, NULL, 0);
     // int wstatus;
     // waitpid(pid2, &wstatus, 0);
     // if (WEXITSTATUS(wstatus) == 127 || WEXITSTATUS(wstatus) == 0)
     //     return WEXITSTATUS(wstatus);
     // return 1;
+    return 0;
 }
 int main()
 {
     char *argv_left[3] = { "echo", "Hallo" };
-    char *argv_right[4] = { "tr", "a", "e" };
+    char *argv_right[4] = { "cat", "-e" };
     exec_pipe(argv_left, argv_right, 2, 3);
     return 0;
 }

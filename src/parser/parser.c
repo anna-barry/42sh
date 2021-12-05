@@ -5,34 +5,37 @@
 #include <stdlib.h>
 #include <string.h>
 //######################
-//TO DELETE
+// TO DELETE
 //######################
 void print(struct lexer *lexer)
 {
     printf("START OF PRINTING ##########\n");
     char *tab[] = {
-        [TOKEN_IF] = "If", [TOKEN_THEN] = "Then",  [TOKEN_ELIF] = "Elif",
-        [TOKEN_ELSE] = "Else",  [TOKEN_FI] = "Fi", [TOKEN_SEMICOLON] = ";",
-        [TOKEN_LINE_BREAK] = "\n", [TOKEN_PIPE] = "|", [TOKEN_AND] = "&&", [TOKEN_OR] = "||",
-        [TOKEN_WHILE] = "While", [TOKEN_DO] = "Do", [TOKEN_DONE] = "Done", [TOKEN_UNTIL] = "Until",
+        [TOKEN_IF] = "If",         [TOKEN_THEN] = "Then",
+        [TOKEN_ELIF] = "Elif",     [TOKEN_ELSE] = "Else",
+        [TOKEN_FI] = "Fi",         [TOKEN_SEMICOLON] = ";",
+        [TOKEN_LINE_BREAK] = "\n", [TOKEN_PIPE] = "|",
+        [TOKEN_AND] = "&&",        [TOKEN_OR] = "||",
+        [TOKEN_WHILE] = "While",   [TOKEN_DO] = "Do",
+        [TOKEN_DONE] = "Done",     [TOKEN_UNTIL] = "Until",
     };
     size_t i = 0;
     if (lexer == NULL || lexer[i].current_tok == NULL)
         return;
     while (lexer[i].current_tok->type != TOKEN_EOF)
-        {
-            if (lexer[i].current_tok->type == TOKEN_SIMPLE_QUOTE)
-                printf("'%s'\n", lexer[i].current_tok->value);
-            else if (lexer[i].current_tok->type == TOKEN_WORDS)
-                printf("%s\n", lexer[i].current_tok->value);
-            else if (lexer[i].current_tok->type == TOKEN_DOUBLE_QUOTE)
-                printf("\"%s\"\n", lexer[i].current_tok->value);
-            else
-                printf("%s\n", tab[lexer[i].current_tok->type]);
-            i++;
-         }
-     printf("END OF PRINTING ##########\n");
- }
+    {
+        if (lexer[i].current_tok->type == TOKEN_SIMPLE_QUOTE)
+            printf("'%s'\n", lexer[i].current_tok->value);
+        else if (lexer[i].current_tok->type == TOKEN_WORDS)
+            printf("%s\n", lexer[i].current_tok->value);
+        else if (lexer[i].current_tok->type == TOKEN_DOUBLE_QUOTE)
+            printf("\"%s\"\n", lexer[i].current_tok->value);
+        else
+            printf("%s\n", tab[lexer[i].current_tok->type]);
+        i++;
+    }
+    printf("END OF PRINTING ##########\n");
+}
 
 //####################################################################
 // INITIALIZER OF EVERY STRUCT
@@ -87,45 +90,47 @@ struct ast_command *create_command()
 
 struct ast_simple_quote *create_simple_quote()
 {
-    struct ast_simple_quote *new_c = malloc(sizeof(struct ast_simple_quote) * 30);
+    struct ast_simple_quote *new_c =
+        malloc(sizeof(struct ast_simple_quote) * 30);
     return new_c;
 }
 
 struct ast_double_quote *create_double_quote()
 {
-    struct ast_double_quote *new_c = malloc(sizeof(struct ast_double_quote) * 30);
+    struct ast_double_quote *new_c =
+        malloc(sizeof(struct ast_double_quote) * 30);
     return new_c;
 }
 
 struct ast_pipe *create_pipe()
 {
-  struct ast_pipe *new = malloc(sizeof(struct ast_pipe));
-  //no needed caus when added it has already been allocated;
-  //new->left = malloc(sizeof(struct ast));
-  new->right = malloc(sizeof(struct ast));
-  return new;
+    struct ast_pipe *new = malloc(sizeof(struct ast_pipe));
+    // no needed caus when added it has already been allocated;
+    // new->left = malloc(sizeof(struct ast));
+    new->right = malloc(sizeof(struct ast));
+    return new;
 }
 
 struct ast_and *create_and()
 {
-  struct ast_and *new = malloc(sizeof(struct ast_and));
-  new->right = malloc(sizeof(struct ast));
-  return new;
+    struct ast_and *new = malloc(sizeof(struct ast_and));
+    new->right = malloc(sizeof(struct ast));
+    return new;
 }
 
 struct ast_or *create_or()
 {
-  struct ast_or *new = malloc(sizeof(struct ast_or));
-  new->right = malloc(sizeof(struct ast));
-  return new;
+    struct ast_or *new = malloc(sizeof(struct ast_or));
+    new->right = malloc(sizeof(struct ast));
+    return new;
 }
 
 struct ast_while *create_while()
 {
-  struct ast_while *new = malloc(sizeof(struct ast_while));
-  new->cond = malloc(sizeof(struct ast));
-  new->then = malloc(sizeof(struct ast));
-  return new;
+    struct ast_while *new = malloc(sizeof(struct ast_while));
+    new->cond = malloc(sizeof(struct ast));
+    new->then = malloc(sizeof(struct ast));
+    return new;
 }
 //####################################################################
 // GET args
@@ -141,62 +146,64 @@ struct lexer *ask_entry(void)
 
 int get_option(struct lexer *lex, struct ast_command *new)
 {
-  enum token_type type = lexer_peek(lex)->type;
+    enum token_type type = lexer_peek(lex)->type;
     if (!lex || type == TOKEN_EOF)
-      return 0;
+        return 0;
     if (type >= TOKEN_REDIR_ENTREE && type >= TOKEN_REDIR_RW)
-        new->option = REDIR_ENTREE;
+        new->option = REDIR_ENTREE; // <
     else if (type == TOKEN_REDIR_DESCRIPEUR)
-        new->option = REDIR_DESCRIPEUR;
+        new->option = REDIR_DESCRIPEUR; //>&
     else if (type == TOKEN_REDIR_SORTIE)
-        new->option = REDIR_SORTIE;
+        new->option = REDIR_SORTIE; // >
     else if (type == TOKEN_REDIR_FIN_FICHIER)
-        new->option = REDIR_FIN_FICHIER;
+        new->option = REDIR_FIN_FICHIER; // >>
     else if (type == TOKEN_REDIR_RW)
-        new->option = REDIR_RW;
+        new->option = REDIR_RW; //<>
     else if (type == TOKEN_REDIR_INPUT_DESCRIPEUR)
-        new->option = REDIR_INPUT_DESCRIPEUR;
+        new->option = REDIR_INPUT_DESCRIPEUR; //<&
     else
         return 1;
-    new->redir = strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
+    new->redir =
+        strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
     return 0;
 }
 // build the command with conditions and handles error
-//returns the number of command generated or -1 if error
+// returns the number of command generated or -1 if error
 int get_command(struct lexer *lex, struct ast_command *new)
 {
-  enum token_type type = lexer_peek(lex)->type;
+    enum token_type type = lexer_peek(lex)->type;
     if (!lex || type == TOKEN_EOF)
         lex = ask_entry();
     if (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
     {
-      new->argv = malloc(sizeof(char *));
-      new->argv[0] = ";";
-      new->count = 1;
-      lexer_pop(lex);
-      return 0;
+        new->argv = malloc(sizeof(char *));
+        new->argv[0] = ";";
+        new->count = 1;
+        lexer_pop(lex);
+        return 0;
     }
     if (type != TOKEN_WORDS)
         return 1;
     int capy = 30;
     new->argv = malloc(sizeof(char *) * 30);
     int y = 0;
-    for (;lex && (type == TOKEN_WORDS); y++)
+    for (; lex && (type == TOKEN_WORDS); y++)
     {
         if (y >= capy)
         {
             capy *= 2;
             new->argv = realloc(new->argv, capy);
         }
-        new->argv[y] = strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
-            lexer_pop(lex);
-            type = lexer_peek(lex)->type;
+        new->argv[y] =
+            strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
+        lexer_pop(lex);
+        type = lexer_peek(lex)->type;
     }
     get_option(lex, new);
     new->count = y;
-      type = lexer_peek(lex)->type;
-      if (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
-      {
+    type = lexer_peek(lex)->type;
+    if (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
+    {
         if (y >= capy)
         {
             capy *= 2;
@@ -205,7 +212,7 @@ int get_command(struct lexer *lex, struct ast_command *new)
         new->argv[y] = ";";
         new->count++;
         lexer_pop(lex);
-      }
+    }
     return 0;
 }
 
@@ -217,59 +224,60 @@ int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
     if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
     new->data.ast_main_root = build_ast(lex, mode)->data.ast_main_root;
-    //printf("\n\n\n\nGET COND : %d\n\n\n",new->data.ast_main_root->children[0]->type);
+    // printf("\n\n\n\nGET COND :
+    // %d\n\n\n",new->data.ast_main_root->children[0]->type);
     print(lex);
     printf("\n\n\nTOKEN MODE IS : %d\n\n\n\n", mode);
     if (mode == NODE_THEN || mode == NODE_DO)
     {
-      printf("\n\n\n\nTOKEN THEN\n\n\n\n");
-      if (lexer_peek(lex)->type == TOKEN_PIPE)
-      {
-        new->type = NODE_PIPE;
-        new->data.ast_pipe = get_pipe(new,lex);
-      }
-      else if (lexer_peek(lex)->type == TOKEN_AND)
-      {
-        new->type = NODE_AND;
-        new->data.ast_and = get_and(new,lex);
-      }
-      else if (lexer_peek(lex)->type == TOKEN_OR)
-      {
-        new->type = NODE_OR;
-        new->data.ast_or = get_or(new,lex);
-      }
+        printf("\n\n\n\nTOKEN THEN\n\n\n\n");
+        if (lexer_peek(lex)->type == TOKEN_PIPE)
+        {
+            new->type = NODE_PIPE;
+            new->data.ast_pipe = get_pipe(new, lex);
+        }
+        else if (lexer_peek(lex)->type == TOKEN_AND)
+        {
+            new->type = NODE_AND;
+            new->data.ast_and = get_and(new, lex);
+        }
+        else if (lexer_peek(lex)->type == TOKEN_OR)
+        {
+            new->type = NODE_OR;
+            new->data.ast_or = get_or(new, lex);
+        }
     }
     return 0;
 }
 
 struct ast_pipe *get_pipe(struct ast *ast, struct lexer *lex)
 {
-  struct ast_pipe *new_pipe = create_pipe();
-  new_pipe->left = ast;
-  lexer_pop(lex);
-  if (get_then(lex, new_pipe->right, NODE_THEN))
-    errx(2, "wrong pipe implementation");
-  return new_pipe;
+    struct ast_pipe *new_pipe = create_pipe();
+    new_pipe->left = ast;
+    lexer_pop(lex);
+    if (get_then(lex, new_pipe->right, NODE_THEN))
+        errx(2, "wrong pipe implementation");
+    return new_pipe;
 }
 
 struct ast_and *get_and(struct ast *ast, struct lexer *lex)
 {
-  struct ast_and *new_and = create_and();
-  new_and->left = ast;
-  lexer_pop(lex);
-  if (get_then(lex, new_and->right, NODE_THEN))
-    errx(2,"wrong && implementation");
-  return new_and;
+    struct ast_and *new_and = create_and();
+    new_and->left = ast;
+    lexer_pop(lex);
+    if (get_then(lex, new_and->right, NODE_THEN))
+        errx(2, "wrong && implementation");
+    return new_and;
 }
 
 struct ast_or *get_or(struct ast *ast, struct lexer *lex)
 {
-  struct ast_or *new_or = create_or();
-  new_or->left = ast;
-  lexer_pop(lex);
-  if (get_then(lex, new_or->right, NODE_THEN))
-    errx(2,"wrong && implementation");
-  return new_or;
+    struct ast_or *new_or = create_or();
+    new_or->left = ast;
+    lexer_pop(lex);
+    if (get_then(lex, new_or->right, NODE_THEN))
+        errx(2, "wrong && implementation");
+    return new_or;
 }
 
 //####################################################################
@@ -281,7 +289,7 @@ int build_if(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_if *new_if = create_if();
     if (get_then(lex, new_if->cond, NODE_THEN))
-      return 1;
+        return 1;
     lexer_pop(lex);
     // if one of them is an error, then 1
     if (get_then(lex, new_if->then, NODE_IF))
@@ -312,9 +320,10 @@ int build_elif(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_elif *new_elif = create_elif();
     if (get_then(lex, new_elif->cond, NODE_THEN))
-      return 1;
+        return 1;
     lexer_pop(lex);
-    if (get_then(lex, new_elif->then, NODE_ELIF)) // if one of them is an error, then 1
+    if (get_then(lex, new_elif->then,
+                 NODE_ELIF)) // if one of them is an error, then 1
         return 1;
     root->children[root->nb_children] = malloc(sizeof(struct ast));
     root->children[root->nb_children]->type = NODE_ELIF;
@@ -393,21 +402,20 @@ struct ast_while *build_ast_while(struct lexer *lex)
     lexer_pop(lex);
 
     if (get_then(lex, new_root->cond, NODE_WHILE))
-      errx(2, "couldn't get cond in while");
+        errx(2, "couldn't get cond in while");
     lexer_pop(lex);
 
     if (lexer_peek(lex)->type == TOKEN_EOF)
-      lex = ask_entry();
+        lex = ask_entry();
 
     if (get_then(lex, new_root->then, NODE_DO))
         errx(2, "couldn't get commands in while");
     if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
     if (lexer_peek(lex)->type != TOKEN_DONE)
-      errx(2, "couldn't close while condition");
+        errx(2, "couldn't close while condition");
     lexer_pop(lex);
     return new_root;
-
 }
 
 //################################################################
@@ -421,68 +429,71 @@ void make_if(struct ast_main_root *ast, struct lexer *lex)
     ast->children[ast->nb_children - 1]->data.ast_if_root = build_ast_if(lex);
 }
 
-//PROCESS AND ADD CHILD WHEN while
+// PROCESS AND ADD CHILD WHEN while
 void make_while(struct ast_main_root *ast, struct lexer *lex)
 {
-  ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
-  ast->children[ast->nb_children - 1]->type = NODE_WHILE;
-  ast->children[ast->nb_children - 1]->data.ast_while = build_ast_while(lex);
+    ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
+    ast->children[ast->nb_children - 1]->type = NODE_WHILE;
+    ast->children[ast->nb_children - 1]->data.ast_while = build_ast_while(lex);
 }
 
 void make_until(struct ast_main_root *ast, struct lexer *lex)
 {
-  int nb = ast->nb_children - 1;
-  ast->children[nb] = malloc(sizeof(struct ast));
-  ast->children[nb]->type = NODE_NEG;
-  ast->children[nb]->data.ast_neg = malloc(sizeof(struct ast));
-  ast->children[nb]->data.ast_neg->node = malloc(sizeof(struct ast));
-  ast->children[nb]->data.ast_neg->node->type = NODE_WHILE;
-  ast->children[nb]->data.ast_neg->node->data.ast_while = build_ast_while(lex);
+    int nb = ast->nb_children - 1;
+    ast->children[nb] = malloc(sizeof(struct ast));
+    ast->children[nb]->type = NODE_NEG;
+    ast->children[nb]->data.ast_neg = malloc(sizeof(struct ast));
+    ast->children[nb]->data.ast_neg->node = malloc(sizeof(struct ast));
+    ast->children[nb]->data.ast_neg->node->type = NODE_WHILE;
+    ast->children[nb]->data.ast_neg->node->data.ast_while =
+        build_ast_while(lex);
 }
 
 // PROCESS AND ADD CHILD WHEN COMMAND
 void make_command(struct ast_main_root *ast, struct lexer *lex)
 {
-      struct ast_command *new_com = create_command();
-      if (get_command(lex, new_com))
+    struct ast_command *new_com = create_command();
+    if (get_command(lex, new_com))
         errx(2, "couldn't get condition");
-      int rank = ast->nb_children - 1;
-      ast->children[rank] = malloc(sizeof(struct ast));
-    //to be tested
-      ast->children[rank]->type = NODE_COMMAND;
-      ast->children[rank]->data.ast_command = new_com;
+    int rank = ast->nb_children - 1;
+    ast->children[rank] = malloc(sizeof(struct ast));
+    // to be tested
+    ast->children[rank]->type = NODE_COMMAND;
+    ast->children[rank]->data.ast_command = new_com;
 }
 
-//make single quote
+// make single quote
 void make_simple_quote(struct ast_main_root *ast, struct lexer *lex)
 {
     int rank = ast->nb_children - 1;
     ast->children[rank] = malloc(sizeof(struct ast));
     ast->children[rank]->type = NODE_SIMPLE_QUOTE;
-    ast->children[rank]->data.ast_simple_quote = malloc(sizeof(struct ast_simple_quote));
+    ast->children[rank]->data.ast_simple_quote =
+        malloc(sizeof(struct ast_simple_quote));
     ast->children[rank]->data.ast_simple_quote->argv =
-    strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
+        strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
     lexer_pop(lex);
 }
 
 void make_double_quote(struct ast_main_root *ast, struct lexer *lex)
 {
-    struct ast_double_quote *new_quote= create_double_quote();
+    struct ast_double_quote *new_quote = create_double_quote();
     int rank = ast->nb_children - 1;
     ast->children[rank] = malloc(sizeof(struct ast));
     ast->children[rank]->type = NODE_DOUBLE_QUOTE;
-    ast->children[rank]->data.ast_simple_quote = malloc(sizeof(struct ast_double_quote));
+    ast->children[rank]->data.ast_simple_quote =
+        malloc(sizeof(struct ast_double_quote));
     ast->children[rank]->data.ast_double_quote->argv =
-    strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
+        strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
     lexer_pop(lex);
 }
 
 void make_neg(struct ast_main_root *ast, struct lexer *lex)
 {
-  int rank = ast->nb_children - 1;
-  ast->children[rank] = malloc(sizeof(struct ast));
-  ast->children[rank] = build_ast(lex, NODE_NEG);
-  lexer_pop(lex);
+    int rank = ast->nb_children - 1;
+    ast->children[rank] = malloc(sizeof(struct ast));
+    ast->children[rank] = build_ast(lex, NODE_NEG);
+    lexer_pop(lex);
 }
 
 //################################################################
@@ -491,15 +502,18 @@ void make_neg(struct ast_main_root *ast, struct lexer *lex)
 // DEPEDENING ON THE ROOT OF THE CALL TO BUILD_AST THE BREAK CASE IS DIFFERENT
 int check_break(enum ast_type mode, enum token_type type)
 {
-  //ajouter gestion d'erreur ici avec les ; et les double pipe etc
-  printf("MODE = %d\n, TYPE = %d\n", mode, type);
+    // ajouter gestion d'erreur ici avec les ; et les double pipe etc
+    printf("MODE = %d\n, TYPE = %d\n", mode, type);
     if (type == TOKEN_EOF)
         return 0;
-    if (mode == NODE_ROOT && (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_DONE || type == TOKEN_DO))
+    if (mode == NODE_ROOT
+        && (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_DONE
+            || type == TOKEN_DO))
         errx(2, "wrong implementation in node root");
     if (mode == NODE_IF || mode == NODE_ELIF)
     {
-        if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI || type == TOKEN_SEMICOLON)
+        if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI
+            || type == TOKEN_SEMICOLON)
             return 0;
     }
     if (mode == NODE_WHILE && type == TOKEN_DO)
@@ -508,8 +522,9 @@ int check_break(enum ast_type mode, enum token_type type)
         return 0;
     if (mode == NODE_THEN)
     {
-      if(type == TOKEN_THEN || type == TOKEN_PIPE || type == TOKEN_AND || type == TOKEN_OR || type == TOKEN_SEMICOLON)
-        return 0;
+        if (type == TOKEN_THEN || type == TOKEN_PIPE || type == TOKEN_AND
+            || type == TOKEN_OR || type == TOKEN_SEMICOLON)
+            return 0;
     }
     if (mode == NODE_ELSE && type == TOKEN_FI)
         return 0;
@@ -530,7 +545,7 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
     int command = 0;
     while (lex && check_break(mode, type))
     {
-      printf("MODE = %d\n", mode);
+        printf("MODE = %d\n", mode);
         printf("TYPE = %d\n", type);
         print(lex);
         ast->nb_children++;
@@ -547,7 +562,8 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
             make_if(ast, lex);
         }
         // IF WORD IS WORD OR SEMICOLON MAKE COMMAND
-        else if (type == TOKEN_WORDS || (command && type == TOKEN_SEMICOLON) || type == TOKEN_LINE_BREAK)
+        else if (type == TOKEN_WORDS || (command && type == TOKEN_SEMICOLON)
+                 || type == TOKEN_LINE_BREAK)
         {
             command = 1;
             make_command(ast, lex);
@@ -560,7 +576,7 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
         {
             make_neg(ast, lex);
             command = 0;
-            //negation must break when the command was treated
+            // negation must break when the command was treated
             break;
         }
         else if (type == TOKEN_WHILE)
@@ -571,7 +587,7 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
         else if (type == TOKEN_UNTIL)
         {
             command = 0;
-            make_until(ast,lex);
+            make_until(ast, lex);
         }
         else
             errx(2, "wrong implementation");
