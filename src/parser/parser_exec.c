@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "../commands/command.h"
+#include "../commands/command_pipe.h"
 #include "../commands/command_redir.h"
 #include "parser.h"
 
@@ -80,6 +81,14 @@ int exec_ast_else(struct ast *ast)
 {
     struct ast_else *a = ast->data.ast_else;
     return exec_ast(a->then);
+}
+
+int exec_ast_pipe(struct ast *ast)
+{
+    struct ast_command *a = ast->data.ast_pipe;
+    struct ast_command *left = a->left;
+    struct ast_command *right = a->right;
+    return pipe_exec(left->argv, left->count, right->argv, right->count);
 }
 
 int exec_ast_command(struct ast *ast)
