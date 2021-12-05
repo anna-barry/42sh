@@ -1,0 +1,38 @@
+#!/bin/bash
+
+gcc src/functionnal/functionnal.c tests/test_functionnal.c -o variables
+echo "********* Testing Variable and Environnement creation functions pt.1 ***********"
+diff <(./variables hello world anna barry ze boite ze boite) <(printf "(anna) = (barry)
+(hello) = (world)
+(IFS) = (
+)
+(RANDOM) = NULL
+(ze) = (boite)
+(ze) = (boite)
+")
+var1=$?
+if [ $var1 -ne 0 ]; 
+then
+echo "error"
+rm ./variables
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Variable and Environnement creation functions pt.2 ***********"
+diff <(./variables man\'s world christmas day boxing day) <(printf "(boxing) = (day)
+(christmas) = (day)
+(IFS) = (
+)
+(man's) = (world)
+(RANDOM) = NULL
+")
+var1=$?
+if [ $var1 -ne 0 ]; 
+then
+echo "error"
+rm ./variables
+exit 1;
+fi
+echo "done [ok] "
+rm ./variables
