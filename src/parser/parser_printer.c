@@ -9,24 +9,24 @@ void print_ast(struct ast *ast);
 
 void print_ast_if_root(struct ast *ast)
 {
-    printf("if root\n");
+    //printf("if root\n");
     struct ast_if_root *a = ast->data.ast_if_root;
     for (int i = 0; i < a->nb_children; i++)
     {
         print_ast(a->children[i]);
     }
-    printf("end if root\n");
+    //printf("end if root\n");
 }
 
 void print_ast_root(struct ast *ast)
 {
-    printf("root\n");
+    //printf("root\n");
     struct ast_main_root *a = ast->data.ast_main_root;
     for (int i = 0; i < a->nb_children; i++)
     {
         print_ast(a->children[i]);
     }
-    printf("end root\n");
+    //printf("end root\n");
 }
 
 void print_ast_if(struct ast *ast)
@@ -46,9 +46,7 @@ void print_ast_elif(struct ast *ast)
 {
     struct ast_elif *a = ast->data.ast_elif;
     printf("elif { ");
-
     print_ast(a->cond);
-
     printf("}; then {");
     print_ast(a->then);
     printf(" }");
@@ -69,7 +67,92 @@ void print_ast_command(struct ast *ast)
     for (int i = 0; i < a->count; i++)
     {
         printf(" \"%s\"",a->argv[i]);
+        switch (a->option)
+        {
+            case (REDIR_SORTIE):
+            printf(">%s", a->redir);
+            break;
+            case (REDIR_ENTREE):
+            printf("<%s", a->redir);
+            break;
+            case (REDIR_DESCRIPEUR):
+            printf(">&%s", a->redir);
+            break;
+            case (REDIR_FIN_FICHIER):
+            printf(">>%s", a->redir);
+            break;
+            case (REDIR_INPUT_DESCRIPEUR):
+            printf("<&%s", a->redir);
+            break;
+            case (REDIR_RW):
+            printf("<>%s", a->redir);
+            break;
+            case (TOKEN_REDIR_PIPE):
+            printf(">|%s", a->redir);
+            break;
+            default:
+            break;
+        }
     }
+}
+
+void print_ast_neg(struct ast *ast)
+{
+    struct ast_neg *a = ast->data.ast_neg;
+    printf("! { ");
+    print_ast(a->node);
+    printf("}");
+}
+
+void print_ast_and(struct ast *ast)
+{
+    struct ast_and *a = ast->data.ast_and;
+    printf("{ ");
+    print_ast(a->left);
+    printf("} && { ");
+    print_ast(a->right);
+    printf("}");
+}
+
+void print_ast_or(struct ast *ast)
+{
+    struct ast_or *a = ast->data.ast_or;
+    printf("{ ");
+    print_ast(a->left);
+    printf("} || { ");
+    print_ast(a->right);
+    printf("}");
+}
+
+void print_ast_pipe(struct ast *ast)
+{
+    struct ast_pipe *a = ast->data.ast_pipe;
+    printf("{ ");
+    print_ast(a->left);
+    printf("} && { ");
+    print_ast(a->right);
+    printf("}");
+}
+
+void print_ast_simple_quote(struct ast *ast)
+{
+    struct ast_simple_quote *a = ast->data.ast_simple_quote;
+    printf("%s", a->argv);
+}
+void print_ast_double_quote(struct ast *ast)
+{
+    struct ast_double_quote *a = ast->data.ast_double_quote;
+    printf("%s", a->argv);
+}
+
+void print_ast_while(struct ast *ast)
+{
+    struct ast_while *a = ast->data.ast_while;
+    printf("while ( ");
+    print_ast(a->cond);
+    printf("); then {");
+    print_ast(a->then);
+    printf("; }");
 }
 
 typedef void (*ast_print_function)(struct ast *ast);
@@ -82,6 +165,13 @@ static ast_print_function ast_printers[] =
     [NODE_COMMAND] = print_ast_command,
     [NODE_IF_ROOT] = print_ast_if_root,
     [NODE_ROOT] = print_ast_root,
+    [NODE_NEG] = print_ast_neg,
+    [NODE_AND] = print_ast_and,
+    [NODE_OR] = print_ast_or,
+    [NODE_PIPE] = print_ast_pipe,
+    [NODE_SIMPLE_QUOTE] = print_ast_simple_quote,
+    [NODE_DOUBLE_QUOTE] = print_ast_double_quote,
+    [NODE_WHILE] = print_ast_while,
 };
 
 void print_ast(struct ast *ast) {
