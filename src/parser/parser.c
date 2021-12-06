@@ -228,7 +228,6 @@ int get_command(struct lexer *lex, struct ast_command *new)
         new->count++;
         lexer_pop(lex);
     }
-
     get_opt(lex, new);
     return 0;
 }
