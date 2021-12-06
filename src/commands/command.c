@@ -23,7 +23,7 @@ int command_exec(char *argv[],
         return echo(argv, count);
     else
     {
-        argv[count] = NULL;
+        // argv[count] = NULL;
         int wstatus;
         int res_exec;
         int pid = fork();
