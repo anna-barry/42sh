@@ -34,6 +34,7 @@ enum option
     REDIR_DESCRIPEUR, ///< '>&' -> 13
     REDIR_FIN_FICHIER,
     REDIR_INPUT_DESCRIPEUR,
+    REDIR_PIPE,
     REDIR_RW,
 };
 
@@ -145,7 +146,7 @@ struct ast_for
 
 struct ast_for_char
 {
-    struct ast *char;
+    struct ast *var;
 };
 
 struct ast_main_root

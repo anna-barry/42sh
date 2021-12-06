@@ -18,17 +18,18 @@ void print(struct lexer *lexer)
         [TOKEN_AND] = "&&",        [TOKEN_OR] = "||",
         [TOKEN_WHILE] = "While",   [TOKEN_DO] = "Do",
         [TOKEN_DONE] = "Done",     [TOKEN_UNTIL] = "Until",
+        [TOKEN_FOR] = "For", [TOKEN_IN] = "In",
     };
     size_t i = 0;
     if (lexer == NULL || lexer[i].current_tok == NULL)
         return;
     while (lexer[i].current_tok->type != TOKEN_EOF)
     {
-        if (lexer[i].current_tok->type == TOKEN_SIMPLE_QUOTE)
+        if (lexer[i].current_tok->type == TOKEN_SIMPLE_QUOTE || lexer[i].current_tok->type == TOKEN_FOR_SINGLE_QUOTE)
             printf("'%s'\n", lexer[i].current_tok->value);
-        else if (lexer[i].current_tok->type == TOKEN_WORDS)
+        else if (lexer[i].current_tok->type == TOKEN_WORDS || lexer[i].current_tok->type == TOKEN_FOR_WORD)
             printf("%s\n", lexer[i].current_tok->value);
-        else if (lexer[i].current_tok->type == TOKEN_DOUBLE_QUOTE)
+        else if (lexer[i].current_tok->type == TOKEN_DOUBLE_QUOTE || lexer[i].current_tok->type == TOKEN_FOR_DOUBLE_QUOTE)
             printf("\"%s\"\n", lexer[i].current_tok->value);
         else
             printf("%s\n", tab[lexer[i].current_tok->type]);
@@ -171,6 +172,8 @@ int get_option(struct lexer *lex, struct ast_command *new)
         new->option = REDIR_RW; //<>
     else if (type == TOKEN_REDIR_INPUT_DESCRIPEUR)
         new->option = REDIR_INPUT_DESCRIPEUR; //<&
+    else if (type == TOKEN_REDIR_PIPE) //<|
+        new->option = REDIR_PIPE;
     else
         return 1;
     new->redir =
@@ -192,12 +195,12 @@ int get_command(struct lexer *lex, struct ast_command *new)
         lexer_pop(lex);
         return 0;
     }
-    if (type != TOKEN_WORDS)
+    if (type != TOKEN_WORDS && type != TOKEN_FOR_WORD)
         return 1;
     int capy = 30;
     new->argv = malloc(sizeof(char *) * 30);
     int y = 0;
-    for (; lex && (type == TOKEN_WORDS); y++)
+    for (; lex && (type == TOKEN_WORDS || type == TOKEN_FOR_WORD); y++)
     {
         if (y >= capy)
         {
@@ -433,10 +436,11 @@ struct ast_for *build_ast_for(struct lexer *lex)
   struct ast_for *new_for = create_for();
   lexer_pop(lex);
   //est ce possible d'avoir autre que for???
-  if (lexer_peek(lex)->type != TOKEN_FOR_WORD)
+  if (lexer_peek(lex)->type != TOKEN_WORDS)
     errx(2, "wrong implementation of variable : for <I> in");
     int i = 0;
-  for (; lexer_peek(lex)->type == TOKEN_FOR_WORD; i++)
+  print(lex);
+  for (; lexer_peek(lex)->type == TOKEN_WORDS ; i++)
   {
     if (i % 30 == 0)
       new_for->var = realloc(new_for->var, i + 30);
@@ -444,6 +448,8 @@ struct ast_for *build_ast_for(struct lexer *lex)
     new_for->var[i] = strndup(trans, strlen(trans) + 1);
     lexer_pop(lex);
   }
+  lexer_pop(lex);
+  print(lex);
   new_for->nb_var = i;
   if (lexer_peek(lex)->type != TOKEN_IN)
     errx(2, "wrong implementation of variable : for i <in>");
@@ -453,17 +459,24 @@ struct ast_for *build_ast_for(struct lexer *lex)
   {
       struct read_for_int* trans = get_structure(lexer_peek(lex)->value);
       new_for->cond->type = NODE_FOR_INT;
-      new_for->cond->data = trans;
+      new_for->cond->data.ast_for_int = trans;
   }
   else if (type == TOKEN_FOR_WORD || type == TOKEN_FOR_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE)
   {
-    get_then(token, new_for->cond->data, NODE_FOR_CHAR);
+    get_then(lex, new_for->cond, NODE_FOR_CHAR);
     new_for->cond->type = NODE_FOR_CHAR;
   }
   else
     errx(2, "wrong implementation need for i in <\"'words'\">|seq{b..s..e}");
   lexer_pop(lex);
-  //now get the get then
+  //now get the get then with the commands to execute
+  if (get_then(lex, new_for->then, NODE_DO))
+      errx(2, "couldn't get commands in while");
+  if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
+          lex = ask_entry();
+  if (lexer_peek(lex)->type != TOKEN_DONE)
+      errx(2, "wrong implementation in for: for i in x do commands <done>");
+  lexer_pop(lex);
   return new_for;
 }
 
@@ -537,7 +550,7 @@ void make_double_quote(struct ast_main_root *ast, struct lexer *lex)
     int rank = ast->nb_children - 1;
     ast->children[rank] = malloc(sizeof(struct ast));
     ast->children[rank]->type = NODE_DOUBLE_QUOTE;
-    ast->children[rank]->data.ast_simple_quote =
+    ast->children[rank]->data.ast_double_quote =
         malloc(sizeof(struct ast_double_quote));
     ast->children[rank]->data.ast_double_quote->argv =
         strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
@@ -560,12 +573,17 @@ int check_break(enum ast_type mode, enum token_type type)
 {
     // ajouter gestion d'erreur ici avec les ; et les double pipe etc
     printf("MODE = %d\n, TYPE = %d\n", mode, type);
-    if (mode == TOKEN_ROOT && type == TOKEN_EOF)
+    if (type == TOKEN_EOF)// each function must handle asking tnew info
         return 0;
-    if (mode == NODE_IF || mode == NODE_ELIF || mode == NODE_WHILE || mode == NODE_FOR_CHAR)
+    if (mode == NODE_IF || mode == NODE_ELIF)
     {
-        if (type == TOKEN_SEMICOLON)
+        if (type == TOKEN_THEN)
             return 0;
+    }
+    if (mode == NODE_FOR_CHAR || mode == NODE_WHILE)
+    {
+      if (type == TOKEN_DO)
+        return 0;
     }
     /*if (mode == NODE_WHILE && type == TOKEN_DO)
         return 0;*/
@@ -607,24 +625,24 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
                 realloc(ast->children, sizeof(struct ast *) * count);
         }
         // IF WORD IS IF THEN MAKE IF
-        if (type == TOKEN_IF || mode != NODE_FOR_CHAR)
+        if (type == TOKEN_IF && mode != NODE_FOR_CHAR)
         {
             command = 0;
             make_if(ast, lex);
         }
         // IF WORD IS WORD OR SEMICOLON MAKE COMMAND
-        else if (type == TOKEN_WORDS || (command && type == TOKEN_SEMICOLON)
+        else if (type == TOKEN_WORDS || type == TOKEN_FOR_WORD || (command && type == TOKEN_SEMICOLON)
                  || type == TOKEN_LINE_BREAK)
         {
             command = 1;
             make_command(ast, lex);
         }
-        else if (type == TOKEN_SIMPLE_QUOTE && command)
+        else if ((type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE) && command)
             make_simple_quote(ast, lex);
-        else if (type == TOKEN_DOUBLE_QUOTE && command)
+        else if ((type == TOKEN_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE) && command)
             make_double_quote(ast, lex);
         else if (mode == NODE_FOR_CHAR) //if node for char the fllowing are not possible
-          errx(2, "wrong implementation");
+          errx(2, "wrong implementation in for");
         else if (type == TOKEN_NEG)
         {
             make_neg(ast, lex);
