@@ -127,6 +127,16 @@ struct ast_while *create_while()
   new->then = malloc(sizeof(struct ast));
   return new;
 }
+
+struct ast_for *create_for()
+{
+  struct ast_for *new = malloc(sizeof(struct ast_for));
+  new->nb_var = 0;
+  new->var = malloc(sizeof(char *) * 30);
+  new->cond = malloc(sizeof(struct ast));
+  new->then = malloc(sizeof(struct ast));
+  return new;
+}
 //####################################################################
 // GET args
 //####################################################################
@@ -195,17 +205,16 @@ int get_command(struct lexer *lex, struct ast_command *new)
     get_option(lex, new);
     new->count = y;
       type = lexer_peek(lex)->type;
-      if (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
+      if (type != TOKEN_SEMICOLON && type != TOKEN_LINE_BREAK)
+        return 1;
+      if (y >= capy)
       {
-        if (y >= capy)
-        {
-            capy *= 2;
-            new->argv = realloc(new->argv, capy);
-        }
-        new->argv[y] = ";";
-        new->count++;
-        lexer_pop(lex);
+          capy *= 2;
+          new->argv = realloc(new->argv, capy);
       }
+      new->argv[y] = ";";
+      new->count++;
+      lexer_pop(lex);
     return 0;
 }
 
@@ -410,6 +419,42 @@ struct ast_while *build_ast_while(struct lexer *lex)
 
 }
 
+struct ast_for *build_ast_for(struct lexer *lex)
+{
+  struct ast_for *new_for = create_for();
+  lexer_pop(lex);
+  //est ce possible d'avoir autre que for???
+  if (lexer_peek(lex)->type != TOKEN_FOR_WORD)
+    errx(2, "wrong implementation of variable : for <I> in");
+    int i = 0;
+  for (; lexer_peek(lex)->type == TOKEN_FOR_WORD; i++)
+  {
+    if (i % 30 == 0)
+      new_for->var = realloc(new_for->var, i + 30);
+    char *trans = lexer_peek(lex)->value;
+    new_for->var[i] = strndup(trans, strlen(trans) + 1);
+    lexer_pop(lex);
+  }
+  new_for->nb_var = i;
+  if (lexer_peek(lex)->type != TOKEN_IN)
+    errx(2, "wrong implementation of variable : for i <in>");
+  lexer_pop(lex);
+  enum token_type type = lexer_peek(lex)->type;
+  if (type == TOKEN_FOR_INT)
+  {
+    //get the option
+  }
+  else if (type == TOKEN_FOR_WORD || type == TOKEN_FOR_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE)
+  {
+    // get the TOKEN_WORDS
+    //is it possible to have DIFFERENT commands???
+  }
+  else
+    errx(2, "wrong implementation need for i in <\"'words'\">|seq{b..s..e}");
+  lexer_pop(lex);
+  return new_for;
+}
+
 //################################################################
 //#####EACH FUNCTION TOOL IS HANDLED HERE TO ADD IN THE TREE######
 
@@ -419,6 +464,13 @@ void make_if(struct ast_main_root *ast, struct lexer *lex)
     ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
     ast->children[ast->nb_children - 1]->type = NODE_IF_ROOT;
     ast->children[ast->nb_children - 1]->data.ast_if_root = build_ast_if(lex);
+}
+
+void make_for(struct ast_main_root *ast, struct lexer *lex)
+{
+    ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
+    ast->children[ast->nb_children - 1]->type = NODE_FOR;
+    ast->children[ast->nb_children - 1]->data.ast_for = build_ast_for(lex);
 }
 
 //PROCESS AND ADD CHILD WHEN while
@@ -495,15 +547,13 @@ int check_break(enum ast_type mode, enum token_type type)
   printf("MODE = %d\n, TYPE = %d\n", mode, type);
     if (type == TOKEN_EOF)
         return 0;
-    if (mode == NODE_ROOT && (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_DONE || type == TOKEN_DO))
-        errx(2, "wrong implementation in node root");
-    if (mode == NODE_IF || mode == NODE_ELIF)
+    if (mode == NODE_IF || mode == NODE_ELIF || mode == NODE_WHILE)
     {
-        if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI || type == TOKEN_SEMICOLON)
+        if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI)
             return 0;
     }
-    if (mode == NODE_WHILE && type == TOKEN_DO)
-        return 0;
+    /*if (mode == NODE_WHILE && type == TOKEN_DO)
+        return 0;*/
     if (mode == NODE_DO && type == TOKEN_DONE)
         return 0;
     if (mode == NODE_THEN)
@@ -572,6 +622,11 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
         {
             command = 0;
             make_until(ast,lex);
+        }
+        else if (type == TOKEN_FOR)
+        {
+          command = 0;
+          make_for(ast,lex);
         }
         else
             errx(2, "wrong implementation");
