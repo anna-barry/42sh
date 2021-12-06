@@ -96,6 +96,7 @@ struct ast_simple_quote *create_simple_quote()
     return new_c;
 }
 
+
 struct ast_pipe *create_pipe()
 {
     struct ast_pipe *new = malloc(sizeof(struct ast_pipe));
@@ -220,11 +221,6 @@ int get_command(struct lexer *lex, struct ast_command *new)
         new->count++;
         lexer_pop(lex);
     }
-    else if (type != TOKEN_EOF && type != TOKEN_AND && type != TOKEN_OR)
-    {
-        errx(2, "wrong implementation need a ';' or a '\n'");
-      }
-
     get_option(lex, new);
     return 0;
 }
@@ -580,7 +576,7 @@ int check_break(enum ast_type mode, enum token_type type)
         return 0;
     if (mode == NODE_IF || mode == NODE_ELIF)
     {
-        if (type == TOKEN_THEN)
+        if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI)
             return 0;
     }
     if (mode == NODE_FOR_CHAR || mode == NODE_WHILE)
