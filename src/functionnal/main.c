@@ -1,11 +1,18 @@
 #include <err.h>
 #include <errno.h>
 #include <getopt.h>
-#include <limits.h>
+//#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#include "../lexer/lexer.h"
+#include "../lexer/token.h"
+#include "../parser/parser.h"
+#include "../parser/parser_exec.h"
+#include "../parser/parser_printer.h"
+#include "functionnal.h"
 
 int getnb(char *filepath)
 {
@@ -16,7 +23,7 @@ int getnb(char *filepath)
         char c;
         while (fscanf(file, "%c", &c) != EOF)
         {
-            if (counter < INT_MAX)
+            if (counter < 123456789)
             {
                 counter++;
             }
@@ -64,7 +71,7 @@ char *find_input(int argc, char *argv[])
     char *input = NULL;
     if (argc == 1)
     {
-        input = malloc(sizeof(char) * INT_MAX);
+        input = malloc(sizeof(char) * 123456789);
         printf("Veuillez saisir l'input : \n");
         fflush(stdout);
         scanf("%[^\n]", input);
@@ -131,5 +138,17 @@ int main(int argc, char *argv[])
     const char *input = (const char *)find_input(argc, argv);
     if (input == NULL)
       return 1;
-    return 0;
+
+    struct lexer *lexer = lexer_new(input);
+    struct ast *ast = build_ast(lexer, NODE_ROOT);
+    struct environnement *env = init_env();
+    if (pretty_print == 1)
+    {
+        my_pretty_print(ast);
+    }
+    int res_e = execution(ast);
+    lexer_free(lexer);
+    free(ast);
+    free(env);
+    return res_e;
 }
