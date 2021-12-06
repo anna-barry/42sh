@@ -129,7 +129,7 @@ void print_ast_pipe(struct ast *ast)
     struct ast_pipe *a = ast->data.ast_pipe;
     printf("{ ");
     print_ast(a->left);
-    printf("} && { ");
+    printf("} | { ");
     print_ast(a->right);
     printf("}");
 }
@@ -191,8 +191,8 @@ int main()
     //struct lexer *lexer = lexer_new("if echo ok; then echo foo bar else echo b ;fi");
     //struct lexer *lexer = lexer_new("if echo ok; then echo foo bar; echo okay; elif echo bebe; echo a ;then echo christian; echo anna laime; fi");
     //struct lexer *lexer = lexer_new("if echo b; echo a then echo a fi else echo a");
-    //struct lexer *lexer = lexer_new("until echo a do echo b done");
-    struct lexer *lexer = lexer_new("for i; in word; do echo a; done");
+    struct lexer *lexer = lexer_new("while echo a || echo b; do echo b; done");
+    //struct lexer *lexer = lexer_new("for i; in word; do echo a; done");
     struct ast *ast = build_ast(lexer, NODE_ROOT);
     printf("\n build ast with nb %i[ok]\n\n", ast->data.ast_main_root->nb_children);
     if (ast->type == NODE_ROOT)

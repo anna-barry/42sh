@@ -107,7 +107,7 @@ struct ast_pipe *create_pipe()
 {
     struct ast_pipe *new = malloc(sizeof(struct ast_pipe));
     // no needed caus when added it has already been allocated;
-    // new->left = malloc(sizeof(struct ast));
+    new->left = malloc(sizeof(struct ast));
     new->right = malloc(sizeof(struct ast));
     return new;
 }
@@ -115,6 +115,7 @@ struct ast_pipe *create_pipe()
 struct ast_and *create_and()
 {
     struct ast_and *new = malloc(sizeof(struct ast_and));
+    new->left = malloc(sizeof(struct ast));
     new->right = malloc(sizeof(struct ast));
     return new;
 }
@@ -122,6 +123,7 @@ struct ast_and *create_and()
 struct ast_or *create_or()
 {
     struct ast_or *new = malloc(sizeof(struct ast_or));
+    new->left = malloc(sizeof(struct ast));
     new->right = malloc(sizeof(struct ast));
     return new;
 }
@@ -160,7 +162,7 @@ int get_option(struct lexer *lex, struct ast_command *new)
     enum token_type type = lexer_peek(lex)->type;
     if (!lex || type == TOKEN_EOF)
         return 0;
-    if (type >= TOKEN_REDIR_ENTREE && type >= TOKEN_REDIR_RW)
+    if (type == TOKEN_REDIR_ENTREE)
         new->option = REDIR_ENTREE; // <
     else if (type == TOKEN_REDIR_DESCRIPEUR)
         new->option = REDIR_DESCRIPEUR; //>&
@@ -176,6 +178,7 @@ int get_option(struct lexer *lex, struct ast_command *new)
         new->option = REDIR_PIPE;
     else
         return 1;
+    printf("\n\n\nget option type = %d\n", type);
     new->redir =
         strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
     return 0;
@@ -212,9 +215,7 @@ int get_command(struct lexer *lex, struct ast_command *new)
         lexer_pop(lex);
         type = lexer_peek(lex)->type;
     }
-    get_option(lex, new);
     new->count = y;
-    type = lexer_peek(lex)->type;
     if (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
     {
         if (y >= capy)
@@ -226,10 +227,15 @@ int get_command(struct lexer *lex, struct ast_command *new)
         new->count++;
         lexer_pop(lex);
     }
+    else if (type != TOKEN_EOF && type != TOKEN_AND && type != TOKEN_OR)
+    {
+        errx(2, "wrong implementation need a ';' or a '\n'");
+      }
+
+    get_option(lex, new);
     return 0;
 }
 
-struct ast_pipe *get_pipe(struct ast *ast, struct lexer *lex);
 // create the new node and calls build_ast for the struct
 int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
 {
@@ -244,53 +250,49 @@ int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
     if (mode == NODE_THEN || mode == NODE_DO)
     {
         printf("\n\n\n\nTOKEN THEN\n\n\n\n");
-        if (lexer_peek(lex)->type == TOKEN_PIPE)
-        {
-            new->type = NODE_PIPE;
-            new->data.ast_pipe = get_pipe(new, lex);
-        }
-        else if (lexer_peek(lex)->type == TOKEN_AND)
-        {
-            new->type = NODE_AND;
-            new->data.ast_and = get_and(new, lex);
-        }
+        if (lexer_peek(lex)->type == TOKEN_AND)
+          get_and(new, lex, mode);
         else if (lexer_peek(lex)->type == TOKEN_OR)
-        {
-            new->type = NODE_OR;
-            new->data.ast_or = get_or(new, lex);
-        }
+          get_or(new, lex, mode);
     }
     return 0;
 }
 
-struct ast_pipe *get_pipe(struct ast *ast, struct lexer *lex)
+void get_pipe(struct ast_main_root *ast, struct lexer *lex)
 {
     struct ast_pipe *new_pipe = create_pipe();
-    new_pipe->left = ast;
+    ast->nb_children--;
+    new_pipe->left->type = ast->children[ast->nb_children - 1]->type;
+    new_pipe->left->data = ast->children[ast->nb_children - 1]->data;
     lexer_pop(lex);
-    if (get_then(lex, new_pipe->right, NODE_THEN))
+    if (get_then(lex, new_pipe->right, NODE_PIPE))
         errx(2, "wrong pipe implementation");
-    return new_pipe;
+    ast->children[ast->nb_children - 1]->type = NODE_PIPE;
+    ast->children[ast->nb_children - 1]->data.ast_pipe = new_pipe;
 }
 
-struct ast_and *get_and(struct ast *ast, struct lexer *lex)
+void get_and(struct ast *ast, struct lexer *lex, enum ast_type mode)
 {
     struct ast_and *new_and = create_and();
-    new_and->left = ast;
+    new_and->left->type = ast->type;
+    new_and->left->data = ast->data;
     lexer_pop(lex);
-    if (get_then(lex, new_and->right, NODE_THEN))
+    if (get_then(lex, new_and->right, mode))
         errx(2, "wrong && implementation");
-    return new_and;
+    ast->type = NODE_AND;
+    ast->data.ast_and = new_and;
 }
 
-struct ast_or *get_or(struct ast *ast, struct lexer *lex)
+void get_or(struct ast *ast, struct lexer *lex, enum ast_type mode)
 {
     struct ast_or *new_or = create_or();
-    new_or->left = ast;
+    new_or->left->type = ast->type;
+    new_or->left->data = ast->data;
     lexer_pop(lex);
-    if (get_then(lex, new_or->right, NODE_THEN))
+    if (get_then(lex, new_or->right, mode))
         errx(2, "wrong && implementation");
-    return new_or;
+    ast->type = NODE_OR;
+    ast->data.ast_or = new_or;
 }
 
 //####################################################################
@@ -519,7 +521,7 @@ void make_until(struct ast_main_root *ast, struct lexer *lex)
 }
 
 // PROCESS AND ADD CHILD WHEN COMMAND
-void make_command(struct ast_main_root *ast, struct lexer *lex)
+void make_command(struct ast_main_root *ast, struct lexer *lex, enum ast_type mode)
 {
     struct ast_command *new_com = create_command();
     if (get_command(lex, new_com))
@@ -529,6 +531,15 @@ void make_command(struct ast_main_root *ast, struct lexer *lex)
     // to be tested
     ast->children[rank]->type = NODE_COMMAND;
     ast->children[rank]->data.ast_command = new_com;
+    printf("\n\n\n\nTOKEN THEN\n\n\n\n");
+    if (lexer_peek(lex)->type == TOKEN_AND)
+    {
+        get_and(ast->children[rank], lex, mode);
+    }
+    else if (lexer_peek(lex)->type == TOKEN_OR)
+    {
+        get_or(ast->children[rank], lex, mode);
+    }
 }
 
 // make single quote
@@ -585,13 +596,13 @@ int check_break(enum ast_type mode, enum token_type type)
       if (type == TOKEN_DO)
         return 0;
     }
-    /*if (mode == NODE_WHILE && type == TOKEN_DO)
-        return 0;*/
+    if (mode == NODE_PIPE && type == TOKEN_SEMICOLON)
+        return 0;
     if (mode == NODE_DO && type == TOKEN_DONE)
         return 0;
     if (mode == NODE_THEN)
     {
-        if (type == TOKEN_THEN || type == TOKEN_PIPE || type == TOKEN_AND
+        if (type == TOKEN_THEN || type == TOKEN_AND
             || type == TOKEN_OR || type == TOKEN_SEMICOLON)
             return 0;
     }
@@ -635,7 +646,7 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
                  || type == TOKEN_LINE_BREAK)
         {
             command = 1;
-            make_command(ast, lex);
+            make_command(ast, lex, mode);
         }
         else if ((type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE) && command)
             make_simple_quote(ast, lex);
@@ -664,6 +675,12 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
         {
           command = 0;
           make_for(ast,lex);
+        }
+        else if (type == TOKEN_PIPE)
+        {
+          command = 0;
+          get_pipe(ast, lex);
+          break;
         }
         else
             errx(2, "wrong implementation");
