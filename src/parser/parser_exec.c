@@ -94,7 +94,7 @@ int exec_ast_else(struct ast *ast)
 int exec_ast_command(struct ast *ast)
 {
     struct ast_command *a = ast->data.ast_command;
-    enum option flag = a->option;
+    enum opt flag = a->opt;
     int return_value = -1;
     switch (flag)
     {

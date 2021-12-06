@@ -19,7 +19,7 @@ int main()
         printf("node root\n");
     }
     printf("before pretty print\n");
-    pretty_print(ast);
+    my_pretty_print(ast);
     lexer_free(lexer);
     return 0;
 }
