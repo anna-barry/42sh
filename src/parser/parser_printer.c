@@ -158,7 +158,7 @@ void print_ast_while(struct ast *ast)
 void print_ast_for(struct ast *ast)
 {
     struct ast_for *a = ast->data.ast_for;
-    printf("for %s in [ ", a->var)
+    printf("for %s in [ ", a->var);
     print_ast(a->cond);
     printf(" ] do {");
     print_ast(a->then);
@@ -173,7 +173,7 @@ void print_ast_for_char(struct ast *ast)
 
 void print_ast_for_int(struct ast *ast)
 {
-    struct read_for_int *a = ast->ast_for_int.;
+    struct read_for_int *a = ast->data.ast_for_int;
     printf(" %lu..%lu..%lu ", a->start, a->end, a->step);
 }
 
