@@ -13,8 +13,9 @@ echo
 \$name
 ;
 Done
-<>
-EOF")
+hi
+EOF
+")
 var1=$?
 #rm ./token_printer
 if [ $var1 -ne 0 ]; 
@@ -37,7 +38,8 @@ echo
 \$i
 ;
 Done
-EOF")
+EOF
+")
 var2=$?
 if [ $var2 -ne 0 ]; 
 then
@@ -83,6 +85,55 @@ echo
 ;
 Done
 hi
+EOF
+")
+var2=$?
+if [ $var2 -ne 0 ]; 
+then
+echo "error"
+rm ./token_printer
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Lexer For 5 ***********"
+diff <(./token_printer "for named in namesss hi a {1..2};do; echo \$name;done <> hi") <(printf "For
+named
+In
+namesss
+hi
+a
+1..2..1
+;
+Do
+;
+echo
+\$name
+;
+Done
+hi
+EOF
+")
+var2=$?
+if [ $var2 -ne 0 ]; 
+then
+echo "error"
+rm ./token_printer
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Lexer For 6 with redirections >& ***********"
+diff <(./token_printer "if echo b; then echo a; fi >&") <(printf "If
+echo
+b
+;
+Then
+echo
+a
+;
+Fi
+1
 EOF
 ")
 var2=$?

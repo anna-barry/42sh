@@ -22,6 +22,8 @@ enum ast_type
     NODE_WHILE,//13
     NODE_DO,//14
     NODE_FOR,
+    NODE_FOR_INT,
+    NODE_FOR_CHAR,
 };
 
 enum option
@@ -51,6 +53,8 @@ union ast_data
     struct ast_or *ast_or;
     struct ast_neg *ast_neg;
     struct ast_for *ast_for;
+    struct ast_for_char* ast_for_char;
+    struct read_for_int* ast_for_int;
 };
 
 struct ast
@@ -132,11 +136,16 @@ struct ast_elif
 
 struct ast_for
 {
-  int nb_var;
+    int nb_var;
     char **var;
     struct ast *cond; //could be either a list of command //ast_for_word : commands
                 // either a struct ast_for_iter [1..2..10] : begin, start, step
     struct ast *then;
+};
+
+struct ast_for_char
+{
+    struct ast *char;
 };
 
 struct ast_main_root

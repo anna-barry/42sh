@@ -26,6 +26,11 @@ Anna_test_lexer:
   script:
     - tests/run_tests_2
   
+Anna_test_variables:
+  stage: test
+  script:
+    - tests/tests_variables
+
 Anna_test_for:
   stage: test
   script:
