@@ -96,13 +96,6 @@ struct ast_simple_quote *create_simple_quote()
     return new_c;
 }
 
-struct ast_double_quote *create_double_quote()
-{
-    struct ast_double_quote *new_c =
-        malloc(sizeof(struct ast_double_quote) * 30);
-    return new_c;
-}
-
 struct ast_pipe *create_pipe()
 {
     struct ast_pipe *new = malloc(sizeof(struct ast_pipe));
@@ -557,7 +550,6 @@ void make_simple_quote(struct ast_main_root *ast, struct lexer *lex)
 
 void make_double_quote(struct ast_main_root *ast, struct lexer *lex)
 {
-    struct ast_double_quote *new_quote = create_double_quote();
     int rank = ast->nb_children - 1;
     ast->children[rank] = malloc(sizeof(struct ast));
     ast->children[rank]->type = NODE_DOUBLE_QUOTE;
