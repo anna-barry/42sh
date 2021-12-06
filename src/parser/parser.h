@@ -137,8 +137,7 @@ struct ast_elif
 
 struct ast_for
 {
-    int nb_var;
-    char **var;
+    char *var;
     struct ast *cond; //could be either a list of command //ast_for_word : commands
                 // either a struct ast_for_iter [1..2..10] : begin, start, step
     struct ast *then;
