@@ -1,6 +1,14 @@
 #ifndef PARSER_EXEC_H
 #define PARSER_EXEC_H
 
+#include <stdio.h>
+#include <string.h>
+
+#include "../commands/command.h"
+#include "../commands/command_pipe.h"
+#include "../commands/command_redir.h"
+#include "parser.h"
+
 int exec_ast_if_root(struct ast *ast);
 
 int exec_ast_root(struct ast *ast);

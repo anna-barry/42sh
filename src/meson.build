@@ -1,5 +1,4 @@
-subdir('utils')
-subdir('io')
 subdir('lexer')
-
-all_sources += files('42sh.c')
+subdir('functionnal')
+subdir('parser')
+subdir('commands')
