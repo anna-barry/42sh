@@ -130,6 +130,8 @@ int pipe_exec(char *argv_left[], char *argv_right[], int count_left,
               int count_right)
 {
     int fd[2];
+    argv_left[count_left] = NULL;
+    argv_right[count_right] = NULL;
     if (pipe(fd) == -1)
         return 1;
     int pid = fork();
@@ -170,16 +172,15 @@ int pipe_exec(char *argv_left[], char *argv_right[], int count_left,
     return 1;
 }
 
-int main()
-{
-    char *argv_left[3] = { "echo", "Hallo" };
-    char *argv_right[4] = { "tr", "a", "e" };
-    // command_exec_pipe(argv_left, argv_right, 2, 3);
-    pipe_exec(argv_left, argv_right, 2, 3);
-    // exec_pipe(argv_left, argv_right, 2, 3);
-    // command_pipe(argv_left, argv_right, 2, 3);
-    return 0;
-}
-
+// int main()
+// {
+//     char *argv_left[3] = { "cat", "command.h" };
+//     char *argv_right[4] = { "cat", "-e" };
+//     // command_exec_pipe(argv_left, argv_right, 2, 3);
+//     pipe_exec(argv_left, argv_right, 2, 2);
+//     // exec_pipe(argv_left, argv_right, 2, 3);
+//     // command_pipe(argv_left, argv_right, 2, 3);
+//     return 0;
+// }
 // cat command.c | cat -e
 // cat -e command.c
