@@ -38,17 +38,17 @@ int exec_ast_and(struct ast *ast)
     struct ast_and *a = ast->data.ast_and;
     if ((exec_ast(a->right) == 0) && (exec_ast(a->left) == 0))
     {
-        return exec_ast(a->then);
+        return 0;
     }
     return 1;
 }
 
 int exec_ast_or(struct ast *ast)
 {
-    struct ast_and *a = ast->data.ast_or;
+    struct ast_or *a = ast->data.ast_or;
     if ((exec_ast(a->right) == 0) || (exec_ast(a->left) == 0))
     {
-        return exec_ast(a->then);
+        return 0;
     }
     return 1;
 }
@@ -85,7 +85,7 @@ int exec_ast_else(struct ast *ast)
 
 int exec_ast_pipe(struct ast *ast)
 {
-    struct ast_command *a = ast->data.ast_pipe;
+    struct ast_pipe *a = ast->data.ast_pipe;
     struct ast_command *left = a->left;
     struct ast_command *right = a->right;
     return pipe_exec(left->argv, left->count, right->argv, right->count);
@@ -139,7 +139,7 @@ int execution(struct ast *ast)
 {
     return exec_ast(ast);
 }
-
+/*
 int main()
 {
     struct lexer *lexer =
@@ -156,3 +156,4 @@ int main()
     lexer_free(lexer);
     return 0;
 }
+*/
