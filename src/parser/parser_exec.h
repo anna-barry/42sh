@@ -25,6 +25,6 @@ typedef int (*ast_exec_function)(struct ast *ast);
 
 int exec_ast(struct ast *ast);
 
-int execution(struct ast_main_root *ast);
+int execution(struct ast *ast);
 
 #endif
