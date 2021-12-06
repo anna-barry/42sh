@@ -439,7 +439,6 @@ struct ast_for *build_ast_for(struct lexer *lex)
   //est ce possible d'avoir autre que for???
   if (lexer_peek(lex)->type != TOKEN_WORDS)
     errx(2, "wrong implementation of variable : for <I> in");
-  int i = 0;
   //print(lex);
   char *trans = lexer_peek(lex)->value;
   new_for->var = strndup(trans, strlen(trans) + 1);
