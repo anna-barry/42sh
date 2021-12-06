@@ -37,6 +37,12 @@ void print_ast_double_quote(struct ast *ast);
 
 void print_ast_while(struct ast *ast);
 
+void print_ast_for(struct ast *ast);
+
+void print_ast_for_char(struct ast *ast);
+
+void print_ast_for_int(struct ast *ast);
+
 typedef void (*ast_print_function)(struct ast *ast);
 
 void print_ast(struct ast *ast);

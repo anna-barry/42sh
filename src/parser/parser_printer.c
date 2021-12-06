@@ -155,6 +155,28 @@ void print_ast_while(struct ast *ast)
     printf("; }");
 }
 
+void print_ast_for(struct ast *ast)
+{
+    struct ast_for *a = ast->data.ast_for;
+    printf("for %s in [ ", a->var)
+    print_ast(a->cond);
+    printf(" ] do {");
+    print_ast(a->then);
+    printf(" }");
+}
+
+void print_ast_for_char(struct ast *ast)
+{
+    struct ast_for_char *a = ast->data.ast_for_char;
+    print_ast(a->var);
+}
+
+void print_ast_for_int(struct ast *ast)
+{
+    struct read_for_int *a = ast->ast_for_int.;
+    printf(" %lu..%lu..%lu ", a->start, a->end, a->step);
+}
+
 typedef void (*ast_print_function)(struct ast *ast);
 
 static ast_print_function ast_printers[] =
@@ -172,17 +194,17 @@ static ast_print_function ast_printers[] =
     [NODE_SIMPLE_QUOTE] = print_ast_simple_quote,
     [NODE_DOUBLE_QUOTE] = print_ast_double_quote,
     [NODE_WHILE] = print_ast_while,
+    [NODE_FOR] = print_ast_for,
+    [NODE_FOR_CHAR] = print_ast_for_char,
+    [NODE_FOR_INT] = print_ast_for_int,
 };
 
 void print_ast(struct ast *ast) {
-    printf("ast printing\n");
     ast_printers[ast->type](ast);
-    free(ast);
 }
 
 void my_pretty_print(struct ast *ast)
 {
-    printf("here printing\n");
     print_ast(ast);
 }
 
