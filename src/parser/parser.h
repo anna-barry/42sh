@@ -26,7 +26,7 @@ enum ast_type
     NODE_FOR_CHAR,
 };
 
-enum option
+enum opt
 {
     NONE,
     REDIR_SORTIE, ///< '>' -> 11
@@ -75,7 +75,7 @@ struct ast_command
 {
     int count;
     char **argv;
-    enum option option;
+    enum opt opt;
     char *redir;
 };
 

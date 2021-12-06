@@ -19,6 +19,12 @@ void print(struct lexer *lexer)
         [TOKEN_WHILE] = "While",   [TOKEN_DO] = "Do",
         [TOKEN_DONE] = "Done",     [TOKEN_UNTIL] = "Until",
         [TOKEN_FOR] = "For", [TOKEN_IN] = "In",
+        [TOKEN_REDIR_ENTREE] = "<", [TOKEN_REDIR_SORTIE] = ">",
+        [TOKEN_REDIR_DESCRIPEUR] = ">&",
+        [TOKEN_REDIR_FIN_FICHIER] = ">>",
+        [TOKEN_REDIR_INPUT_DESCRIPEUR] = "<&", ///< '<&' -> 15
+        [TOKEN_REDIR_PIPE] = ">|",///< '>|' -> 16
+        [TOKEN_REDIR_RW] = "<>", ///< '<>' -> 17
     };
     size_t i = 0;
     if (lexer == NULL || lexer[i].current_tok == NULL)
@@ -84,7 +90,7 @@ struct ast_elif *create_elif()
 struct ast_command *create_command()
 {
     struct ast_command *new_c = malloc(sizeof(struct ast_command) * 30);
-    new_c->option = NONE;
+    new_c->opt = NONE;
     new_c->count = 0;
     return new_c;
 }
@@ -151,30 +157,31 @@ struct lexer *ask_entry(void)
     return lexer_new(buf);
 }
 
-int get_option(struct lexer *lex, struct ast_command *new)
+int get_opt(struct lexer *lex, struct ast_command *new)
 {
     enum token_type type = lexer_peek(lex)->type;
     if (!lex || type == TOKEN_EOF)
         return 0;
     if (type == TOKEN_REDIR_ENTREE)
-        new->option = REDIR_ENTREE; // <
+        new->opt = REDIR_ENTREE; // <
     else if (type == TOKEN_REDIR_DESCRIPEUR)
-        new->option = REDIR_DESCRIPEUR; //>&
+        new->opt = REDIR_DESCRIPEUR; //>&
     else if (type == TOKEN_REDIR_SORTIE)
-        new->option = REDIR_SORTIE; // >
+        new->opt = REDIR_SORTIE; // >
     else if (type == TOKEN_REDIR_FIN_FICHIER)
-        new->option = REDIR_FIN_FICHIER; // >>
+        new->opt = REDIR_FIN_FICHIER; // >>
     else if (type == TOKEN_REDIR_RW)
-        new->option = REDIR_RW; //<>
+        new->opt = REDIR_RW; //<>
     else if (type == TOKEN_REDIR_INPUT_DESCRIPEUR)
-        new->option = REDIR_INPUT_DESCRIPEUR; //<&
+        new->opt = REDIR_INPUT_DESCRIPEUR; //<&
     else if (type == TOKEN_REDIR_PIPE) //<|
-        new->option = REDIR_PIPE;
+        new->opt = REDIR_PIPE;
     else
         return 1;
-    printf("\n\n\nget option type = %d\n", type);
+    printf("\n\n\nget opt type = %d\n", type);
     new->redir =
         strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
+    lexer_pop(lex);
     return 0;
 }
 // build the command with conditions and handles error
@@ -221,7 +228,8 @@ int get_command(struct lexer *lex, struct ast_command *new)
         new->count++;
         lexer_pop(lex);
     }
-    get_option(lex, new);
+
+    get_opt(lex, new);
     return 0;
 }
 
@@ -429,7 +437,7 @@ struct ast_for *build_ast_for(struct lexer *lex)
   //est ce possible d'avoir autre que for???
   if (lexer_peek(lex)->type != TOKEN_WORDS)
     errx(2, "wrong implementation of variable : for <I> in");
-    int i = 0;
+  int i = 0;
   print(lex);
   for (; lexer_peek(lex)->type == TOKEN_WORDS ; i++)
   {
@@ -608,9 +616,11 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
     enum token_type type = lexer_peek(lex)->type;
     if (!lex || type == TOKEN_EOF)
         lex = ask_entry();
+    type = lexer_peek(lex)->type;
     int count = 30;
     ast->children = malloc(sizeof(struct ast *) * 30);
     int command = 0;
+    print(lex);
     while (lex && check_break(mode, type))
     {
         printf("MODE = %d\n", mode);
