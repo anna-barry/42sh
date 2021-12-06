@@ -63,7 +63,7 @@ void print_ast_else(struct ast *ast)
 void print_ast_command(struct ast *ast)
 {
     struct ast_command *a = ast->data.ast_command;
-    printf("command\n");
+    printf(" command ");
     for (int i = 0; i < a->count; i++)
     {
         printf(" \"%s\"",a->argv[i]);
@@ -137,12 +137,12 @@ void print_ast_pipe(struct ast *ast)
 void print_ast_simple_quote(struct ast *ast)
 {
     struct ast_simple_quote *a = ast->data.ast_simple_quote;
-    printf("%s", a->argv);
+    printf(" \'%s\' ", a->argv);
 }
 void print_ast_double_quote(struct ast *ast)
 {
     struct ast_double_quote *a = ast->data.ast_double_quote;
-    printf("%s", a->argv);
+    printf(" \"%s\" ", a->argv);
 }
 
 void print_ast_while(struct ast *ast)
