@@ -178,7 +178,7 @@ int get_opt(struct lexer *lex, struct ast_command *new)
         new->opt = REDIR_PIPE;
     else
         return 1;
-    printf("\n\n\nget opt type = %d\n", type);
+    //printf("\n\n\nget opt type = %d\n", type);
     new->redir =
         strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
     lexer_pop(lex);
@@ -241,11 +241,11 @@ int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
     new->data.ast_main_root = build_ast(lex, mode)->data.ast_main_root;
     // printf("\n\n\n\nGET COND :
     // %d\n\n\n",new->data.ast_main_root->children[0]->type);
-    print(lex);
-    printf("\n\n\nTOKEN MODE IS : %d\n\n\n\n", mode);
+    //print(lex);
+    //printf("\n\n\nTOKEN MODE IS : %d\n\n\n\n", mode);
     if (mode == NODE_THEN || mode == NODE_DO)
     {
-        printf("\n\n\n\nTOKEN THEN\n\n\n\n");
+        //printf("\n\n\n\nTOKEN THEN\n\n\n\n");
         if (lexer_peek(lex)->type == TOKEN_AND)
           get_and(new, lex, mode);
         else if (lexer_peek(lex)->type == TOKEN_OR)
@@ -437,7 +437,7 @@ struct ast_for *build_ast_for(struct lexer *lex)
   if (lexer_peek(lex)->type != TOKEN_WORDS)
     errx(2, "wrong implementation of variable : for <I> in");
   int i = 0;
-  print(lex);
+  //print(lex);
   for (; lexer_peek(lex)->type == TOKEN_WORDS ; i++)
   {
     if (i % 30 == 0)
@@ -447,7 +447,7 @@ struct ast_for *build_ast_for(struct lexer *lex)
     lexer_pop(lex);
   }
   lexer_pop(lex);
-  print(lex);
+  //print(lex);
   new_for->nb_var = i;
   if (lexer_peek(lex)->type != TOKEN_IN)
     errx(2, "wrong implementation of variable : for i <in>");
@@ -527,7 +527,7 @@ void make_command(struct ast_main_root *ast, struct lexer *lex, enum ast_type mo
     // to be tested
     ast->children[rank]->type = NODE_COMMAND;
     ast->children[rank]->data.ast_command = new_com;
-    printf("\n\n\n\nTOKEN THEN\n\n\n\n");
+    //printf("\n\n\n\nTOKEN THEN\n\n\n\n");
     if (lexer_peek(lex)->type == TOKEN_AND)
     {
         get_and(ast->children[rank], lex, mode);
@@ -578,7 +578,7 @@ void make_neg(struct ast_main_root *ast, struct lexer *lex)
 int check_break(enum ast_type mode, enum token_type type)
 {
     // ajouter gestion d'erreur ici avec les ; et les double pipe etc
-    printf("MODE = %d\n, TYPE = %d\n", mode, type);
+    //printf("MODE = %d\n, TYPE = %d\n", mode, type);
     if (type == TOKEN_EOF)// each function must handle asking tnew info
         return 0;
     if (mode == NODE_IF || mode == NODE_ELIF)
@@ -619,12 +619,12 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
     int count = 30;
     ast->children = malloc(sizeof(struct ast *) * 30);
     int command = 0;
-    print(lex);
+    //print(lex);
     while (lex && check_break(mode, type))
     {
-        printf("MODE = %d\n", mode);
-        printf("TYPE = %d\n", type);
-        print(lex);
+        //("MODE = %d\n", mode);
+        //printf("TYPE = %d\n", type);
+        //print(lex);
         ast->nb_children++;
         if (ast->nb_children >= count)
         {

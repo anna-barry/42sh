@@ -67,7 +67,7 @@ void print_ast_command(struct ast *ast)
     for (int i = 0; i < a->count; i++)
     {
         printf(" \"%s\"",a->argv[i]);
-        switch (a->option)
+        switch (a->opt)
         {
             case (REDIR_SORTIE):
             printf(">%s", a->redir);
@@ -180,7 +180,7 @@ void print_ast(struct ast *ast) {
     free(ast);
 }
 
-void pretty_print(struct ast *ast)
+void my_pretty_print(struct ast *ast)
 {
     printf("here printing\n");
     print_ast(ast);

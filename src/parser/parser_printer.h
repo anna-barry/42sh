@@ -41,6 +41,6 @@ typedef void (*ast_print_function)(struct ast *ast);
 
 void print_ast(struct ast *ast);
 
-void pretty_print(struct ast *ast);
+void my_pretty_print(struct ast *ast);
 
 #endif

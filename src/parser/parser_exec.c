@@ -57,10 +57,9 @@ int exec_ast_if(struct ast *ast)
 {
     struct ast_if *a = ast->data.ast_if;
     int res = exec_ast(a->cond);
-    int inter = 0;
     if (res == 0)
     {
-        inter = exec_ast(a->then);
+        exec_ast(a->then);
     }
     return res;
 }
@@ -69,10 +68,9 @@ int exec_ast_elif(struct ast *ast)
 {
     struct ast_elif *a = ast->data.ast_elif;
     int res = exec_ast(a->cond);
-    int inter = 0;
     if (res == 0)
     {
-        inter = exec_ast(a->then);
+        exec_ast(a->then);
     }
     return res;
 }
@@ -94,7 +92,7 @@ int exec_ast_else(struct ast *ast)
 int exec_ast_command(struct ast *ast)
 {
     struct ast_command *a = ast->data.ast_command;
-    enum option flag = a->option;
+    enum opt flag = a->opt;
     int return_value = -1;
     switch (flag)
     {

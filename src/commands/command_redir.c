@@ -146,7 +146,7 @@ int command_redir_r_pipe(char *command[], int count, char *file)
     return 0;
 }
 
-int main()
+/*int main()
 {
     char *argv[2] = { "echo", "geoffroy" };
     char *file = "tester.txt";
@@ -157,4 +157,4 @@ int main()
     // fprintf(fd, "old file descriptor\n");
     printf("lounch\n");
     return 0;
-}
+}*/
