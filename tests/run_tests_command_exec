@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gcc src/commands/command.c -o command_exec
+gcc src/commands/command.c src/commands/echo.c tests/geoff/command_test.c -o command_exec
 echo "********* Testing Command LS ***********"
 diff <(./command_exec "test0") <(ls)
 var1=$?

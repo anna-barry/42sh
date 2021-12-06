@@ -24,8 +24,8 @@ int command_exec(char *argv[],
     else
     {
         // argv[count] = NULL;
-        int wstatus;
-        int res_exec;
+        int wstatus = 0;
+        int res_exec = 0;
         int pid = fork();
         char *command = argv[0];
         if (pid == 0)

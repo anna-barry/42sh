@@ -130,8 +130,8 @@ int pipe_exec(char *argv_left[], char *argv_right[], int count_left,
               int count_right)
 {
     int fd[2];
-    argv_left[count_left] = NULL;
-    argv_right[count_right] = NULL;
+    // argv_left[count_left] = NULL;
+    // argv_right[count_right] = NULL;
     if (pipe(fd) == -1)
         return 1;
     int pid = fork();

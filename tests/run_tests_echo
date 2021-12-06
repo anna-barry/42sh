@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gcc src/commands/echo.c -o echo
+gcc src/commands/echo.c tests/geoff/echo_test.c -o echo
 echo "********* Testing Echo 0 ***********"
 diff <(./echo "test0") <(printf "\n")
 var1=$?

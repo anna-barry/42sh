@@ -71,8 +71,24 @@ int command_redir_lr(char *command[], int count, char *file)
 }
 
 // dup in and out, basic case 0 for out if NULL
-int command_redir_l_and(int out /*n*/, int in /*word*/)
+int command_redir_l_and(char *command[], char *file)
 {
+    int start = 0;
+    int i = 0;
+    while (command[0][i] != '\0')
+    {
+        start = start * 10 + ((int)command[0][i] - 48);
+        i++;
+    }
+    int out = start; /*n*/
+    start = 0;
+    i = 0;
+    while (file[i] != '\0')
+    {
+        start = start * 10 + ((int)file[i] - 48);
+        i++;
+    }
+    int in = start; /*word*/
     int old_fd = dup(STDOUT_FILENO);
     if (dup2(in, out) == -1)
         fprintf(stderr, "Error with dup2");
@@ -83,8 +99,24 @@ int command_redir_l_and(int out /*n*/, int in /*word*/)
 }
 
 // dup in and out, basic case 1 for out if NULL
-int command_redir_r_and(int out /*n*/, int in /*word*/)
+int command_redir_r_and(char *command[], char *file)
 {
+    int start = 0;
+    int i = 0;
+    while (command[0][i] != '\0')
+    {
+        start = start * 10 + ((int)command[0][i] - 48);
+        i++;
+    }
+    int out = start; /*n*/
+    start = 0;
+    i = 0;
+    while (file[i] != '\0')
+    {
+        start = start * 10 + ((int)file[i] - 48);
+        i++;
+    }
+    int in = start; /*word*/
     int old_fd = dup(STDOUT_FILENO);
     if (dup2(in, out) == -1)
         fprintf(stderr, "Error with dup2");

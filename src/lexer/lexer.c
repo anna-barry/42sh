@@ -147,9 +147,7 @@ struct cap_and_i * spe_token(const char *input, size_t *index, struct cap_and_i 
            */
           new[*index - 1].current_tok = token_new(TOKEN_WORDS);
           nb = 0;
-          while (*for_s->i + nb < strlen(input) && ((input[*for_s->i + nb] >= 'a'
-                && input[*for_s->i + nb] <= 'z') ||
-                (input[*for_s->i + nb] >= 'A' && input[*for_s->i + nb] <= 'Z')))
+          while (*for_s->i + nb < strlen(input) && !is_space(input[*for_s->i + nb]))
           {
               nb++;
           }

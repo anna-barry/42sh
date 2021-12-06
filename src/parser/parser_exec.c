@@ -38,17 +38,17 @@ int exec_ast_and(struct ast *ast)
     struct ast_and *a = ast->data.ast_and;
     if ((exec_ast(a->right) == 0) && (exec_ast(a->left) == 0))
     {
-        return exec_ast(a->then);
+        return 0;
     }
     return 1;
 }
 
 int exec_ast_or(struct ast *ast)
 {
-    struct ast_and *a = ast->data.ast_or;
+    struct ast_or *a = ast->data.ast_or;
     if ((exec_ast(a->right) == 0) || (exec_ast(a->left) == 0))
     {
-        return exec_ast(a->then);
+        return 0;
     }
     return 1;
 }
@@ -107,8 +107,8 @@ int exec_ast_command(struct ast *ast)
     case REDIR_FIN_FICHIER: // '>>'
         return_value = command_redir_rr(a->argv, a->count, a->redir);
         break;
-    case REDIR_FIN_FICHIER: // '>>'
-        return_value = command_redir_rr(a->argv, a->count, a->redir);
+    case REDIR_PIPE: // '>>'
+        return_value = command_redir_r_pipe(a->argv, a->count, a->redir);
         break;
     case REDIR_RW: // '<>'
         return_value = command_redir_l(a->argv, a->count, a->redir);
@@ -142,7 +142,7 @@ int execution(struct ast *ast)
 {
     return exec_ast(ast);
 }
-
+/*
 int main()
 {
     struct lexer *lexer =
@@ -159,3 +159,4 @@ int main()
     lexer_free(lexer);
     return 0;
 }
+*/
