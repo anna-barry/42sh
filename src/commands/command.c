@@ -23,9 +23,9 @@ int command_exec(char *argv[],
         return echo(argv, count);
     else
     {
-        argv[count] = NULL;
-        int wstatus;
-        int res_exec;
+        // argv[count] = NULL;
+        int wstatus = 0;
+        int res_exec = 0;
         int pid = fork();
         char *command = argv[0];
         if (pid == 0)
