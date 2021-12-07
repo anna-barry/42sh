@@ -60,40 +60,17 @@ void free_ast_else(struct ast *ast)
     //freef("}");
 }
 
-void free_ast_command()
+void free_ast_command(struct ast *ast)
 {
-    //struct ast_command *a = ast->data.ast_command;
-    /*free(" command ");
+    struct ast_command *a = ast->data.ast_command;
     for (int i = 0; i < a->count; i++)
     {
-        freef(" \"%s\"",a->argv[i]);
-        switch (a->opt)
+        free(a->argv[i]);
+        if (a->opt)
         {
-            case (REDIR_SORTIE):
-            freef(">%s", a->redir);
-            break;
-            case (REDIR_ENTREE):
-            freef("<%s", a->redir);
-            break;
-            case (REDIR_DESCRIPEUR):
-            freef(">&%s", a->redir);
-            break;
-            case (REDIR_FIN_FICHIER):
-            freef(">>%s", a->redir);
-            break;
-            case (REDIR_INPUT_DESCRIPEUR):
-            freef("<&%s", a->redir);
-            break;
-            case (REDIR_RW):
-            freef("<>%s", a->redir);
-            break;
-            case (REDIR_PIPE):
-            freef(">|%s", a->redir);
-            break;
-            default:
-            break;
+            free(a->redir);
         }
-    }*/
+    }
 }
 
 void free_ast_neg(struct ast *ast)
@@ -134,15 +111,15 @@ void free_ast_pipe(struct ast *ast)
     //freef("}");
 }
 
-void free_ast_simple_quote()
+void free_ast_simple_quote(struct ast *ast)
 {
-    //struct ast_simple_quote *a = ast->data.ast_simple_quote;
-    //freef(" \'%s\' ", a->argv);
+    struct ast_simple_quote *a = ast->data.ast_simple_quote;
+    free(a->argv);
 }
-void free_ast_double_quote()
+void free_ast_double_quote(struct ast *ast)
 {
-    //struct ast_double_quote *a = ast->data.ast_double_quote;
-    //freef(" \"%s\" ", a->argv);
+    struct ast_double_quote *a = ast->data.ast_double_quote;
+    free(a->argv);
 }
 
 void free_ast_while(struct ast *ast)
@@ -171,10 +148,10 @@ void free_ast_for_char(struct ast *ast)
     free_ast(a->var);
 }
 
-void free_ast_for_int()
+void free_ast_for_int(struct ast *ast)
 {
-    //struct read_for_int *a = ast->data.ast_for_int;
-    //freef(" %lu..%lu..%lu ", a->start, a->end, a->step);
+    struct read_for_int *a = ast->data.ast_for_int;
+    free(a);
 }
 
 static ast_free_function ast_freeers[] =
