@@ -56,8 +56,45 @@ int my_strcmp(char *s, char *s2)
     return 0;
 }
 
+int find_variable(char *name, struct environnement *new)
+{
+    struct variable *index = new->var;
+    for (; index != NULL; index = index->next)
+    {
+        if (strcmp(index->name, name) == 0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void update_variable(char *name, char *value, struct environnement *new)
+{
+    if (find_variable(name, new) == 0)
+    {
+        insert_variable( name, value, new);
+    }
+    else
+    {
+        struct variable *index = new->var;
+        for (; index != NULL; index = index->next)
+        {
+            if (strcmp(index->name, name) == 0)
+            {
+                index->value = value;
+            }
+        }
+    }
+}
+
 void insert_variable(char *name, char *value, struct environnement *new)
 {
+    if (find_variable(name, new) == 1)
+    {
+        update_variable(name, value, new);
+        return;
+    }
     struct variable *new_v = malloc(sizeof(struct variable));
     if (!new_v)
         err(2, "Error with malloc\n");
@@ -89,6 +126,33 @@ void insert_variable(char *name, char *value, struct environnement *new)
         new_v->next = tmp;
     }
     new->nb_variables++;
+}
+
+int is_var(char *command)
+{
+    for (size_t i = 0; i < strlen(command); i++)
+    {
+       if (command[i] == '=')
+       {
+           return i;
+       }
+    }
+    return -1;
+}
+
+char **get_all_var(char *command)
+{
+    int res = is_var(command);
+    if (res == -1)
+    {
+        return NULL;
+    }
+    char **result = malloc(sizeof(char *) * 2);
+    char *first = strndup(command, res);
+    char *second = strndup(command + res + 1, strlen(command) - res);
+    result[0] = first; // name
+    result[1] = second; // value
+    return result;
 }
 
 struct environnement *init_env(void)

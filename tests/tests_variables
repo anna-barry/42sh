@@ -8,6 +8,15 @@ diff <(./variables hello world anna barry ze boite ze boite) <(printf "(anna) = 
 )
 (RANDOM) = NULL
 (ze) = (boite)
+
+
+
+
+(anna) = (updating)
+(hello) = (world)
+(IFS) = (
+)
+(RANDOM) = NULL
 (ze) = (boite)
 ")
 var1=$?
@@ -21,6 +30,17 @@ echo "done [ok] "
 
 echo "********* Testing Variable and Environnement creation functions pt.2 ***********"
 diff <(./variables man\'s world christmas day boxing day) <(printf "(boxing) = (day)
+(christmas) = (day)
+(IFS) = (
+)
+(man's) = (world)
+(RANDOM) = NULL
+
+
+
+
+(anna) = (updating)
+(boxing) = (day)
 (christmas) = (day)
 (IFS) = (
 )

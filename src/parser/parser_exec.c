@@ -52,13 +52,28 @@ int exec_ast_or(struct ast *ast, struct environnement *env)
     return 1;
 }
 
+// int exec_ast_while(struct ast *ast, struct environnement *env)
+
 int exec_ast_while(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    // printf("or\n");
+    struct environnement *inter = env;
     struct ast_while *a = ast->data.ast_while;
-    while (exec_ast(a->cond, env) == 0)
+    while (exec_ast(a->cond, inter) == 0)
+    {
+        exec_ast(a->then, env);
+    }
+    return 0;
+}
+
+int exec_ast_until(struct ast *ast, struct environnement *env)
+{
+    if (env == NULL)
+        return 1;
+    struct environnement *inter = env;
+    struct ast_while *a = ast->data.ast_while;
+    while (exec_ast(a->cond, inter) == 0)
     {
         exec_ast(a->then, env);
     }
@@ -108,8 +123,8 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     int start = *index;
     unsigned long interm = *index + 1;
     size_t p = 0;
-    printf("interm %lu *argv[0]=%s \n", interm, argv);
-    printf("%lu stren is \n", strlen(argv));
+    // printf("interm %lu *argv[0]=%s \n", interm, argv);
+    // printf("%lu stren is \n", strlen(argv));
     for (; interm < strlen(argv) || argv[interm] != ' '; interm++)
     {
         indice[p] = argv[interm];
@@ -222,13 +237,12 @@ void transform_command(struct ast *ast, struct environnement *env)
 
 void concat_node(struct ast *node1, struct ast *node2)
 {
-    printf("concat node\n");
+    // printf("concat node\n");
     if (node1->type == NODE_COMMAND && node2->type == NODE_SIMPLE_QUOTE)
     {
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_simple_quote *a2 = node2->data.ast_simple_quote;
         char **res = malloc(sizeof(char *) * (1 + a1->count));
-
         int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
@@ -254,7 +268,7 @@ void concat_node(struct ast *node1, struct ast *node2)
     {
         struct ast_double_quote *a2 = node2->data.ast_double_quote;
         struct ast_command *a1 = node1->data.ast_command;
-        char **res = malloc(sizeof(char) * (1 + a1->count));
+        char **res = malloc(sizeof(char *) * (1 + a1->count));
         int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
@@ -426,8 +440,14 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    // printf("command\n");
     struct ast_command *a = ast->data.ast_command;
+    char **tab = get_all_var(a->argv[0]);
+    if (tab != NULL)
+    {
+        insert_variable(tab[0], tab[1], env);
+        free(tab);
+        return 0;
+    }
     enum opt flag = a->opt;
     int return_value = -1;
     switch (flag)

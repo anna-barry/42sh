@@ -22,7 +22,9 @@ int echo(char *argv[], int count)
     for (; i < count; i++)
     {
         if (argv[i] == NULL)
+        {
             break;
+        }
         for (int j = 0; argv[i][j]; j++)
         {
             if (flag == 1)
