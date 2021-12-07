@@ -74,10 +74,10 @@ void free_variables(struct variable *index)
     if (index->next != NULL)
         free_variables(index->next);
     
-    if (index->value)
-        free(index->value);
-    if (index->name)
-        free(index->name);
+    //if (index->value)
+    //    free(index->value);
+    //if (index->name)
+    //    free(index->name);
     if (index)
         free(index);
 }
@@ -91,10 +91,10 @@ void free_environnement(struct environnement *new)
         if (new->args_b[i])
             free(new->args_b[i]);
     }
-    if (new->args)
-        free(new->args);
-    if (new->args_b)
-        free(new->args_b);
+    //if (new->args)
+    //    free(new->args);
+    //if (new->args_b)
+    //    free(new->args_b);
     free_variables(new->var);
     if (new)
         free(new);

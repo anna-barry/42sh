@@ -21,11 +21,31 @@ build:
       - builddir/42sh
     expose_as: 42sh
 
+Geoffroy_test_command:
+  stage: test
+  script:
+    - tests/run_tests_command_exec
+
+Geoffroy_test_echo:
+  stage: test
+  script:
+    - tests/run_tests_echo
+
+Geoffroy_test_redir:
+  stage: test
+  script:
+    - tests/run_tests_redir
+
+Geoffroy_test_pipe:
+  stage: test
+  script:
+    - tests/run_tests_pipe
+
 Anna_test_lexer:
   stage: test
   script:
     - tests/run_tests_2
-  
+
 Anna_test_variables:
   stage: test
   script:
