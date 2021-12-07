@@ -29,6 +29,8 @@ struct environnement
  */
 struct environnement *init_env(void);
 
+void free_environnement(struct environnement *new);
+
 /*
  * Print environnement variables
  */

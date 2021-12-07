@@ -14,6 +14,8 @@ int exec_ast_and(struct ast *ast, struct environnement *env);
 
 int exec_ast_or(struct ast *ast, struct environnement *env);
 
+int exec_ast_neg(struct ast *ast, struct environnement *env);
+
 int exec_ast_if_root(struct ast *ast, struct environnement *env);
 
 int is_dotf(struct ast *ast);
@@ -35,8 +37,6 @@ int exec_ast_elif(struct ast *ast, struct environnement *env);
 int exec_ast_else(struct ast *ast, struct environnement *env);
 
 int exec_ast_command(struct ast *ast, struct environnement *env);
-
-// typedef int (*ast_exec_function)(struct ast *ast, struct environnement *env);
 
 int exec_ast(struct ast *ast, struct environnement *env);
 

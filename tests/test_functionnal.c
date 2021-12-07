@@ -13,7 +13,6 @@ int main(int argc, char *argv[])
     printf("\n\n\n\n");
     update_variable("anna", "updating", env);
     print_variables(env);
-    free(env->var);
-    free(env);
+    free_environnement(env);
     return 0;
 }

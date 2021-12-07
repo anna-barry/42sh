@@ -448,6 +448,7 @@ struct lexer *lexer_new(const char *input)
     }
     free(index);
     free(i);
+    free(cap);
     return new;
 }
 

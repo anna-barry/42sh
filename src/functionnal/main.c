@@ -129,7 +129,6 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Number of arguments not correct");
 
     int pretty_print = 0;
-    printf("%s = %s\n", argv[1], "--pretty-print");
     if (strcmp(argv[1], "--pretty-print") == 0)
     {
             pretty_print = 1;
@@ -144,7 +143,6 @@ int main(int argc, char *argv[])
     const char *input = (const char *)find_input(argc, argv);
     if (input == NULL)
       return 1;
-    printf("input is (%s) \n", input);
     struct lexer *lexer = lexer_new(input);
     struct ast *ast = build_ast(lexer, NODE_ROOT);
     struct environnement *env = init_env();
@@ -155,12 +153,8 @@ int main(int argc, char *argv[])
         printf("\n ______ end of pretty print ________ \n");
     }
     int res_e = execution(ast, env);
-    if (ast->type == NODE_ROOT)
-    {
-        printf("node root\n");
-    }
     lexer_free(lexer);
     free(ast);
-    free(env);
+    free_environnement(env);
     return res_e;
 }
