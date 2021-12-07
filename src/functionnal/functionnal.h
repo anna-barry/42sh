@@ -45,6 +45,11 @@ int find_variable(char *name, struct environnement *new);
 void update_variable(char *name, char *value, struct environnement *new);
 
 /*
+ * Command is a new variable
+ */
+int is_var(char *command);
+
+/*
  * Insert environnement variables
  */
 void insert_variable(char *name, char *value, struct environnement *new);

@@ -128,6 +128,19 @@ void insert_variable(char *name, char *value, struct environnement *new)
     new->nb_variables++;
 }
 
+int is_var(char *command)
+{
+    for (size_t i = 0; i < strlen(command); i++)
+    {
+       if (command[i] == '=')
+       {
+           return i;
+       }
+       
+    }
+    return -1;
+}
+
 struct environnement *init_env(void)
 {
     struct environnement *env = malloc(sizeof(struct environnement));
