@@ -409,14 +409,21 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
     return new_root;
 }
 
-struct ast_while *build_ast_while(struct lexer *lex)
+struct ast_while *build_ast_while(struct lexer *lex, int until)
 {
     struct ast_while *new_root = create_while();
     // here getting if out of the lexer
-    lexer_pop(lex);
-
-    if (get_then(lex, new_root->cond, NODE_WHILE))
+    if (until)
+    {
+      new_root->cond->type = NODE_NEG;
+      new_root->cond->data.ast_neg = malloc(sizeof(struct ast_neg));
+      new_root->cond->data.ast_neg->node = malloc(sizeof(struct ast));
+      if (get_then(lex, new_root->cond->data.ast_neg->node, NODE_WHILE))
+        errx(2, "couldn't get cond in until");
+    }
+    else if(get_then(lex, new_root->cond, NODE_WHILE))
         errx(2, "couldn't get cond in while");
+
     lexer_pop(lex);
 
     if (lexer_peek(lex)->type == TOKEN_EOF)
@@ -503,14 +510,15 @@ void make_for(struct ast_main_root *ast, struct lexer *lex)
 }
 
 //PROCESS AND ADD CHILD WHEN while
-void make_while(struct ast_main_root *ast, struct lexer *lex)
+void make_while(struct ast_main_root *ast, struct lexer *lex, int until)
 {
+    lexer_pop(lex);
     ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
     ast->children[ast->nb_children - 1]->type = NODE_WHILE;
-    ast->children[ast->nb_children - 1]->data.ast_while = build_ast_while(lex);
+    ast->children[ast->nb_children - 1]->data.ast_while = build_ast_while(lex, until);
 }
 
-void make_until(struct ast_main_root *ast, struct lexer *lex)
+/*void make_until(struct ast_main_root *ast, struct lexer *lex)
 {
     int nb = ast->nb_children - 1;
     ast->children[nb] = malloc(sizeof(struct ast));
@@ -519,8 +527,8 @@ void make_until(struct ast_main_root *ast, struct lexer *lex)
     ast->children[nb]->data.ast_neg->node = malloc(sizeof(struct ast));
     ast->children[nb]->data.ast_neg->node->type = NODE_WHILE;
     ast->children[nb]->data.ast_neg->node->data.ast_while =
-        build_ast_while(lex);
-}
+        build_ast_while(lex, );
+}*/
 
 // PROCESS AND ADD CHILD WHEN COMMAND
 void make_command(struct ast_main_root *ast, struct lexer *lex, enum ast_type mode)
@@ -667,12 +675,12 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
         else if (type == TOKEN_WHILE )
         {
             command = 0;
-            make_while(ast, lex);
+            make_while(ast, lex, 0);
         }
         else if (type == TOKEN_UNTIL)
         {
             command = 0;
-            make_until(ast, lex);
+            make_while(ast, lex, 1);
         }
         else if (type == TOKEN_FOR)
         {
