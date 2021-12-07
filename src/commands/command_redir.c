@@ -20,6 +20,7 @@ int command_redir_r(char *command[], int count, char *file)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count) != 0)
         return 127;
+    fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
@@ -35,6 +36,7 @@ int command_redir_l(char *command[], int count, char *file)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count) != 0)
         return 127;
+    fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
@@ -45,11 +47,12 @@ int command_redir_l(char *command[], int count, char *file)
 int command_redir_rr(char *command[], int count, char *file)
 {
     int old_fd = dup(STDOUT_FILENO);
-    int fd = open(file, O_CREAT | O_APPEND, 0644);
+    int fd = open(file, O_CREAT | O_APPEND | O_WRONLY, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count) != 0)
         return 127;
+    fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
@@ -64,6 +67,7 @@ int command_redir_lr(char *command[], int count, char *file)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count) != 0)
         return 127;
+    fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
@@ -139,6 +143,7 @@ int command_redir_r_pipe(char *command[], int count, char *file)
             fprintf(stderr, "Error with dup2");
         if (command_exec(command, count) != 0)
             return 127;
+        fflush(stdout);
         if (dup2(old_fd, STDOUT_FILENO) == -1)
             fprintf(stderr, "Error with dup2");
         fcntl(old_fd, F_SETFD, FD_CLOEXEC);
@@ -146,15 +151,15 @@ int command_redir_r_pipe(char *command[], int count, char *file)
     return 0;
 }
 
-/*int main()
-{
-    char *argv[2] = { "echo", "geoffroy" };
-    char *file = "tester.txt";
-    printf("recieve\n");
-    // fprintf(fd, "new file descriptor\n");
-    // command_redir_r(argv, 2, file);
-    command_redir_r_pipe(argv, 2, file);
-    // fprintf(fd, "old file descriptor\n");
-    printf("lounch\n");
-    return 0;
-}*/
+// int main()
+// {
+//     char *argv[2] = { "echo", "geoffroy" };
+//     char *file = "tester.txt";
+//     // printf("recieve\n");
+//     // fprintf(fd, "new file descriptor\n");
+//     command_redir_r(argv, 2, file);
+//     // command_redir_r_pipe(argv, 2, file);
+//     // fprintf(fd, "old file descriptor\n");
+//     // printf("lounch\n");
+//     return 0;
+// }

@@ -1,0 +1,57 @@
+#!/bin/bash
+
+gcc src/commands/command.c src/commands/echo.c src/commands/command_pipe.c tests/geoff/pipe_test.c -o pipe_exec
+echo "********* Testing Command LS with CAT -E ***********"
+diff <(./pipe_exec "test0") <(ls | cat -e)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./pipe_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command ECHO Hello with CAT -E ***********"
+diff <(./pipe_exec "test1") <(echo Hello | cat -e)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./pipe_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command ECHO Hallo with TR A E ***********"
+diff <(./pipe_exec "test2") <(echo Hallo | tr a e)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./pipe_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command ECHO a with ECHO b ***********"
+diff <(./pipe_exec "test3") <(echo a | echo b)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./pipe_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command LS with TR A E ***********"
+diff <(./pipe_exec "test4") <(ls | tr a e)
+var1=$?
+if [ $var1 -ne 1 ];
+then
+echo "error"
+rm ./pipe_exec
+exit 1;
+fi
+echo "done [ok] "
