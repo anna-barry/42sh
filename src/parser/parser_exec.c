@@ -30,7 +30,7 @@ int exec_ast_and(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    printf("and\n");
+    // printf("and\n");
     struct ast_and *a = ast->data.ast_and;
     if ((exec_ast(a->left, env) == 0) && (exec_ast(a->right, env) == 0))
     {
@@ -55,12 +55,12 @@ int exec_ast_neg(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
+    // printf("negation\n");
     struct ast_neg *a = ast->data.ast_neg;
     if (exec_ast(a->node, env) == 1)
-    {
         return 0;
-    }
-    return 1;
+    else
+        return 1;
 }
 
 int exec_ast_while(struct ast *ast, struct environnement *env)
@@ -495,7 +495,7 @@ static ast_exec_function ast_exec[] = {
     [NODE_ELSE] = exec_ast_else,       [NODE_COMMAND] = exec_ast_command,
     [NODE_IF_ROOT] = exec_ast_if_root, [NODE_ROOT] = exec_ast_root,
     [NODE_WHILE] = exec_ast_while,     [NODE_OR] = exec_ast_or,
-    [NODE_AND] = exec_ast_and,         [NODE_NEG] = exec_ast_or,
+    [NODE_AND] = exec_ast_and,         [NODE_NEG] = exec_ast_neg,
 };
 
 int exec_ast(struct ast *ast, struct environnement *env)
