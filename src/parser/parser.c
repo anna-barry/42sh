@@ -154,7 +154,7 @@ struct lexer *ask_entry(void)
 {
     write(1, ">", 1);
     char buf[500]; // chiffre basic jsp mettre on testera
-    scanf("%s\n", buf);
+    scanf("%499[^\n]", buf);
     return lexer_new(buf);
 }
 
@@ -435,7 +435,6 @@ struct ast_while *build_ast_while(struct lexer *lex, int until)
 
     if (lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
-
     if (get_then(lex, new_root->then, NODE_DO))
         errx(2, "couldn't get commands in while");
     if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
@@ -600,7 +599,7 @@ int check_break(enum ast_type mode, enum token_type type)
 {
     // ajouter gestion d'erreur ici avec les ; et les double pipe etc
     //printf("MODE = %d\n, TYPE = %d\n", mode, type);
-    if (type == TOKEN_EOF)// each function must handle asking tnew info
+    if (mode == NODE_ROOT && type == TOKEN_EOF)// each function must handle asking tnew info
         return 0;
     if (mode == NODE_IF || mode == NODE_ELIF)
     {
@@ -642,9 +641,9 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
     //print(lex);
     while (lex && check_break(mode, type))
     {
-        //printf("MODE = %d\n", mode);
-        //printf("TYPE = %d\n", type);
-        //print(lex);
+        printf("MODE = %d\n", mode);
+        printf("TYPE = %d\n", type);
+        print(lex);
         ast->nb_children++;
         if (ast->nb_children >= count)
         {
@@ -657,6 +656,8 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
         {
             make_if(ast, lex);
         }
+        else if (type == TOKEN_EOF)
+            lex = ask_entry();
         // IF WORD IS WORD OR SEMICOLON MAKE COMMAND
         else if (type == TOKEN_WORDS || type == TOKEN_FOR_WORD || type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
         {
@@ -675,24 +676,18 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
             break;
         }
         else if (type == TOKEN_WHILE)
-        {
             make_while(ast, lex, 0);
-        }
         else if (type == TOKEN_UNTIL)
-        {
             make_while(ast, lex, 1);
-        }
         else if (type == TOKEN_FOR)
-        {
-          make_for(ast,lex);
-        }
+            make_for(ast,lex);
         else if (type == TOKEN_PIPE)
         {
           get_pipe(ast, lex);
           break;
         }
         else
-            errx(2, "wrong implementation");
+          errx(2, "wrong implementation");
         type = lexer_peek(lex)->type;
     }
     struct ast *new_ast = malloc(sizeof(struct ast));
