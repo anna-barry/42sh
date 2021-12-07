@@ -1,4 +1,4 @@
-//#include "parser_exec.h"
+#include "parser_exec.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -6,79 +6,378 @@
 #include "../commands/command.h"
 #include "../commands/command_pipe.h"
 #include "../commands/command_redir.h"
+#include "../functionnal/functionnal.h"
 #include "parser.h"
 
-int exec_ast(struct ast *ast);
+int exec_ast(struct ast *ast, struct environnement *env);
 
-int exec_ast_if_root(struct ast *ast)
+int exec_ast_if_root(struct ast *ast, struct environnement *env)
 {
+    if (env == NULL)
+        return 1;
+    // printf("if root\n");
     struct ast_if_root *a = ast->data.ast_if_root;
     for (int i = 0; i < a->nb_children; i++)
     {
-        a->status = exec_ast(a->children[i]);
+        a->status = exec_ast(a->children[i], env);
         if (a->status == 0)
             break;
     }
     return a->status;
 }
 
-int exec_ast_root(struct ast *ast)
+int exec_ast_and(struct ast *ast, struct environnement *env)
 {
+    if (env == NULL)
+        return 1;
+    // printf("and\n");
+    struct ast_and *a = ast->data.ast_and;
+    if ((exec_ast(a->right, env) == 0) && (exec_ast(a->left, env) == 0))
+    {
+        return 0;
+    }
+    return 1;
+}
+
+int exec_ast_or(struct ast *ast, struct environnement *env)
+{
+    if (env == NULL)
+        return 1;
+    // printf("or\n");
+    struct ast_or *a = ast->data.ast_or;
+    if ((exec_ast(a->right, env) == 0) || (exec_ast(a->left, env) == 0))
+    {
+        return 0;
+    }
+    return 1;
+}
+
+int exec_ast_while(struct ast *ast, struct environnement *env)
+{
+    if (env == NULL)
+        return 1;
+    // printf("or\n");
+    struct ast_while *a = ast->data.ast_while;
+    while (exec_ast(a->cond, env) == 0)
+    {
+        exec_ast(a->then, env);
+    }
+    return 0;
+}
+
+int is_nullf(struct ast *ast)
+{
+    // printf("dot\n");
+    struct ast_command *a = ast->data.ast_command;
+    for (int index = 0; index < a->count; index++)
+    {
+        if (a->argv[index] == NULL)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+char *transform_char(char *argv, struct environnement *env, int *index)
+{
+    char *indice = malloc(sizeof(char) * 1);
+    memset(indice, '\0', sizeof(char) * 1);
+    int start = *index;
+    int taille = 2;
+    unsigned long interm = *index + 1;
+    int p = 0;
+    for (; interm < strlen(argv) || argv[interm] != ' '; interm++)
+    {
+        indice[p] = argv[interm];
+        taille += 1;
+        p += 1;
+        indice = realloc(indice, taille);
+    }
+    indice[interm] = '\0';
+    struct variable *inter = env->var;
+    while (inter)
+    {
+        if (strcmp(indice, inter->name) == 0)
+            break;
+        inter = inter->next;
+    }
+    if (inter == NULL)
+        fprintf(stderr, "ERROR : the value of $ not find");
+    char *res = malloc(sizeof(char) * 1);
+    memset(indice, '\0', sizeof(char) * 1);
+    taille = 1;
+    int a = 0;
+    for (; a < start; a++)
+    {
+        res[a] = argv[a];
+        taille += 1;
+        res = realloc(res, taille);
+    }
+    int avance = a;
+    for (unsigned long f = 0; f < strlen(inter->value); f++)
+    {
+        res[avance] = inter->value[f];
+        avance += 1;
+        taille += 1;
+        res = realloc(res, taille);
+    }
+    avance += 1;
+    a += strlen(inter->name) + 1;
+    for (; argv[a] != '\0'; a++)
+    {
+        res[avance] = argv[a];
+        avance += 1;
+        taille += 1;
+        res = realloc(res, taille);
+    }
+    res[avance] = '\0';
+    index += (strlen(inter->value) - strlen(inter->name));
+    free(argv);
+    return res;
+}
+
+void transform_command(struct ast *ast, struct environnement *env)
+{
+    // printf("transform command\n");
+    if (env == NULL)
+        return;
+    if (ast->type == NODE_DOUBLE_QUOTE)
+    {
+        struct ast_double_quote *a = ast->data.ast_double_quote;
+        int index = 0;
+        for (; a->argv[index] != '\0'; index++)
+        {
+            int i = index;
+            if (a->argv[index] == '$')
+            {
+                char *new = transform_char(a->argv, env, &index);
+                a->argv = new;
+            }
+        }
+    }
+    else if (ast->type == NODE_COMMAND)
+    {
+        // printf("transform command1\n");
+        struct ast_command *a = ast->data.ast_command;
+        for (int j = 0; j < a->count; j++)
+        {
+            int index = 0;
+            if (a->argv[j] == NULL)
+                break;
+            for (; a->argv[j][index] != '\0'; index++)
+            {
+                if (a->argv[j][index] == '$')
+                {
+                    char *new = transform_char(a->argv[j], env, &index);
+                    // printf("the new string is %s\n", new);
+                    a->argv[j] = new;
+                }
+            }
+        }
+    }
+    // printf("transform command2\n");
+    return;
+}
+
+void concat_node(struct ast *node1, struct ast *node2)
+{
+    printf("concat node\n");
+    if (node1->type == NODE_COMMAND && node2->type == NODE_SIMPLE_QUOTE)
+    {
+        struct ast_command *a1 = node1->data.ast_command;
+        struct ast_simple_quote *a2 = node2->data.ast_simple_quote;
+        // printf(" count //// %d\n", a1->count);
+        char **res = malloc(sizeof(char) * (1 + a1->count));
+        int index = 0;
+        for (int a = 0; a < a1->count; a++)
+        {
+            if (a1->argv[a] != NULL)
+            {
+                res[index] = a1->argv[a];
+                // printf(" count //// %s\n", a1->argv[a]);
+                index += 1;
+            }
+            else
+            {
+                a1->count -= 1;
+            }
+        }
+        if (a2->argv != NULL)
+        {
+            res[index] = a2->argv;
+            a1->count += 1;
+        }
+        /*for (int e = 0; e < a1->count; e++)
+            free(a1->argv[e]);*/
+        free(a1->argv);
+        a1->argv = res;
+    }
+    else if (node1->type == NODE_COMMAND && node2->type == NODE_DOUBLE_QUOTE)
+    {
+        struct ast_double_quote *a2 = node2->data.ast_double_quote;
+        struct ast_command *a1 = node1->data.ast_command;
+        char **res = malloc(sizeof(char) * (1 + a1->count));
+        int index = 0;
+        for (int a = 0; a < a1->count; a++)
+        {
+            if (a1->argv[a] != NULL)
+            {
+                res[index] = a1->argv[a];
+                index += 1;
+            }
+            else
+            {
+                a1->count -= 1;
+            }
+        }
+        if (a2->argv != NULL)
+        {
+            res[index] = a2->argv;
+            a1->count += 1;
+        }
+        free(a1->argv);
+        a1->argv = res;
+    }
+    else if (node1->type == NODE_COMMAND && node2->type == NODE_COMMAND)
+    {
+        struct ast_command *a1 = node1->data.ast_command;
+        struct ast_command *a2 = node2->data.ast_command;
+        char **res = malloc(sizeof(char) * (a1->count + a2->count));
+        int index = 0;
+        int a = 0;
+        for (; a < a1->count; a++)
+        {
+            if (a1->argv[a] != NULL)
+            {
+                res[index] = a1->argv[a];
+                index += 1;
+            }
+            else
+            {
+                a1->count -= 1;
+            }
+        }
+        for (a = 0; a < a2->count; a++)
+        {
+            if (a2->argv != NULL)
+            {
+                res[index] = a2->argv[a];
+                index += 1;
+                a1->count += 1;
+            }
+        }
+        free(a1->argv);
+        free(a2->argv);
+        a1->argv = res;
+    }
+}
+
+void concat_command(struct ast_main_root *a, int *i, struct environnement *env)
+{
+    // printf("concat command\n");
+    if (env == NULL)
+        fprintf(stderr, "concat_command");
+    int inter = *i;
+    // printf("child = %d\n", a->nb_children);
+    // printf("inter = %d\n", inter);
+    int ii = *i;
+    // printf("pere = %d\n", ii);
+    transform_command(a->children[inter], env);
+    // printf("coucou\n");
+    if (is_nullf(a->children[inter]))
+    {
+        return;
+    }
+    // printf("coucou1\n");
+    inter += 1;
+    // printf("inter = %d\n", inter);
+    for (; inter < a->nb_children; inter++)
+    {
+        // printf("inter 1 = %d\n", inter);
+        if (a->children[inter]->type == NODE_DOUBLE_QUOTE
+            || a->children[inter]->type == NODE_SIMPLE_QUOTE
+            || a->children[inter]->type == NODE_COMMAND)
+        {
+            // printf("inter 2 = %d\n", inter);
+            transform_command(a->children[inter], env);
+            // printf("concat node\n");
+            concat_node(a->children[ii], a->children[inter]);
+            *i = inter;
+            // printf("inter 3 = %d\n", inter);
+            if (is_nullf(a->children[inter]))
+            {
+                return;
+            }
+            // printf("inter 5 = %d\n", inter);
+        }
+    }
+    return;
+}
+
+int exec_ast_root(struct ast *ast, struct environnement *env)
+{
+    if (env == NULL)
+        return 1;
+    // printf("root\n");
     struct ast_main_root *a = ast->data.ast_main_root;
     int res = -1;
+    int inter = 0;
+    // printf("nb child = %d\n", a->nb_children);
     for (int i = 0; i < a->nb_children; i++)
     {
-        res = exec_ast(a->children[i]);
+        inter = i;
+        if (a->children[i]->type == NODE_DOUBLE_QUOTE
+            || a->children[i]->type == NODE_SIMPLE_QUOTE
+            || a->children[i]->type == NODE_COMMAND)
+        {
+            concat_command(a, &i, env);
+        }
+        // printf("hihihi%d\n", inter);
+        /*for (int m = 0; m < as->count; m++)
+            printf("ooooooooooooooooooooo %s\n", as->argv[m]);*/
+        res = exec_ast(a->children[inter], env);
     }
     return res;
 }
 
-int exec_ast_and(struct ast *ast)
+int exec_ast_if(struct ast *ast, struct environnement *env)
 {
-    struct ast_and *a = ast->data.ast_and;
-    if ((exec_ast(a->right) == 0) && (exec_ast(a->left) == 0))
-    {
-        return 0;
-    }
-    return 1;
-}
-
-int exec_ast_or(struct ast *ast)
-{
-    struct ast_or *a = ast->data.ast_or;
-    if ((exec_ast(a->right) == 0) || (exec_ast(a->left) == 0))
-    {
-        return 0;
-    }
-    return 1;
-}
-
-int exec_ast_if(struct ast *ast)
-{
+    // printf("if\n");
+    if (env == NULL)
+        return 1;
     struct ast_if *a = ast->data.ast_if;
-    int res = exec_ast(a->cond);
+    int res = exec_ast(a->cond, env);
+    int inter = 0;
     if (res == 0)
     {
-        exec_ast(a->then);
+        inter = exec_ast(a->then, env);
     }
     return res;
 }
 
-int exec_ast_elif(struct ast *ast)
+int exec_ast_elif(struct ast *ast, struct environnement *env)
 {
+    if (env == NULL)
+        return 1;
+    // printf("elif\n");
     struct ast_elif *a = ast->data.ast_elif;
-    int res = exec_ast(a->cond);
+    int res = exec_ast(a->cond, env);
+    int inter = 0;
     if (res == 0)
     {
-        exec_ast(a->then);
+        inter = exec_ast(a->then, env);
     }
     return res;
 }
 
-int exec_ast_else(struct ast *ast)
+int exec_ast_else(struct ast *ast, struct environnement *env)
 {
+    if (env == NULL)
+        return 1;
+    // printf("else\n");
     struct ast_else *a = ast->data.ast_else;
-    return exec_ast(a->then);
+    return exec_ast(a->then, env);
 }
 
 // int exec_ast_pipe(struct ast *ast)
@@ -89,8 +388,11 @@ int exec_ast_else(struct ast *ast)
 //     return pipe_exec(left->argv, left->count, right->argv, right->count);
 // }
 
-int exec_ast_command(struct ast *ast)
+int exec_ast_command(struct ast *ast, struct environnement *env)
 {
+    if (env == NULL)
+        return 1;
+    // printf("command\n");
     struct ast_command *a = ast->data.ast_command;
     enum opt flag = a->opt;
     int return_value = -1;
@@ -123,38 +425,27 @@ int exec_ast_command(struct ast *ast)
     return return_value;
 }
 
-typedef int (*ast_exec_function)(struct ast *ast);
+typedef int (*ast_exec_function)(struct ast *ast, struct environnement *env);
 
 static ast_exec_function ast_exec[] = {
     [NODE_IF] = exec_ast_if,           [NODE_ELIF] = exec_ast_elif,
     [NODE_ELSE] = exec_ast_else,       [NODE_COMMAND] = exec_ast_command,
     [NODE_IF_ROOT] = exec_ast_if_root, [NODE_ROOT] = exec_ast_root,
+    [NODE_WHILE] = exec_ast_while,
 };
 
-int exec_ast(struct ast *ast)
+int exec_ast(struct ast *ast, struct environnement *env)
 {
-    return ast_exec[ast->type](ast);
+    if (env == NULL)
+        return 1;
+    // printf("exec\n");
+    return ast_exec[ast->type](ast, env);
 }
 
-int execution(struct ast *ast)
+int execution(struct ast *ast, struct environnement *env)
 {
-    return exec_ast(ast);
+    if (env == NULL)
+        return 1;
+    // printf("execution\n");
+    return exec_ast(ast, env);
 }
-/*
-int main()
-{
-    struct lexer *lexer =
-        lexer_new("if echo a then ls elif echo bebe then echo anna; fi");
-    struct ast *ast = build_ast(lexer, NODE_ROOT);
-    printf("\n build ast with nb %i[ok]\n\n",
-           ast->data.ast_main_root->nb_children);
-    if (ast->type == NODE_ROOT)
-    {
-        printf("node root\n");
-    }
-    printf("before pretty print\n");
-    int res_e = execution(ast);
-    lexer_free(lexer);
-    return 0;
-}
-*/
