@@ -190,7 +190,6 @@ void transform_command(struct ast *ast, struct environnement *env)
         int index = 0;
         for (; a->argv[index] != '\0'; index++)
         {
-            int i = index;
             if (a->argv[index] == '$')
             {
                 char *new = transform_char(a->argv, env, &index);

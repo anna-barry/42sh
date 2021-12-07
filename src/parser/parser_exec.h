@@ -36,7 +36,7 @@ int exec_ast_else(struct ast *ast, struct environnement *env);
 
 int exec_ast_command(struct ast *ast, struct environnement *env);
 
-typedef int (*ast_exec_function)(struct ast *ast, struct environnement *env);
+// typedef int (*ast_exec_function)(struct ast *ast, struct environnement *env);
 
 int exec_ast(struct ast *ast, struct environnement *env);
 
