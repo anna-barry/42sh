@@ -35,8 +35,6 @@ void free_ast_if(struct ast *ast)
 {
     struct ast_if *a = ast->data.ast_if;
     //freef("if { ");
-
-
     free_ast(a->cond);
 
     //freef("}; then {");
@@ -62,10 +60,10 @@ void free_ast_else(struct ast *ast)
     //freef("}");
 }
 
-void free_ast_command(struct ast *ast)
+void free_ast_command()
 {
-    struct ast_command *a = ast->data.ast_command;
-    /*freef(" command ");
+    //struct ast_command *a = ast->data.ast_command;
+    /*free(" command ");
     for (int i = 0; i < a->count; i++)
     {
         freef(" \"%s\"",a->argv[i]);
@@ -136,14 +134,14 @@ void free_ast_pipe(struct ast *ast)
     //freef("}");
 }
 
-void free_ast_simple_quote(struct ast *ast)
+void free_ast_simple_quote()
 {
-    struct ast_simple_quote *a = ast->data.ast_simple_quote;
+    //struct ast_simple_quote *a = ast->data.ast_simple_quote;
     //freef(" \'%s\' ", a->argv);
 }
-void free_ast_double_quote(struct ast *ast)
+void free_ast_double_quote()
 {
-    struct ast_double_quote *a = ast->data.ast_double_quote;
+    //struct ast_double_quote *a = ast->data.ast_double_quote;
     //freef(" \"%s\" ", a->argv);
 }
 
@@ -173,9 +171,9 @@ void free_ast_for_char(struct ast *ast)
     free_ast(a->var);
 }
 
-void free_ast_for_int(struct ast *ast)
+void free_ast_for_int()
 {
-    struct read_for_int *a = ast->data.ast_for_int;
+    //struct read_for_int *a = ast->data.ast_for_int;
     //freef(" %lu..%lu..%lu ", a->start, a->end, a->step);
 }
 
