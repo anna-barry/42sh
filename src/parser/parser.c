@@ -304,7 +304,7 @@ int build_if(struct lexer *lex, struct ast_if_root *root)
     struct ast_if *new_if = create_if();
     if (get_then(lex, new_if->cond, NODE_THEN))
         return 1;
-      printf("test\n");
+      //printf("test\n");
     lexer_pop(lex);
     // if one of them is an error, then 1
     if (get_then(lex, new_if->then, NODE_IF))

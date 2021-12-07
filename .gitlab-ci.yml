@@ -43,6 +43,13 @@ test:
   script:
     - tests/run_tests builddir/42sh
 
+week_1:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - tests/week1/tests_if_echo builddir/42sh
+
 clang-format:
   stage: qa
   needs: []
