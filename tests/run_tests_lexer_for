@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gcc src/lexer/lexer.c src/lexer/token.c -g -fsanitize=leak rsrc/lexer/token_printer.c src/lexer/for_lexer.c -o token_printer
+gcc src/lexer/lexer.c src/lexer/token.c -g -fsanitize=leak src/lexer/token_printer.c src/lexer/for_lexer.c -o token_printer
 echo "********* Testing Lexer For 1 ***********"
 diff <(./token_printer "for named in namesss;do; echo \$name;done <> hi") <(printf "For
 named
