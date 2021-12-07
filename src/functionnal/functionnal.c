@@ -136,9 +136,23 @@ int is_var(char *command)
        {
            return i;
        }
-       
     }
     return -1;
+}
+
+char **get_all_var(char *command)
+{
+    int res = is_var(command);
+    if (res == -1)
+    {
+        return NULL;
+    }
+    char **result = malloc(sizeof(char *) * 2);
+    char *first = strndup(command, res);
+    char *second = strndup(command + res + 1, strlen(command) - res);
+    result[0] = first; // name
+    result[1] = second; // value
+    return result;
 }
 
 struct environnement *init_env(void)
