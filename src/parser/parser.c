@@ -583,12 +583,15 @@ void make_double_quote(struct ast_main_root *ast, struct lexer *lex)
     lexer_pop(lex);
 }
 
-void make_neg(struct ast_main_root *ast, struct lexer *lex)
+void make_neg(struct ast_main_root *ast, struct lexer *lex, enum ast_type mode)
 {
     int rank = ast->nb_children - 1;
     ast->children[rank] = malloc(sizeof(struct ast));
-    ast->children[rank] = build_ast(lex, NODE_NEG);
     lexer_pop(lex);
+    ast->children[rank]->type = NODE_NEG;
+    ast->children[rank]->data.ast_neg = malloc(sizeof(struct ast_neg));
+    ast->children[rank]->data.ast_neg->node = malloc(sizeof(struct ast));
+    ast->children[rank]->data.ast_neg->node =  build_ast(lex, mode);
 }
 
 //################################################################
@@ -641,9 +644,9 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
     //print(lex);
     while (lex && check_break(mode, type))
     {
-        printf("MODE = %d\n", mode);
-        printf("TYPE = %d\n", type);
-        print(lex);
+        //printf("MODE = %d\n", mode);
+        //printf("TYPE = %d\n", type);
+        //print(lex);
         ast->nb_children++;
         if (ast->nb_children >= count)
         {
@@ -671,7 +674,7 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
           errx(2, "wrong implementation in for");
         else if (type == TOKEN_NEG)
         {
-            make_neg(ast, lex);
+            make_neg(ast, lex, mode);
             // negation must break when the command was treated
             break;
         }
