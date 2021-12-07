@@ -13,7 +13,6 @@
 #include "../parser/parser_exec.h"
 #include "../parser/parser_printer.h"
 #include "functionnal.h"
-#include "../parser/parser_free.h"
 
 int getnb(char *filepath)
 {
@@ -155,7 +154,6 @@ int main(int argc, char *argv[])
     }
     int res_e = execution(ast, env);
     lexer_free(lexer);
-    my_pretty_free(ast);
     free_environnement(env);
     return res_e;
 }
