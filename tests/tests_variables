@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gcc src/functionnal/functionnal.c tests/test_functionnal.c -o variables
+gcc src/functionnal/functionnal.c -g -fsanitize=leak tests/test_functionnal.c -o variables
 echo "********* Testing Variable and Environnement creation functions pt.1 ***********"
 diff <(./variables hello world anna barry ze boite ze boite) <(printf "(anna) = (barry)
 (hello) = (world)
