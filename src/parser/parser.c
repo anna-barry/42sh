@@ -641,9 +641,9 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
     //print(lex);
     while (lex && check_break(mode, type))
     {
-        printf("MODE = %d\n", mode);
-        printf("TYPE = %d\n", type);
-        print(lex);
+        //printf("MODE = %d\n", mode);
+        //printf("TYPE = %d\n", type);
+        //print(lex);
         ast->nb_children++;
         if (ast->nb_children >= count)
         {
