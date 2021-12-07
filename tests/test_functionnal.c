@@ -10,6 +10,9 @@ int main(int argc, char *argv[])
         insert_variable( argv[i], argv[i + 1], env);
     }
     print_variables(env);
+    printf("\n\n\n\n");
+    update_variable("anna", "updating", env);
+    print_variables(env);
     free(env->var);
     free(env);
     return 0;
