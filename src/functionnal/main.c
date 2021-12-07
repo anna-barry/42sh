@@ -100,6 +100,7 @@ char *find_input(int argc, char *argv[])
             c_index = optind - 1;
             break;
         default:
+            printf("little error here\n");
             exit(EXIT_FAILURE);
             break;
         }
@@ -124,29 +125,40 @@ char *find_input(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    if (argc < 1 || argc > 3)
+    if (argc < 1)
         fprintf(stderr, "Number of arguments not correct");
 
     int pretty_print = 0;
-    for (int i = 1; i < argc; i++)
+    printf("%s = %s\n", argv[1], "--pretty-print");
+    if (strcmp(argv[1], "--pretty-print") == 0)
     {
-        if (strcmp(argv[i], "--pretty-print"))
-        {
             pretty_print = 1;
-        }
+            int i = 1;
+            for (; i + 1 < argc; i++)
+            {
+                argv[i] = argv[i + 1];
+            }
+            argv[i] = "\0";
     }
+
     const char *input = (const char *)find_input(argc, argv);
     if (input == NULL)
       return 1;
-
+    printf("input is (%s) \n", input);
     struct lexer *lexer = lexer_new(input);
     struct ast *ast = build_ast(lexer, NODE_ROOT);
     struct environnement *env = init_env();
     if (pretty_print == 1)
     {
+        printf("______ start of pretty print ________ \n");
         my_pretty_print(ast);
+        printf("\n ______ end of pretty print ________ \n");
     }
-    int res_e = execution(ast);
+    int res_e = execution(ast, env);
+    if (ast->type == NODE_ROOT)
+    {
+        printf("node root\n");
+    }
     lexer_free(lexer);
     free(ast);
     free(env);

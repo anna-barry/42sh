@@ -35,6 +35,26 @@ struct environnement *init_env(void);
 void print_variables(struct environnement *new);
 
 /*
+ * Find environnement variables
+ */
+int find_variable(char *name, struct environnement *new);
+
+/*
+ * Update environnement variables
+ */
+void update_variable(char *name, char *value, struct environnement *new);
+
+/*
+ * Command is a new variable
+ */
+int is_var(char *command);
+
+/*
+ * Get char** for new variable
+ */
+char **get_all_var(char *command);
+
+/*
  * Insert environnement variables
  */
 void insert_variable(char *name, char *value, struct environnement *new);

@@ -523,6 +523,12 @@ struct token *lexer_pop(struct lexer *lexer)
       }
       j++;
     }
+    // test //
+    if (lexer[j].current_tok->value != NULL) {
+        free(lexer[j].current_tok->value);
+        lexer[j].current_tok->value = NULL;
+      }
+    //
     if (t == TOKEN_SIMPLE_QUOTE || t == TOKEN_WORDS || t == TOKEN_REDIR_SORTIE || t == TOKEN_REDIR_ENTREE 
     || t == TOKEN_REDIR_DESCRIPEUR || t == TOKEN_REDIR_FIN_FICHIER || t == TOKEN_DOUBLE_QUOTE
     || t == TOKEN_FOR_WORD || t == TOKEN_REDIR_PIPE
@@ -532,10 +538,10 @@ struct token *lexer_pop(struct lexer *lexer)
     || t == TOKEN_FOR_DOUBLE_QUOTE
     || t == TOKEN_FOR_INT)
     {
-      if (lexer[j].current_tok->value != NULL) {
+      /*if (lexer[j].current_tok->value != NULL) {
         free(lexer[j].current_tok->value);
         lexer[j].current_tok->value = NULL;
-      }
+      }*/
       lexer[j].current_tok->value = test;
     }
     lexer[j].current_tok->type = t;

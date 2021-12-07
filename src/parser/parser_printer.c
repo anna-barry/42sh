@@ -63,7 +63,7 @@ void print_ast_else(struct ast *ast)
 void print_ast_command(struct ast *ast)
 {
     struct ast_command *a = ast->data.ast_command;
-    printf("command\n");
+    printf(" command ");
     for (int i = 0; i < a->count; i++)
     {
         printf(" \"%s\"",a->argv[i]);
@@ -137,12 +137,12 @@ void print_ast_pipe(struct ast *ast)
 void print_ast_simple_quote(struct ast *ast)
 {
     struct ast_simple_quote *a = ast->data.ast_simple_quote;
-    printf("%s", a->argv);
+    printf(" \'%s\' ", a->argv);
 }
 void print_ast_double_quote(struct ast *ast)
 {
     struct ast_double_quote *a = ast->data.ast_double_quote;
-    printf("%s", a->argv);
+    printf(" \"%s\" ", a->argv);
 }
 
 void print_ast_while(struct ast *ast)
@@ -153,6 +153,28 @@ void print_ast_while(struct ast *ast)
     printf("); then {");
     print_ast(a->then);
     printf("; }");
+}
+
+void print_ast_for(struct ast *ast)
+{
+    struct ast_for *a = ast->data.ast_for;
+    printf("for %s in [ ", a->var);
+    print_ast(a->cond);
+    printf(" ] do {");
+    print_ast(a->then);
+    printf(" }");
+}
+
+void print_ast_for_char(struct ast *ast)
+{
+    struct ast_for_char *a = ast->data.ast_for_char;
+    print_ast(a->var);
+}
+
+void print_ast_for_int(struct ast *ast)
+{
+    struct read_for_int *a = ast->data.ast_for_int;
+    printf(" %lu..%lu..%lu ", a->start, a->end, a->step);
 }
 
 typedef void (*ast_print_function)(struct ast *ast);
@@ -172,17 +194,17 @@ static ast_print_function ast_printers[] =
     [NODE_SIMPLE_QUOTE] = print_ast_simple_quote,
     [NODE_DOUBLE_QUOTE] = print_ast_double_quote,
     [NODE_WHILE] = print_ast_while,
+    [NODE_FOR] = print_ast_for,
+    [NODE_FOR_CHAR] = print_ast_for_char,
+    [NODE_FOR_INT] = print_ast_for_int,
 };
 
 void print_ast(struct ast *ast) {
-    printf("ast printing\n");
     ast_printers[ast->type](ast);
-    free(ast);
 }
 
 void my_pretty_print(struct ast *ast)
 {
-    printf("here printing\n");
     print_ast(ast);
 }
 
