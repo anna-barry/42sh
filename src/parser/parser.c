@@ -470,7 +470,7 @@ struct ast_for *build_ast_for(struct lexer *lex)
   else if (type == TOKEN_FOR_WORD || type == TOKEN_FOR_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE)
   {
     get_then(lex, new_for->cond, NODE_FOR_CHAR);
-    new_for->cond->type = NODE_FOR_CHAR;
+    //new_for->cond->type = NODE_FOR_CHAR;
   }
   else
     errx(2, "wrong implementation need for i in <\"'words'\">|seq{b..s..e}");
