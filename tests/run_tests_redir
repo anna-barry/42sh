@@ -1,0 +1,60 @@
+#!/bin/bash
+
+gcc src/commands/command.c src/commands/echo.c src/commands/command_redir.c tests/geoff/redir_test.c -o redir_exec
+echo "********* Testing Command ECHO geoffroy >| TESTER.TXT ***********"
+diff <(./redir_exec "test0") <(echo geoffroy >| tester.txt)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./redir_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command ECHO < TESTER.TXT ***********"
+diff <(./redir_exec "test1") <(echo < tester.txt)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./redir_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command ECHO Hallo >| TESTER.TXT ***********"
+diff <(./redir_exec "test2") <(echo Hallo >| tester.txt)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./redir_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command ECHO Hallo > TESTER.TXT ***********"
+diff <(./redir_exec "test3") <(echo Hallo > tester.txt)
+var1=$?
+if [ $var1 -ne 0 ];
+then
+echo "error"
+rm ./redir_exec
+exit 1;
+fi
+echo "done [ok] "
+
+echo "********* Testing Command ECHO geoffroy >> TESTER.TXT ***********"
+diff <(./redir_exec "test4") <(echo geoffroy >> tester.txt)
+var1=$?
+if [ $var1 -ne 1 ];
+then
+echo "error"
+rm ./redir_exec
+exit 1;
+fi
+echo "done [ok] "
+
+rm ./redir_exec
+rm tester.txt
