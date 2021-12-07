@@ -125,7 +125,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
         }
     }
     indice[interm] = '\0';
-    //printf("indice is %s \n", indice);
+    // printf("indice is %s \n", indice);
     struct variable *inter = env->var;
     while (inter)
     {
@@ -141,7 +141,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     char *res = malloc(sizeof(char) * cap);
     memset(res, '\0', sizeof(char) * cap);
     size_t a = 0;
-    for (; (int) a < start; a++)
+    for (; (int)a < start; a++)
     {
         res[a] = argv[a];
         if (a >= cap)
@@ -204,10 +204,9 @@ void transform_command(struct ast *ast, struct environnement *env)
         struct ast_command *a = ast->data.ast_command;
         for (int j = 0; j < a->count; j++)
         {
-            int index = 0;
             if (a->argv[j] == NULL)
                 break;
-            for (; a->argv[j][index] != '\0'; index++)
+            for (int index = 0; a->argv[j][index] != '\0'; index++)
             {
                 if (a->argv[j][index] == '$')
                 {
@@ -230,7 +229,7 @@ void concat_node(struct ast *node1, struct ast *node2)
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_simple_quote *a2 = node2->data.ast_simple_quote;
         char **res = malloc(sizeof(char *) * (1 + a1->count));
-        
+
         int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
@@ -386,10 +385,9 @@ int exec_ast_if(struct ast *ast, struct environnement *env)
         return 1;
     struct ast_if *a = ast->data.ast_if;
     int res = exec_ast(a->cond, env);
-    int inter = 0;
     if (res == 0)
     {
-        inter = exec_ast(a->then, env);
+        exec_ast(a->then, env);
     }
     return res;
 }
@@ -401,10 +399,9 @@ int exec_ast_elif(struct ast *ast, struct environnement *env)
     // printf("elif\n");
     struct ast_elif *a = ast->data.ast_elif;
     int res = exec_ast(a->cond, env);
-    int inter = 0;
     if (res == 0)
     {
-        inter = exec_ast(a->then, env);
+        exec_ast(a->then, env);
     }
     return res;
 }
