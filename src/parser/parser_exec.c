@@ -67,34 +67,65 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
 
 int is_nullf(struct ast *ast)
 {
-    // printf("dot\n");
-    struct ast_command *a = ast->data.ast_command;
-    for (int index = 0; index < a->count; index++)
+    if (ast->type == NODE_COMMAND)
     {
-        if (a->argv[index] == NULL)
+        struct ast_command *a = ast->data.ast_command;
+        for (int index = 0; index < a->count; index++)
+        {
+            if (a->argv[index] == NULL)
+            {
+                return 1;
+            }
+        }
+        return 0;
+    }
+    else if (ast->type == NODE_DOUBLE_QUOTE)
+    {
+        struct ast_double_quote *a = ast->data.ast_double_quote;
+        if (a->argv == NULL)
         {
             return 1;
         }
+        return 0;
+    }
+    else if (ast->type == NODE_SIMPLE_QUOTE)
+    {
+        struct ast_simple_quote *a = ast->data.ast_simple_quote;
+        if (a->argv == NULL)
+        {
+            return 1;
+        }
+        return 0;
     }
     return 0;
 }
 
 char *transform_char(char *argv, struct environnement *env, int *index)
 {
-    char *indice = malloc(sizeof(char) * 1);
-    memset(indice, '\0', sizeof(char) * 1);
+    size_t cap = 200;
+    char *indice = malloc(sizeof(char) * cap);
+    memset(indice, '\0', sizeof(char) * cap);
     int start = *index;
-    int taille = 2;
     unsigned long interm = *index + 1;
-    int p = 0;
+    size_t p = 0;
+    printf("interm %lu *argv[0]=%s \n", interm, argv);
+    printf("%lu stren is \n", strlen(argv));
     for (; interm < strlen(argv) || argv[interm] != ' '; interm++)
     {
         indice[p] = argv[interm];
-        taille += 1;
         p += 1;
-        indice = realloc(indice, taille);
+        if (p >= cap)
+        {
+            cap *= 2;
+            indice = realloc(indice, cap * sizeof(char));
+        }
+        if (interm == strlen(argv))
+        {
+            break;
+        }
     }
     indice[interm] = '\0';
+    //printf("indice is %s \n", indice);
     struct variable *inter = env->var;
     while (inter)
     {
@@ -102,25 +133,33 @@ char *transform_char(char *argv, struct environnement *env, int *index)
             break;
         inter = inter->next;
     }
+    free(indice);
+
     if (inter == NULL)
         fprintf(stderr, "ERROR : the value of $ not find");
-    char *res = malloc(sizeof(char) * 1);
-    memset(indice, '\0', sizeof(char) * 1);
-    taille = 1;
-    int a = 0;
-    for (; a < start; a++)
+    cap = 200;
+    char *res = malloc(sizeof(char) * cap);
+    memset(res, '\0', sizeof(char) * cap);
+    size_t a = 0;
+    for (; (int) a < start; a++)
     {
         res[a] = argv[a];
-        taille += 1;
-        res = realloc(res, taille);
+        if (a >= cap)
+        {
+            cap *= 2;
+            res = realloc(res, sizeof(char) * cap);
+        }
     }
-    int avance = a;
+    size_t avance = a;
     for (unsigned long f = 0; f < strlen(inter->value); f++)
     {
         res[avance] = inter->value[f];
         avance += 1;
-        taille += 1;
-        res = realloc(res, taille);
+        if (avance >= cap)
+        {
+            cap *= 2;
+            res = realloc(res, sizeof(char) * cap);
+        }
     }
     avance += 1;
     a += strlen(inter->name) + 1;
@@ -128,11 +167,14 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     {
         res[avance] = argv[a];
         avance += 1;
-        taille += 1;
-        res = realloc(res, taille);
+        if (avance >= cap)
+        {
+            cap *= 2;
+            res = realloc(res, sizeof(char) * cap);
+        }
     }
     res[avance] = '\0';
-    index += (strlen(inter->value) - strlen(inter->name));
+    *index += (strlen(inter->value) - strlen(inter->name));
     free(argv);
     return res;
 }
@@ -187,15 +229,14 @@ void concat_node(struct ast *node1, struct ast *node2)
     {
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_simple_quote *a2 = node2->data.ast_simple_quote;
-        // printf(" count //// %d\n", a1->count);
-        char **res = malloc(sizeof(char) * (1 + a1->count));
+        char **res = malloc(sizeof(char *) * (1 + a1->count));
+        
         int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
             if (a1->argv[a] != NULL)
             {
-                res[index] = a1->argv[a];
-                // printf(" count //// %s\n", a1->argv[a]);
+                res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
                 index += 1;
             }
             else
@@ -205,11 +246,9 @@ void concat_node(struct ast *node1, struct ast *node2)
         }
         if (a2->argv != NULL)
         {
-            res[index] = a2->argv;
+            res[index] = strndup(a2->argv, strlen(a2->argv));
             a1->count += 1;
         }
-        /*for (int e = 0; e < a1->count; e++)
-            free(a1->argv[e]);*/
         free(a1->argv);
         a1->argv = res;
     }
@@ -223,7 +262,7 @@ void concat_node(struct ast *node1, struct ast *node2)
         {
             if (a1->argv[a] != NULL)
             {
-                res[index] = a1->argv[a];
+                res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
                 index += 1;
             }
             else
@@ -233,7 +272,7 @@ void concat_node(struct ast *node1, struct ast *node2)
         }
         if (a2->argv != NULL)
         {
-            res[index] = a2->argv;
+            res[index] = strndup(a2->argv, strlen(a2->argv));
             a1->count += 1;
         }
         free(a1->argv);
@@ -243,14 +282,14 @@ void concat_node(struct ast *node1, struct ast *node2)
     {
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_command *a2 = node2->data.ast_command;
-        char **res = malloc(sizeof(char) * (a1->count + a2->count));
+        char **res = malloc(sizeof(char *) * (a1->count + a2->count));
         int index = 0;
         int a = 0;
         for (; a < a1->count; a++)
         {
             if (a1->argv[a] != NULL)
             {
-                res[index] = a1->argv[a];
+                res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
                 index += 1;
             }
             else
@@ -260,15 +299,14 @@ void concat_node(struct ast *node1, struct ast *node2)
         }
         for (a = 0; a < a2->count; a++)
         {
-            if (a2->argv != NULL)
+            if (a2->argv[a] != NULL)
             {
-                res[index] = a2->argv[a];
+                res[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
                 index += 1;
                 a1->count += 1;
             }
         }
         free(a1->argv);
-        free(a2->argv);
         a1->argv = res;
     }
 }
