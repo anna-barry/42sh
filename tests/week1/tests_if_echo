@@ -5,32 +5,30 @@ diff <(./builddir/42sh -c "if echo a; then echo b; else echo 2; fi") <(printf "a
 b
 ")
 
-cd builddir
-diff <(./42sh -c "if echo a; then echo b; else echo 2; fi") <(printf "a 
+diff <(./builddir/42sh -c "if echo a; then echo b; else echo 2; fi") <(printf "a 
 b
 ")
-cd ..
 
 echo "*********** Test 2 with if and echo ***********"
-diff <(.builddir/42sh -c "if echo \$a b ; then echo 'foo' bar ; fi") <(printf "b 
+diff <(./builddir/42sh -c "if echo \$a b ; then echo 'foo' bar ; fi") <(printf "b 
 foo bar
 ")
 
 echo "*********** Test 3 with if/echo/ \$ **********"
-diff <(.builddir/42sh -c "a=2; if echo \$a b ; then echo 'foo' \"coucou\" tchoin ; fi") <(printf "2 b 
+diff <(./builddir/42sh -c "a=2; if echo \$a b ; then echo 'foo' \"coucou\" tchoin ; fi") <(printf "2 b 
 foo coucou tchoin
 ")
 
 echo "*********** Test 4 with if/echo/ \$ **********"
-diff <(.builddir/42sh -c "if echo \"ls\"; then echo 'foo' bar; echo okay; elif echo bebe; echo a ; then echo christian; echo anna laime; fi") <(printf "ls
+diff <(./builddir/42sh -c "if echo \"ls\"; then echo 'foo' bar; echo okay; elif echo bebe; echo a ; then echo christian; echo anna laime; fi") <(printf "ls
 foo bar
 okay
 ")
 
 echo "*********** Test 5 with wrong implementation **********"
-diff <(.builddir/42sh -c "if echo b; echo a then echo a fi else echo a") <(printf "42sh: wrong implementation
+diff <(./builddir/42sh -c "if echo b; echo a then echo a fi else echo a") <(printf "42sh: wrong implementation
 ")
 
 echo "*********** Test 6 with big implementation **********"
-diff <(.builddir/42sh -c "if false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; else echo b; fi") <(printf "b
+diff <(./builddir/42sh -c "if false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; else echo b; fi") <(printf "b
 ")
