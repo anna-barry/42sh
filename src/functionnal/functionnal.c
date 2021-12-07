@@ -91,10 +91,10 @@ void free_environnement(struct environnement *new)
         if (new->args_b[i])
             free(new->args_b[i]);
     }
-    if (new->args)
-        free(new->args);
-    if (new->args_b)
-        free(new->args_b);
+    //if (new->args)
+    //    free(new->args);
+    //if (new->args_b)
+    //    free(new->args_b);
     free_variables(new->var);
     if (new)
         free(new);
