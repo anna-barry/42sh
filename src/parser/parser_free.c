@@ -177,8 +177,6 @@ void free_ast_for_int()
     //freef(" %lu..%lu..%lu ", a->start, a->end, a->step);
 }
 
-typedef void (*ast_free_function)(struct ast *ast);
-
 static ast_free_function ast_freeers[] =
 {
     [NODE_IF] = free_ast_if,
