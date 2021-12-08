@@ -64,13 +64,10 @@ void free_ast_command(struct ast *ast)
 {
     struct ast_command *a = ast->data.ast_command;
     for (int i = 0; i < a->count; i++)
-    {
         free(a->argv[i]);
-        if (a->opt)
-        {
-            free(a->redir);
-        }
-    }
+    free(a->argv);
+    if (a->opt != NONE)
+      free(a->redir);
 }
 
 void free_ast_neg(struct ast *ast)
@@ -136,6 +133,7 @@ void free_ast_for(struct ast *ast)
 {
     struct ast_for *a = ast->data.ast_for;
     //freef("for %s in [ ", a->var);
+    free(a->var);
     free_ast(a->cond);
     //freef(" ] do {");
     free_ast(a->then);
