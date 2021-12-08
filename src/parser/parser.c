@@ -695,7 +695,6 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
         }
         else
           errx(2, "wrong implementation");
-          print(lex);
         if (lex)
           type = lexer_peek(lex)->type;
     }
