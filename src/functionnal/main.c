@@ -158,6 +158,6 @@ int main(int argc, char *argv[])
     my_pretty_free(ast);
     //free(ast);
     free_environnement(env);
-    free(input);
+    free((void *)input);
     return res_e;
 }
