@@ -155,5 +155,6 @@ int main(int argc, char *argv[])
     int res_e = execution(ast, env);
     lexer_free(lexer);
     free_environnement(env);
+    free(input);
     return res_e;
 }
