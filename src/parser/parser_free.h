@@ -21,7 +21,7 @@ void free_ast_elif(struct ast *ast);
 
 void free_ast_else(struct ast *ast);
 
-void free_ast_command(struct ast *ast);
+void free_ast_command();
 
 void free_ast_neg(struct ast *ast);
 
@@ -31,9 +31,9 @@ void free_ast_or(struct ast *ast);
 
 void free_ast_pipe(struct ast *ast);
 
-void free_ast_simple_quote(struct ast *ast);
+void free_ast_simple_quote();
 
-void free_ast_double_quote(struct ast *ast);
+void free_ast_double_quote();
 
 void free_ast_while(struct ast *ast);
 
@@ -41,7 +41,7 @@ void free_ast_for(struct ast *ast);
 
 void free_ast_for_char(struct ast *ast);
 
-void free_ast_for_int(struct ast *ast);
+void free_ast_for_int();
 
 typedef void (*ast_free_function)(struct ast *ast);
 

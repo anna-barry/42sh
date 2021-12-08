@@ -17,6 +17,8 @@ void free_ast_if_root(struct ast *ast)
     {
         free_ast(a->children[i]);
     }
+    free(a->children);
+    free(a);
     //freef("end if root\n");
 }
 
@@ -28,6 +30,8 @@ void free_ast_root(struct ast *ast)
     {
         free_ast(a->children[i]);
     }
+    free(a->children);
+    free(a);
     //freef("end root\n");
 }
 
@@ -35,12 +39,11 @@ void free_ast_if(struct ast *ast)
 {
     struct ast_if *a = ast->data.ast_if;
     //freef("if { ");
-
-
     free_ast(a->cond);
 
     //freef("}; then {");
     free_ast(a->then);
+    free(a);
     //freef("; }");
 }
 
@@ -51,6 +54,7 @@ void free_ast_elif(struct ast *ast)
     free_ast(a->cond);
     //freef("}; then {");
     free_ast(a->then);
+    free(a);
     //freef(" }");
 }
 
@@ -59,43 +63,19 @@ void free_ast_else(struct ast *ast)
     struct ast_else *a = ast->data.ast_else;
     //freef("else { ");
     free_ast(a->then);
+    free(a);
     //freef("}");
 }
 
 void free_ast_command(struct ast *ast)
 {
     struct ast_command *a = ast->data.ast_command;
-    /*freef(" command ");
     for (int i = 0; i < a->count; i++)
-    {
-        freef(" \"%s\"",a->argv[i]);
-        switch (a->opt)
-        {
-            case (REDIR_SORTIE):
-            freef(">%s", a->redir);
-            break;
-            case (REDIR_ENTREE):
-            freef("<%s", a->redir);
-            break;
-            case (REDIR_DESCRIPEUR):
-            freef(">&%s", a->redir);
-            break;
-            case (REDIR_FIN_FICHIER):
-            freef(">>%s", a->redir);
-            break;
-            case (REDIR_INPUT_DESCRIPEUR):
-            freef("<&%s", a->redir);
-            break;
-            case (REDIR_RW):
-            freef("<>%s", a->redir);
-            break;
-            case (REDIR_PIPE):
-            freef(">|%s", a->redir);
-            break;
-            default:
-            break;
-        }
-    }*/
+        free(a->argv[i]);
+    free(a->argv);
+    if (a->opt != NONE)
+      free(a->redir);
+    free(a);
 }
 
 void free_ast_neg(struct ast *ast)
@@ -103,6 +83,7 @@ void free_ast_neg(struct ast *ast)
     struct ast_neg *a = ast->data.ast_neg;
     //freef("! { ");
     free_ast(a->node);
+    free(a);
     //freef("}");
 }
 
@@ -113,6 +94,7 @@ void free_ast_and(struct ast *ast)
     free_ast(a->left);
     //freef("} && { ");
     free_ast(a->right);
+    free(a);
     //freef("}");
 }
 
@@ -123,6 +105,7 @@ void free_ast_or(struct ast *ast)
     free_ast(a->left);
     //freef("} || { ");
     free_ast(a->right);
+    free(a);
     //freef("}");
 }
 
@@ -133,18 +116,21 @@ void free_ast_pipe(struct ast *ast)
     free_ast(a->left);
     //freef("} | { ");
     free_ast(a->right);
+    free(a);
     //freef("}");
 }
 
 void free_ast_simple_quote(struct ast *ast)
 {
     struct ast_simple_quote *a = ast->data.ast_simple_quote;
-    //freef(" \'%s\' ", a->argv);
+    free(a->argv);
+    free(a);
 }
 void free_ast_double_quote(struct ast *ast)
 {
     struct ast_double_quote *a = ast->data.ast_double_quote;
-    //freef(" \"%s\" ", a->argv);
+    free(a->argv);
+    free(a);
 }
 
 void free_ast_while(struct ast *ast)
@@ -154,6 +140,7 @@ void free_ast_while(struct ast *ast)
     free_ast(a->cond);
     //freef("); then {");
     free_ast(a->then);
+    free(a);
     //freef("; }");
 }
 
@@ -161,9 +148,11 @@ void free_ast_for(struct ast *ast)
 {
     struct ast_for *a = ast->data.ast_for;
     //freef("for %s in [ ", a->var);
+    free(a->var);
     free_ast(a->cond);
     //freef(" ] do {");
     free_ast(a->then);
+    free(a);
     //freef(" }");
 }
 
@@ -171,15 +160,14 @@ void free_ast_for_char(struct ast *ast)
 {
     struct ast_for_char *a = ast->data.ast_for_char;
     free_ast(a->var);
+    free(a);
 }
 
 void free_ast_for_int(struct ast *ast)
 {
     struct read_for_int *a = ast->data.ast_for_int;
-    //freef(" %lu..%lu..%lu ", a->start, a->end, a->step);
+    free(a);
 }
-
-typedef void (*ast_free_function)(struct ast *ast);
 
 static ast_free_function ast_freeers[] =
 {
