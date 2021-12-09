@@ -25,7 +25,6 @@ void free_ast_if_root(struct ast *ast)
     {
         free_ast(a->children[i]);
     }
-    printf("here \n");
     if (a->children)
         free(a->children);
     if (a)
@@ -37,12 +36,6 @@ void free_ast_if_root(struct ast *ast)
 
 void free_ast_root(struct ast *ast)
 {
-    printf("root\n");
-    /*
-    *struct ast_main_root
-    int nb_children;
-    struct ast **children;
-    */
     struct ast_main_root *a = ast->data.ast_main_root;
     for (int i = 0; i < a->nb_children; i++)
     {
@@ -54,7 +47,6 @@ void free_ast_root(struct ast *ast)
         free(a);
     if (ast)
         free(ast);
-    printf("end root\n");
 }
 
 void free_ast_if(struct ast *ast)
@@ -83,6 +75,10 @@ void free_ast_elif(struct ast *ast)
     free_ast(a->cond);
     //freef("}; then {");
     free_ast(a->then);
+    if (a->cond)
+        free(a->cond);
+    if (a->then)
+        free(a->then);
     if (a)
         free(a);
     if (ast)
@@ -95,6 +91,8 @@ void free_ast_else(struct ast *ast)
     struct ast_else *a = ast->data.ast_else;
     //freef("else { ");
     free_ast(a->then);
+    if (a->then)
+        free(a->then);
     if (a)
         free(a);
     if (ast)
