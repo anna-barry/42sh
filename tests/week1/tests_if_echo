@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "*********** Test 1 with if and echo ***********"
-diff <(./builddir/42sh -c "if echo a; then echo b; else echo 2; fi") <(printf "a 
+diff <(./builddir/42sh --pretty-print -c "if echo a; then echo b; else echo 2; fi") <(printf "a 
 b
 ")
 
