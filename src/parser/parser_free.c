@@ -198,4 +198,6 @@ void free_ast(struct ast *ast) {
 void my_pretty_free(struct ast *ast)
 {
     free_ast(ast);
+    if (ast)
+        free(ast);
 }
