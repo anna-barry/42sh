@@ -56,7 +56,7 @@ struct ast_main_root *create_main_root()
 {
     struct ast_main_root *ast = malloc(sizeof(struct ast_main_root));
     ast->nb_children = 0;
-    ast->children = malloc(sizeof(struct ast *));
+    //ast->children = malloc(sizeof(struct ast *));
     return ast;
 }
 
@@ -65,7 +65,7 @@ struct ast_if_root *create_if_root()
     struct ast_if_root *root = malloc(sizeof(struct ast_if_root));
     root->nb_children = 0;
     root->status = 1;
-    root->children = malloc(sizeof(struct ast));
+    //root->children = malloc(sizeof(struct ast *));
     return root;
 }
 
@@ -357,7 +357,7 @@ struct ast_if_root *build_ast_if(struct lexer *lex)
     // creating the ast_if_root node
     struct ast_if_root *new_root = create_if_root();
     int cap = 30;
-    new_root->children = malloc(sizeof(struct ast_if) * cap);
+    new_root->children = malloc(sizeof(struct ast_if *) * cap);
     enum token_type type = lexer_peek(lex)->type;
     // here getting if out of the lexer
     token_free(lexer_pop(lex));
