@@ -43,9 +43,12 @@ void free_ast_root(struct ast *ast)
     {
         free_ast(a->children[i]);
     }
-    free(a->children);
-    free(a);
-    free(ast);
+    if (a->children)
+        free(a->children);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
     //freef("end root\n");
 }
 
@@ -57,8 +60,10 @@ void free_ast_if(struct ast *ast)
 
     //freef("}; then {");
     free_ast(a->then);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
     //freef("; }");
 }
 
@@ -69,8 +74,10 @@ void free_ast_elif(struct ast *ast)
     free_ast(a->cond);
     //freef("}; then {");
     free_ast(a->then);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
     //freef(" }");
 }
 
@@ -79,8 +86,10 @@ void free_ast_else(struct ast *ast)
     struct ast_else *a = ast->data.ast_else;
     //freef("else { ");
     free_ast(a->then);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
     //freef("}");
 }
 
@@ -92,8 +101,10 @@ void free_ast_command(struct ast *ast)
     free(a->argv);
     if (a->opt != NONE)
       free(a->redir);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
 }
 
 void free_ast_neg(struct ast *ast)
@@ -101,8 +112,10 @@ void free_ast_neg(struct ast *ast)
     struct ast_neg *a = ast->data.ast_neg;
     //freef("! { ");
     free_ast(a->node);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
     //freef("}");
 }
 
@@ -113,8 +126,10 @@ void free_ast_and(struct ast *ast)
     free_ast(a->left);
     //freef("} && { ");
     free_ast(a->right);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
     //freef("}");
 }
 
@@ -125,8 +140,10 @@ void free_ast_or(struct ast *ast)
     free_ast(a->left);
     //freef("} || { ");
     free_ast(a->right);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
     //freef("}");
 }
 
@@ -137,8 +154,10 @@ void free_ast_pipe(struct ast *ast)
     free_ast(a->left);
     //freef("} | { ");
     free_ast(a->right);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
     //freef("}");
 }
 
@@ -146,15 +165,19 @@ void free_ast_simple_quote(struct ast *ast)
 {
     struct ast_simple_quote *a = ast->data.ast_simple_quote;
     free(a->argv);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
 }
 void free_ast_double_quote(struct ast *ast)
 {
     struct ast_double_quote *a = ast->data.ast_double_quote;
     free(a->argv);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
 }
 
 void free_ast_while(struct ast *ast)
@@ -164,8 +187,10 @@ void free_ast_while(struct ast *ast)
     free_ast(a->cond);
     //freef("); then {");
     free_ast(a->then);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
     //freef("; }");
 }
 
@@ -177,8 +202,10 @@ void free_ast_for(struct ast *ast)
     free_ast(a->cond);
     //freef(" ] do {");
     free_ast(a->then);
-    free(a);
-    free(ast);
+    if (a)
+        free(a);
+    if (ast)
+        free(ast);
     //freef(" }");
 }
 
@@ -187,14 +214,16 @@ void free_ast_for_char(struct ast *ast)
     struct ast_for_char *a = ast->data.ast_for_char;
     free_ast(a->var);
     free(a);
-    free(ast);
+    if (ast)
+        free(ast);
 }
 
 void free_ast_for_int(struct ast *ast)
 {
     struct read_for_int *a = ast->data.ast_for_int;
     free(a);
-    free(ast);
+    if (ast)
+        free(ast);
 }
 
 static ast_free_function ast_freeers[] =
