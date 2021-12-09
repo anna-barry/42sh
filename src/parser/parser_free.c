@@ -52,8 +52,8 @@ void free_ast_root(struct ast *ast)
         free(a->children);
     if (a)
         free(a);
-    //if (ast)
-    //    free(ast);
+    if (ast)
+        free(ast);
     printf("end root\n");
 }
 
@@ -263,6 +263,6 @@ void free_ast(struct ast *ast) {
 void my_pretty_free(struct ast *ast)
 {
     free_ast(ast);
-    if (ast)
-        free(ast);
+    //if (ast)
+    //    free(ast);
 }
