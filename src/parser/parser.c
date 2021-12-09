@@ -701,6 +701,6 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
     }
     new_ast->data.ast_main_root = ast;
     new_ast->type = NODE_ROOT;
-    token_free(lexer_pop(lex));
+    //token_free(lexer_pop(lex));
     return new_ast;
 }
