@@ -46,6 +46,11 @@ void free_ast_root(struct ast *ast)
     {
         free_ast(a->children[i]);
     }
+    for (int i = 0; i < a->nb_children; i++)
+    {
+        if(a->children[i])
+            free(a->children[i]);
+    }
     if (a->children)
         free(a->children);
     if (a)
@@ -266,6 +271,6 @@ void free_ast(struct ast *ast) {
 void my_pretty_free(struct ast *ast)
 {
     free_ast(ast);
-    //if (ast)
-    //    free(ast);
+    if (ast)
+        free(ast);
 }
