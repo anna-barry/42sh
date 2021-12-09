@@ -17,6 +17,7 @@ void free_ast_if_root(struct ast *ast)
     {
         free_ast(a->children[i]);
     }
+    printf("here \n");
     free(a->children);
     free(a);
     //freef("end if root\n");
