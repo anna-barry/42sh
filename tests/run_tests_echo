@@ -46,7 +46,7 @@ fi
 echo "done [ok] "
 
 echo "********* Testing Echo 4 ***********"
-diff <(./echo "test4") <(printf "geof'\''n'froy")
+diff <(./echo "test4") <(printf "geof\\nfroy")
 var1=$?
 if [ $var1 -ne 0 ];
 then
