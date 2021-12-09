@@ -25,11 +25,6 @@ void free_ast_if_root(struct ast *ast)
     {
         free_ast(a->children[i]);
     }
-    for (int i = 0; i < a->nb_children; i++)
-    {
-        if(a->children[i])
-            free(a->children[i]);
-    }
     if (a->children)
         free(a->children);
     if (a)
@@ -45,11 +40,6 @@ void free_ast_root(struct ast *ast)
     for (int i = 0; i < a->nb_children; i++)
     {
         free_ast(a->children[i]);
-    }
-    for (int i = 0; i < a->nb_children; i++)
-    {
-        if(a->children[i])
-            free(a->children[i]);
     }
     if (a->children)
         free(a->children);
@@ -271,6 +261,4 @@ void free_ast(struct ast *ast) {
 void my_pretty_free(struct ast *ast)
 {
     free_ast(ast);
-    if (ast)
-        free(ast);
 }
