@@ -639,6 +639,7 @@ int check_break(enum ast_type mode, enum token_type type)
 // for now only handles IF and commands (for now echo)
 struct ast *build_ast(struct lexer *lex, enum ast_type mode)
 {
+    struct ast *new_ast = malloc(sizeof(struct ast));
     struct ast_main_root *ast = create_main_root();
     enum token_type type = lexer_peek(lex)->type;
     if (!lex || type == TOKEN_EOF)
@@ -698,7 +699,6 @@ struct ast *build_ast(struct lexer *lex, enum ast_type mode)
         if (lex)
           type = lexer_peek(lex)->type;
     }
-    struct ast *new_ast = malloc(sizeof(struct ast));
     new_ast->data.ast_main_root = ast;
     new_ast->type = NODE_ROOT;
     token_free(lexer_pop(lex));
