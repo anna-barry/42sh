@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <unistd.h>
 
 #include "../lexer/lexer.h"
@@ -58,7 +59,10 @@ char *filetostring(char *filepath)
             offset++;
         }
         fclose(file);
-        ptr[offset] = '\0';
+        if (ptr[offset - 1] == '\n')
+          ptr[offset - 1] = '\0';
+        else
+          ptr[offset] = '\0';
         return ptr;
     }
     else
@@ -73,7 +77,7 @@ char *find_input(int argc, char *argv[])
     if (argc == 1)
     {
         input = malloc(sizeof(char) * 123456789);
-        printf("Veuillez saisir l'input : \n");
+        printf("> ");
         fflush(stdout);
         scanf("%[^\n]", input);
         return input;
@@ -123,14 +127,28 @@ char *find_input(int argc, char *argv[])
     }
     return NULL;
 }
+/*
+*
+* Catching sigint
+*
+*/
+
+static void sigintHandler(int sig)
+{
+    printf("int sig %i \n", sig);
+}
+
 
 int main(int argc, char *argv[])
 {
     if (argc < 1)
         fprintf(stderr, "Number of arguments not correct");
 
+    signal(SIGINT, sigintHandler);
+
+    int res_e = 2;
     int pretty_print = 0;
-    if (argc > 0 && strcmp(argv[1], "--pretty-print") == 0)
+    if (argc > 0 && argv[1] != NULL && strcmp(argv[1], "--pretty-print") == 0)
     {
             pretty_print = 1;
             int i = 1;
@@ -140,20 +158,19 @@ int main(int argc, char *argv[])
             }
             argv[i] = "\0";
     }
-
+    struct environnement *env = init_env();
     const char *input = (const char *)find_input(argc, argv);
     if (input == NULL)
       return 1;
     struct lexer *lexer = lexer_new(input);
     struct ast *ast = build_ast(lexer, NODE_ROOT);
-    struct environnement *env = init_env();
     if (pretty_print == 1)
     {
         printf("______ start of pretty print ________ \n");
         my_pretty_print(ast);
         printf("\n ______ end of pretty print ________ \n");
     }
-    int res_e = execution(ast, env);
+    res_e = execution(ast, env);
     token_free(lexer_pop(lexer));
     lexer_free(lexer);
     my_pretty_free(ast);
