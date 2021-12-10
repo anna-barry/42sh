@@ -12,9 +12,9 @@ int echo(char *argv[], int count)
         printf("\n");
         return 0;
     }
-    else if (strcmp("-n", argv[1]) == 0)
+    else if (count > 1 && strcmp("-n", argv[1]) == 0)
         flag = 2;
-    else if (strcmp("-e", argv[1]) == 0)
+    else if (count > 1 && strcmp("-e", argv[1]) == 0)
         flag = 1;
     int i = 1;
     if (flag > 0)
