@@ -17,7 +17,7 @@ int exec_ast_if_root(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        return env->exit_status;
     // printf("if root\n");
     struct ast_if_root *a = ast->data.ast_if_root;
     for (int i = 0; i < a->nb_children; i++)
@@ -34,7 +34,7 @@ int exec_ast_and(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        return env->exit_status;
     // printf("and\n");
     struct ast_and *a = ast->data.ast_and;
     if ((exec_ast(a->left, env) == 0) && (exec_ast(a->right, env) == 0))
@@ -49,7 +49,7 @@ int exec_ast_or(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        return env->exit_status;
     // printf("or\n");
     struct ast_or *a = ast->data.ast_or;
     if ((exec_ast(a->left, env) == 0) || (exec_ast(a->right, env) == 0))
@@ -63,7 +63,7 @@ int exec_ast_neg(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        return env->exit_status;
     // printf("negation\n");
     struct ast_neg *a = ast->data.ast_neg;
     if (exec_ast(a->node, env) == 1)
@@ -77,7 +77,7 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        return env->exit_status;
     struct environnement *inter = env;
     struct ast_while *a = ast->data.ast_while;
     int bool_et_bool_et_ratatam = 0;
@@ -97,6 +97,8 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
         }
         else
             exec_ast(a->then, inter);
+        if (env->exit_status != -1)
+            return env->exit_status;
     }
     if (bool_et_bool_et_ratatam == 0)
         env->flag_loop_break -= 1;
@@ -108,12 +110,15 @@ int exec_ast_until(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        if (env->exit_status != -1)
+            return env->exit_status;
     struct environnement *inter = env;
     struct ast_while *a = ast->data.ast_while;
     while (exec_ast(a->cond, inter) == 0)
     {
         exec_ast(a->then, env);
+        if (env->exit_status != -1)
+            return env->exit_status;
     }
     return 0;
 }
@@ -278,7 +283,8 @@ void transform_command(struct ast *ast, struct environnement *env)
     return;
 }
 
-void concat_node(struct ast *node1, struct ast *node2)
+void concat_node(struct ast *node1, struct ast *node2,
+                 struct environnement *env)
 {
     // printf("concat node\n");
     if (node1->type == NODE_COMMAND && node2->type == NODE_SIMPLE_QUOTE)
@@ -289,6 +295,14 @@ void concat_node(struct ast *node1, struct ast *node2)
         int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
+            if (strcmp(a1->argv[a], "exit"))
+            {
+                if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
+                    env->exit_status = atoi(a1->argv[a + 1]);
+                else
+                    env->exit_status = 0;
+                return;
+            }
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
@@ -315,6 +329,14 @@ void concat_node(struct ast *node1, struct ast *node2)
         int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
+            if (strcmp(a1->argv[a], "exit"))
+            {
+                if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
+                    env->exit_status = atoi(a1->argv[a + 1]);
+                else
+                    env->exit_status = 0;
+                return;
+            }
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
@@ -342,6 +364,14 @@ void concat_node(struct ast *node1, struct ast *node2)
         int a = 0;
         for (; a < a1->count; a++)
         {
+            if (strcmp(a1->argv[a], "exit"))
+            {
+                if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
+                    env->exit_status = atoi(a1->argv[a + 1]);
+                else
+                    env->exit_status = 0;
+                return;
+            }
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
@@ -354,6 +384,14 @@ void concat_node(struct ast *node1, struct ast *node2)
         }
         for (a = 0; a < a2->count; a++)
         {
+            if (strcmp(a2->argv[a], "exit"))
+            {
+                if (a2->count > a + 1 && a1->argv[a + 1] != NULL)
+                    env->exit_status = atoi(a1->argv[a + 1]);
+                else
+                    env->exit_status = 0;
+                return;
+            }
             if (a2->argv[a] != NULL)
             {
                 res[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
@@ -395,7 +433,7 @@ void concat_command(struct ast_main_root *a, int *i, struct environnement *env)
             // printf("inter 2 = %d\n", inter);
             transform_command(a->children[inter], env);
             // printf("concat node\n");
-            concat_node(a->children[ii], a->children[inter]);
+            concat_node(a->children[ii], a->children[inter], env);
             *i = inter;
             // printf("inter 3 = %d\n", inter);
             if (is_nullf(a->children[inter]))
@@ -431,6 +469,8 @@ int exec_ast_root(struct ast *ast, struct environnement *env)
         /*for (int m = 0; m < as->count; m++)
             printf("ooooooooooooooooooooo %s\n", as->argv[m]);*/
         res = exec_ast(a->children[inter], env);
+        if (env->exit_status != -1)
+            return env->exit_status;
     }
     return res;
 }
@@ -440,12 +480,16 @@ int exec_ast_if(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        return env->exit_status;
     struct ast_if *a = ast->data.ast_if;
     int res = exec_ast(a->cond, env);
+    if (env->exit_status != -1)
+        return env->exit_status;
     if (res == 0)
     {
         exec_ast(a->then, env);
+        if (env->exit_status != -1)
+            return env->exit_status;
     }
     return res;
 }
@@ -455,7 +499,7 @@ int exec_ast_elif(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        return env->exit_status;
     // printf("elif\n");
     struct ast_elif *a = ast->data.ast_elif;
     int res = exec_ast(a->cond, env);
@@ -471,7 +515,7 @@ int exec_ast_else(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        return env->exit_status;
     // printf("else\n");
     struct ast_else *a = ast->data.ast_else;
     return exec_ast(a->then, env);
@@ -539,6 +583,8 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     default:
         return_value = command_exec(a->argv, a->count, env);
     }
+    if (env->exit_status != -1)
+        return env->exit_status;
     return return_value;
 }
 
@@ -558,9 +604,12 @@ int exec_ast(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        return env->exit_status;
     // printf("exec\n");
-    return ast_exec[ast->type](ast, env);
+    int res = ast_exec[ast->type](ast, env);
+    if (env->exit_status != -1)
+        return env->exit_status;
+    return res;
 }
 
 int execution(struct ast *ast, struct environnement *env)
@@ -568,6 +617,9 @@ int execution(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
-    return exec_ast(ast, env);
+        return env->exit_status;
+    int res = exec_ast(ast, env);
+    if (env->exit_status != -1)
+        return env->exit_status;
+    return res;
 }
