@@ -194,7 +194,7 @@ struct environnement *init_env(void)
     insert_variable("RANDOM", NULL, env);
     // ADD UID VARIABLE
     env->uid = getuid();
-    env->flag_exit = -1;
+    env->exit_status = -1;
     // ADD OLDPWD VARIABLE + PWD
     // TODO
     // ADD IFS VARIABLE
