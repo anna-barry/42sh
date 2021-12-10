@@ -15,7 +15,7 @@ int exec_ast_if_root(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     // printf("if root\n");
     struct ast_if_root *a = ast->data.ast_if_root;
@@ -32,7 +32,7 @@ int exec_ast_and(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     // printf("and\n");
     struct ast_and *a = ast->data.ast_and;
@@ -47,7 +47,7 @@ int exec_ast_or(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     // printf("or\n");
     struct ast_or *a = ast->data.ast_or;
@@ -61,7 +61,7 @@ int exec_ast_neg(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     // printf("negation\n");
     struct ast_neg *a = ast->data.ast_neg;
@@ -75,30 +75,30 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     struct environnement *inter = env;
     struct ast_while *a = ast->data.ast_while;
     int bool_et_bool_et_ratatam = 0;
-    env.flag_loop_break += 1;
-    int tmp = env.flag_loop_break;
+    env->flag_loop_break += 1;
+    int tmp = env->flag_loop_break;
     while (exec_ast(a->cond, inter) == 0)
     {
-        if (env.flag_loop_break != tmp)
+        if (env->flag_loop_break != tmp)
         {
             bool_et_bool_et_ratatam = 1;
             break;
         }
-        if (env.flag_loop_continue != 0)
+        if (env->flag_loop_continue != 0)
         {
-            env.flag_loop_continue = 0;
+            env->flag_loop_continue = 0;
             continue;
         }
         else
             exec_ast(a->then, inter);
     }
     if (bool_et_bool_et_ratatam == 0)
-        env.flag_loop_break -= 1;
+        env->flag_loop_break -= 1;
     return 0;
 }
 
@@ -106,7 +106,7 @@ int exec_ast_until(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     struct environnement *inter = env;
     struct ast_while *a = ast->data.ast_while;
@@ -406,7 +406,7 @@ int exec_ast_root(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     // printf("root\n");
     struct ast_main_root *a = ast->data.ast_main_root;
@@ -435,7 +435,7 @@ int exec_ast_if(struct ast *ast, struct environnement *env)
     // printf("if\n");
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     struct ast_if *a = ast->data.ast_if;
     int res = exec_ast(a->cond, env);
@@ -450,7 +450,7 @@ int exec_ast_elif(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     // printf("elif\n");
     struct ast_elif *a = ast->data.ast_elif;
@@ -466,7 +466,7 @@ int exec_ast_else(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     // printf("else\n");
     struct ast_else *a = ast->data.ast_else;
@@ -477,7 +477,7 @@ int exec_ast_pipe(struct ast *ast)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     struct ast_command *a = ast->data.ast_pipe;
     struct ast_command *left = a->left;
@@ -489,7 +489,7 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     struct ast_command *a = ast->data.ast_command;
     char **tab = get_all_var(a->argv[0]);
@@ -549,7 +549,7 @@ int exec_ast(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     // printf("exec\n");
     return ast_exec[ast->type](ast, env);
@@ -559,7 +559,7 @@ int execution(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
-    if (env.exit_status != -1)
+    if (env->exit_status != -1)
         return 0;
     // printf("execution\n");
     return exec_ast(ast, env);

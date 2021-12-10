@@ -24,19 +24,19 @@ int command_exit(char *command[], int count, struct environnement *env)
         start = start * 10 + ((int)command[0][i] - 48);
         i++;
     }
-    env.exit_status = start;
+    env->exit_status = start;
     return 0;
 }
 
 int command_break(struct environnement *env)
 {
-    env.flag_loop_break -= 1;
+    env->flag_loop_break -= 1;
     return 0;
 }
 
 int command_continue(struct environnement *env)
 {
-    env.flag_loop_continue = 1;
+    env->flag_loop_continue = 1;
     return 0;
 }
 
