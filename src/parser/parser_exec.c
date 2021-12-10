@@ -190,7 +190,10 @@ char *transform_char(char *argv, struct environnement *env, int *index)
 
     if (inter == NULL)
     {
-        fprintf(stderr, "ERROR : the value of $ not find");
+        char *res = malloc(sizeof(char) * 1);
+        res = "\0";
+        free(argv);
+        return res;
     }
     cap = 200;
     char *res = malloc(sizeof(char) * cap);
@@ -481,10 +484,12 @@ int exec_ast_pipe(struct ast *ast, struct environnement *env)
     if (env->exit_status != -1)
         return 0;
     struct ast_pipe *a = ast->data.ast_pipe;
-    printf("%p ",(void *) a);
-    //struct ast *left = a->left;
-    //struct ast *right = a->right;
-    //return pipe_exec(left->data.ast_command->argv, left->data.ast_command->count, right->data.ast_command->argv, right->data.ast_command->count);
+    printf("%p ", (void *)a);
+    // struct ast *left = a->left;
+    // struct ast *right = a->right;
+    // return pipe_exec(left->data.ast_command->argv,
+    // left->data.ast_command->count, right->data.ast_command->argv,
+    // right->data.ast_command->count);
     return 1;
 }
 
@@ -540,16 +545,11 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
 typedef int (*ast_exec_function)(struct ast *ast, struct environnement *env);
 
 static ast_exec_function ast_exec[] = {
-    [NODE_IF] = exec_ast_if,
-    [NODE_ELIF] = exec_ast_elif,
-    [NODE_ELSE] = exec_ast_else,
-    [NODE_COMMAND] = exec_ast_command,
-    [NODE_IF_ROOT] = exec_ast_if_root,
-    [NODE_ROOT] = exec_ast_root,
-    [NODE_WHILE] = exec_ast_while,
-    [NODE_OR] = exec_ast_or,
-    [NODE_AND] = exec_ast_and,
-    [NODE_NEG] = exec_ast_neg,
+    [NODE_IF] = exec_ast_if,           [NODE_ELIF] = exec_ast_elif,
+    [NODE_ELSE] = exec_ast_else,       [NODE_COMMAND] = exec_ast_command,
+    [NODE_IF_ROOT] = exec_ast_if_root, [NODE_ROOT] = exec_ast_root,
+    [NODE_WHILE] = exec_ast_while,     [NODE_OR] = exec_ast_or,
+    [NODE_AND] = exec_ast_and,         [NODE_NEG] = exec_ast_neg,
     [NODE_PIPE] = exec_ast_pipe,
 };
 
