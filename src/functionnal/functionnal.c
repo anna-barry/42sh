@@ -1,10 +1,10 @@
 #include "functionnal.h"
 
+#include <err.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <err.h>
 
 void print_variables(struct environnement *new)
 {
@@ -20,7 +20,6 @@ void print_variables(struct environnement *new)
     }
 }
 
-
 // S > S2 -> 1
 // S2 > S -> -1
 // S = S2 -> 0
@@ -32,10 +31,10 @@ int my_strcmp(char *s, char *s2)
     {
         char low1 = s[i];
         if (low1 >= 'A' && low1 <= 'Z')
-            low1 = (char) ((int) low1 + 32);
+            low1 = (char)((int)low1 + 32);
         char low2 = s2[i];
         if (low2 >= 'A' && low2 <= 'Z')
-            low2 = (char) ((int) low2 + 32);
+            low2 = (char)((int)low2 + 32);
         if (low1 < low2)
         {
             return -1;
@@ -73,11 +72,11 @@ void free_variables(struct variable *index)
 {
     if (index->next != NULL)
         free_variables(index->next);
-    
-    //if (index->value)
-    //    free(index->value);
-    //if (index->name)
-    //    free(index->name);
+
+    // if (index->value)
+    //     free(index->value);
+    // if (index->name)
+    //     free(index->name);
     if (index)
         free(index);
 }
@@ -91,21 +90,20 @@ void free_environnement(struct environnement *new)
         if (new->args_b[i])
             free(new->args_b[i]);
     }
-    //if (new->args)
-    //    free(new->args);
-    //if (new->args_b)
-    //    free(new->args_b);
+    // if (new->args)
+    //     free(new->args);
+    // if (new->args_b)
+    //     free(new->args_b);
     free_variables(new->var);
     if (new)
         free(new);
-    
 }
 
 void update_variable(char *name, char *value, struct environnement *new)
 {
     if (find_variable(name, new) == 0)
     {
-        insert_variable( name, value, new);
+        insert_variable(name, value, new);
     }
     else
     {
@@ -164,10 +162,10 @@ int is_var(char *command)
 {
     for (size_t i = 0; i < strlen(command); i++)
     {
-       if (command[i] == '=')
-       {
-           return i;
-       }
+        if (command[i] == '=')
+        {
+            return i;
+        }
     }
     return -1;
 }
@@ -196,11 +194,11 @@ struct environnement *init_env(void)
     insert_variable("RANDOM", NULL, env);
     // ADD UID VARIABLE
     env->uid = getuid();
-    env->exit_status = -1;
+    env->flag_exit = -1;
     // ADD OLDPWD VARIABLE + PWD
-        // TODO
+    // TODO
     // ADD IFS VARIABLE
     insert_variable("IFS", "\n", env);
-    //print_variables(env);
+    // print_variables(env);
     return env;
 }
