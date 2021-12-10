@@ -2,6 +2,7 @@
 
 #include <err.h>
 
+#include "../functionnal/functionnal.h"
 #include "echo.h"
 //#include <errno.h>
 //#include <fcntl.h>
@@ -14,6 +15,31 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+int command_exit(char *command[], int count, struct environnement *env)
+{
+    int start = 0;
+    int i = 0;
+    while (i < count && command[1][i] != '\0')
+    {
+        start = start * 10 + ((int)command[0][i] - 48);
+        i++;
+    }
+    env->exit_status = start;
+    return 0;
+}
+
+int command_break(struct environnement *env)
+{
+    env->flag_loop_break -= 1;
+    return 0;
+}
+
+int command_continue(struct environnement *env)
+{
+    env->flag_loop_continue = 1;
+    return 0;
+}
+
 int command_exec(char *argv[],
                  int count) // the command should be as : char *argv[4] = {
                             // "echo", "geoffroy", "geoffroy", NULL };
@@ -23,7 +49,10 @@ int command_exec(char *argv[],
         return echo(argv, count);
     else
     {
-        // argv[count] = NULL;
+        if (argv[count] != NULL)
+        {
+            argv[count] = NULL;
+        }
         int wstatus = 0;
         int res_exec = 0;
         int pid = fork();
