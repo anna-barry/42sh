@@ -189,7 +189,9 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     free(indice);
 
     if (inter == NULL)
+    {
         fprintf(stderr, "ERROR : the value of $ not find");
+    }
     cap = 200;
     char *res = malloc(sizeof(char) * cap);
     memset(res, '\0', sizeof(char) * cap);
