@@ -57,10 +57,10 @@ void free_ast_if(struct ast *ast)
 
     //freef("}; then {");
     free_ast(a->then);
-    if (a->cond)
+    /*if (a->cond)
         free(a->cond);
     if (a->then)
-        free(a->then);
+        free(a->then);*/
     if (a)
         free(a);
     if (ast)
@@ -75,10 +75,10 @@ void free_ast_elif(struct ast *ast)
     free_ast(a->cond);
     //freef("}; then {");
     free_ast(a->then);
-    if (a->cond)
+    /*if (a->cond)
         free(a->cond);
     if (a->then)
-        free(a->then);
+        free(a->then);*/
     if (a)
         free(a);
     if (ast)
@@ -91,8 +91,8 @@ void free_ast_else(struct ast *ast)
     struct ast_else *a = ast->data.ast_else;
     //freef("else { ");
     free_ast(a->then);
-    if (a->then)
-        free(a->then);
+    /*if (a->then)
+        free(a->then);*/
     if (a)
         free(a);
     if (ast)
