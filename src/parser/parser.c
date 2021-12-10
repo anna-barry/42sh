@@ -72,23 +72,23 @@ struct ast_if_root *create_if_root()
 struct ast_else *create_else()
 {
     struct ast_else *new_else = malloc(sizeof(struct ast_else));
-    new_else->then = malloc(sizeof(struct ast));
+    //new_else->then = malloc(sizeof(struct ast));
     return new_else;
 }
 
 struct ast_if *create_if()
 {
     struct ast_if *new_if = malloc(sizeof(struct ast_if));
-    new_if->cond = malloc(sizeof(struct ast));
-    new_if->then = malloc(sizeof(struct ast));
+    //new_if->cond = malloc(sizeof(struct ast));
+    //new_if->then = malloc(sizeof(struct ast));
     return new_if;
 }
 
 struct ast_elif *create_elif()
 {
     struct ast_elif *new_elif = malloc(sizeof(struct ast_elif));
-    new_elif->cond = malloc(sizeof(struct ast));
-    new_elif->then = malloc(sizeof(struct ast));
+    //new_elif->cond = malloc(sizeof(struct ast));
+    //new_elif->then = malloc(sizeof(struct ast));
     return new_elif;
 }
 
@@ -112,24 +112,24 @@ struct ast_pipe *create_pipe()
 {
     struct ast_pipe *new = malloc(sizeof(struct ast_pipe));
     // no needed caus when added it has already been allocated;
-    new->left = malloc(sizeof(struct ast));
-    new->right = malloc(sizeof(struct ast));
+    //new->left = malloc(sizeof(struct ast));
+    //new->right = malloc(sizeof(struct ast));
     return new;
 }
 
 struct ast_and *create_and()
 {
     struct ast_and *new = malloc(sizeof(struct ast_and));
-    new->left = malloc(sizeof(struct ast));
-    new->right = malloc(sizeof(struct ast));
+    //new->left = malloc(sizeof(struct ast));
+    //new->right = malloc(sizeof(struct ast));
     return new;
 }
 
 struct ast_or *create_or()
 {
     struct ast_or *new = malloc(sizeof(struct ast_or));
-    new->left = malloc(sizeof(struct ast));
-    new->right = malloc(sizeof(struct ast));
+    //new->left = malloc(sizeof(struct ast));
+    //new->right = malloc(sizeof(struct ast));
     return new;
 }
 
@@ -240,12 +240,11 @@ int get_command(struct lexer *lex, struct ast_command *new)
 }
 
 // create the new node and calls build_ast for the struct
-int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
+struct ast *get_then(struct lexer *lex, enum ast_type mode)
 {
-    new->type = NODE_ROOT;
     if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
-    new->data.ast_main_root = build_ast(lex, mode)->data.ast_main_root;
+    struct ast *new  = build_ast(lex, mode);
     // printf("\n\n\n\nGET COND :
     // %d\n\n\n",new->data.ast_main_root->children[0]->type);
     //print(lex);
@@ -258,7 +257,7 @@ int get_then(struct lexer *lex, struct ast *new, enum ast_type mode)
         else if (lexer_peek(lex)->type == TOKEN_OR)
           get_or(new, lex, mode);
     }
-    return 0;
+    return new;
 }
 
 void get_pipe(struct ast_main_root *ast, struct lexer *lex)
@@ -268,7 +267,7 @@ void get_pipe(struct ast_main_root *ast, struct lexer *lex)
     new_pipe->left->type = ast->children[ast->nb_children - 1]->type;
     new_pipe->left->data = ast->children[ast->nb_children - 1]->data;
     token_free(lexer_pop(lex));
-    if (get_then(lex, new_pipe->right, NODE_PIPE))
+    if ((new_pipe->right = get_then(lex, NODE_PIPE)) == NULL)
         errx(2, "wrong pipe implementation");
     ast->children[ast->nb_children - 1]->type = NODE_PIPE;
     ast->children[ast->nb_children - 1]->data.ast_pipe = new_pipe;
@@ -280,7 +279,7 @@ void get_and(struct ast *ast, struct lexer *lex, enum ast_type mode)
     new_and->left->type = ast->type;
     new_and->left->data = ast->data;
     token_free(lexer_pop(lex));
-    if (get_then(lex, new_and->right, mode))
+    if ((new_and->right = get_then(lex, mode)) == NULL)
         errx(2, "wrong && implementation");
     ast->type = NODE_AND;
     ast->data.ast_and = new_and;
@@ -292,7 +291,7 @@ void get_or(struct ast *ast, struct lexer *lex, enum ast_type mode)
     new_or->left->type = ast->type;
     new_or->left->data = ast->data;
     token_free(lexer_pop(lex));
-    if (get_then(lex, new_or->right, mode))
+    if ((new_or->right = get_then(lex, mode)) == NULL)
         errx(2, "wrong && implementation");
     ast->type = NODE_OR;
     ast->data.ast_or = new_or;
@@ -306,12 +305,12 @@ void get_or(struct ast *ast, struct lexer *lex, enum ast_type mode)
 int build_if(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_if *new_if = create_if();
-    if (get_then(lex, new_if->cond, NODE_THEN))
+    if ((new_if->cond = get_then(lex, NODE_THEN)) == NULL)
         return 1;
       //printf("test\n");
     token_free(lexer_pop(lex));
     // if one of them is an error, then 1
-    if (get_then(lex, new_if->then, NODE_IF))
+    if ((new_if->then = get_then(lex, NODE_IF)) == NULL)
         return 1;
     root->nb_children = 1;
     root->children[0] = malloc(sizeof(struct ast));
@@ -324,7 +323,7 @@ int build_else(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_else *new_else = create_else();
     token_free(lexer_pop(lex));
-    if (get_then(lex, new_else->then, NODE_ELSE))
+    if ((new_else->then = get_then(lex, NODE_ELSE)) == NULL)
         return 1;
     // root->children = realloc(root->children, sizeof(struct ast) *
     // root->nb_children);
@@ -338,11 +337,10 @@ int build_else(struct lexer *lex, struct ast_if_root *root)
 int build_elif(struct lexer *lex, struct ast_if_root *root)
 {
     struct ast_elif *new_elif = create_elif();
-    if (get_then(lex, new_elif->cond, NODE_THEN))
+    if ((new_elif->cond = get_then(lex, NODE_THEN)) == NULL)
         return 1;
     token_free(lexer_pop(lex));
-    if (get_then(lex, new_elif->then,
-                 NODE_ELIF)) // if one of them is an error, then 1
+    if ((new_elif->then = get_then(lex, NODE_ELIF)) == NULL) // if one of them is an error, then 1
         return 1;
     root->children[root->nb_children] = malloc(sizeof(struct ast));
     root->children[root->nb_children]->type = NODE_ELIF;
@@ -429,18 +427,17 @@ struct ast_while *build_ast_while(struct lexer *lex, int until)
     {
       new_root->cond->type = NODE_NEG;
       new_root->cond->data.ast_neg = malloc(sizeof(struct ast_neg));
-      new_root->cond->data.ast_neg->node = malloc(sizeof(struct ast));
-      if (get_then(lex, new_root->cond->data.ast_neg->node, NODE_WHILE))
+      if ((new_root->cond->data.ast_neg->node = get_then(lex, NODE_WHILE)) == NULL)
         errx(2, "couldn't get cond in until");
     }
-    else if(get_then(lex, new_root->cond, NODE_WHILE))
+    else if((new_root->cond =get_then(lex, NODE_WHILE)) == NULL)
         errx(2, "couldn't get cond in while");
 
     token_free(lexer_pop(lex));
 
     if (lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
-    if (get_then(lex, new_root->then, NODE_DO))
+    if ( (new_root->then = get_then(lex, NODE_DO)) == NULL)
         errx(2, "couldn't get commands in while");
     if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         lex = ask_entry();
@@ -487,7 +484,7 @@ struct ast_for *build_ast_for(struct lexer *lex)
   }
   else if (type == TOKEN_FOR_WORD || type == TOKEN_FOR_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE)
   {
-    get_then(lex, new_for->cond, NODE_FOR_CHAR);
+    new_for->cond = get_then(lex, NODE_FOR_CHAR);
     //new_for->cond->type = NODE_FOR_CHAR;
   }
   else
@@ -499,7 +496,7 @@ struct ast_for *build_ast_for(struct lexer *lex)
     errx(2, "missing th do instruction :for i in {...}; [DO] .. [DONE];");
   token_free(lexer_pop(lex));
   //now get the get then with the commands to execute
-  if (get_then(lex, new_for->then, NODE_DO))
+  if ((new_for->then = get_then(lex, NODE_DO)) == NULL)
       errx(2, "couldn't get commands in while");
   if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
           lex = ask_entry();
@@ -595,7 +592,7 @@ void make_neg(struct ast_main_root *ast, struct lexer *lex, enum ast_type mode)
     token_free(lexer_pop(lex));
     ast->children[rank]->type = NODE_NEG;
     ast->children[rank]->data.ast_neg = malloc(sizeof(struct ast_neg));
-    ast->children[rank]->data.ast_neg->node = malloc(sizeof(struct ast));
+    //ast->children[rank]->data.ast_neg->node = malloc(sizeof(struct ast));
     ast->children[rank]->data.ast_neg->node =  build_ast(lex, mode);
 }
 

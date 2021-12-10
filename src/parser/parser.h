@@ -139,7 +139,7 @@ struct ast_for
 {
     char *var;
     struct ast *cond; //could be either a list of command //ast_for_word : commands
-                // either a struct ast_for_iter [1..2..10] : begin, start, step
+                // either a struct //read_for_int [1..2..10] : begin, start, step
     struct ast *then;
 };
 
@@ -165,7 +165,7 @@ void get_pipe(struct ast_main_root *ast, struct lexer *lex);
 void get_and(struct ast *ast, struct lexer *lex, enum ast_type mode);
 void get_or(struct ast *ast, struct lexer *lex, enum ast_type mode);
 int get_command(struct lexer *lex, struct ast_command *new);
-int get_then(struct lexer *lex, struct ast *new, enum ast_type mode);
+struct ast *get_then(struct lexer *lex, enum ast_type mode);
 int build_if(struct lexer *lex, struct ast_if_root *root);
 int build_else(struct lexer *lex, struct ast_if_root *root);
 int build_elif(struct lexer *lex, struct ast_if_root *root);
