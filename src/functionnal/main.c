@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Number of arguments not correct");
 
     int pretty_print = 0;
-    if (strcmp(argv[1], "--pretty-print") == 0)
+    if (argc > 0 && strcmp(argv[1], "--pretty-print") == 0)
     {
             pretty_print = 1;
             int i = 1;
@@ -154,6 +154,7 @@ int main(int argc, char *argv[])
         printf("\n ______ end of pretty print ________ \n");
     }
     int res_e = execution(ast, env);
+    token_free(lexer_pop(lexer));
     lexer_free(lexer);
     my_pretty_free(ast);
     free_environnement(env);

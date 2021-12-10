@@ -473,16 +473,18 @@ int exec_ast_else(struct ast *ast, struct environnement *env)
     return exec_ast(a->then, env);
 }
 
-int exec_ast_pipe(struct ast *ast)
+int exec_ast_pipe(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
         return 0;
-    struct ast_command *a = ast->data.ast_pipe;
-    struct ast_command *left = a->left;
-    struct ast_command *right = a->right;
-    return pipe_exec(left->argv, left->count, right->argv, right->count);
+    struct ast_pipe *a = ast->data.ast_pipe;
+    printf("%p ",(void *) a);
+    //struct ast *left = a->left;
+    //struct ast *right = a->right;
+    //return pipe_exec(left->data.ast_command->argv, left->data.ast_command->count, right->data.ast_command->argv, right->data.ast_command->count);
+    return 1;
 }
 
 int exec_ast_command(struct ast *ast, struct environnement *env)
@@ -524,10 +526,10 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     case REDIR_INPUT_DESCRIPEUR: // '<&'
         return_value = command_redir_r_and(a->argv, a->redir);
         break;
-    case BREAK_COMMAND:
+    /*case BREAK_COMMAND:
         return_value = command_break(env);
     case EXIT_COMMAND:
-        return_value = command_exit(a->argv, a->count, env);
+        return_value = command_exit(a->argv, a->count, env);*/
     default:
         return_value = command_exec(a->argv, a->count);
     }

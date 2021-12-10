@@ -19,7 +19,7 @@ int command_exit(char *command[], int count, struct environnement *env)
 {
     int start = 0;
     int i = 0;
-    while (command[1][i] != '\0')
+    while (i < count && command[1][i] != '\0')
     {
         start = start * 10 + ((int)command[0][i] - 48);
         i++;
