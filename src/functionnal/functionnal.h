@@ -21,7 +21,7 @@ struct environnement
     int return_value; // $?
     int flag_loop_break; // = 0; // break command
     int flag_loop_continue; // = 0; // continue command
-    int flag_exit; // = -1; // exit command
+    int exit_status; // = -1; // exit command
     struct variable *var;
     uid_t uid;
     int nb_variables;
