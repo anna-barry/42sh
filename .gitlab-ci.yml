@@ -70,6 +70,13 @@ week_1:
   script:
     - tests/week1/tests_if_echo builddir/42sh
 
+week_3:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - tests/week3/test_dot builddir/42sh
+
 clang-format:
   stage: qa
   needs: []
