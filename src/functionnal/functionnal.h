@@ -1,9 +1,9 @@
 #ifndef FUNCTIONNAL_H
 #define FUNCTIONNAL_H
 
-#include <sys/types.h> 
-#include <unistd.h> 
 #include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 struct variable
 {
@@ -19,6 +19,9 @@ struct environnement
     int nb_args; /// $#
     pid_t pid; /// $$
     int return_value; // $?
+    int flag_loop_break = 0; // break command
+    int flag_loop_continue = 0; // continue command
+    int exit_status = -1; // exit command
     struct variable *var;
     uid_t uid;
     int nb_variables;

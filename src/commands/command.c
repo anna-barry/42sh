@@ -3,6 +3,7 @@
 #include <err.h>
 
 #include "echo.h"
+#include "functionnal.h"
 //#include <errno.h>
 //#include <fcntl.h>
 //#include <stddef.h>
@@ -13,6 +14,31 @@
 //#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+int command_exit(char *command[], int count, struct environnement *env)
+{
+    int start = 0;
+    int i = 0;
+    while (command[1][i] != '\0')
+    {
+        start = start * 10 + ((int)command[0][i] - 48);
+        i++;
+    }
+    env.exit_status = start;
+    return 0;
+}
+
+int command_break(struct environnement *env)
+{
+    env.flag_loop_break -= 1;
+    return 0;
+}
+
+int command_continue(struct environnement *env)
+{
+    env.flag_loop_continue = 1;
+    return 0;
+}
 
 int command_exec(char *argv[],
                  int count) // the command should be as : char *argv[4] = {
