@@ -41,12 +41,14 @@ int command_continue(struct environnement *env)
 }
 
 int command_exec(char *argv[],
-                 int count) // the command should be as : char *argv[4] = {
+                 int count, struct environnement *env) // the command should be as : char *argv[4] = {
                             // "echo", "geoffroy", "geoffroy", NULL };
                             // the NULL argument is nessessary.
 {
     if (strcmp("echo", argv[0]) == 0)
         return echo(argv, count);
+    else if (is_dot(argv[0]))
+        return my_dot(argv, count, env);
     else
     {
         if (argv[count] != NULL)

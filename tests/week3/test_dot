@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "*********** Test 1 dot ***********"
+diff <(./builddir/42sh -c "if echo a; then ./test1; else echo 2; fi") <(printf "a 
+c
+")
+
+echo "*********** Test 2 dot ***********"
+diff <(./builddir/42sh -c "if echo a; then ./test2; else echo 2; fi") <(printf "b 
+")

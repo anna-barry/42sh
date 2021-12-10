@@ -13,6 +13,7 @@ int exec_ast(struct ast *ast, struct environnement *env);
 
 int exec_ast_if_root(struct ast *ast, struct environnement *env)
 {
+    //("if root \n");
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
@@ -408,7 +409,6 @@ int exec_ast_root(struct ast *ast, struct environnement *env)
         return 1;
     if (env->exit_status != -1)
         return 0;
-    // printf("root\n");
     struct ast_main_root *a = ast->data.ast_main_root;
     int res = -1;
     int inter = 0;
@@ -432,7 +432,6 @@ int exec_ast_root(struct ast *ast, struct environnement *env)
 
 int exec_ast_if(struct ast *ast, struct environnement *env)
 {
-    // printf("if\n");
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
@@ -506,19 +505,19 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     switch (flag)
     {
     case REDIR_SORTIE: // '>'
-        return_value = command_redir_r(a->argv, a->count, a->redir);
+        return_value = command_redir_r(a->argv, a->count, a->redir, env);
         break;
     case REDIR_ENTREE: // '<'
-        return_value = command_redir_l(a->argv, a->count, a->redir);
+        return_value = command_redir_l(a->argv, a->count, a->redir, env);
         break;
     case REDIR_FIN_FICHIER: // '>>'
-        return_value = command_redir_rr(a->argv, a->count, a->redir);
+        return_value = command_redir_rr(a->argv, a->count, a->redir, env);
         break;
     case REDIR_PIPE: // '>>'
-        return_value = command_redir_r_pipe(a->argv, a->count, a->redir);
+        return_value = command_redir_r_pipe(a->argv, a->count, a->redir, env);
         break;
     case REDIR_RW: // '<>'
-        return_value = command_redir_l(a->argv, a->count, a->redir);
+        return_value = command_redir_l(a->argv, a->count, a->redir, env);
         break;
     case REDIR_DESCRIPEUR: // '>&'
         return_value = command_redir_r_and(a->argv, a->redir);
@@ -531,7 +530,7 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     case EXIT_COMMAND:
         return_value = command_exit(a->argv, a->count, env);*/
     default:
-        return_value = command_exec(a->argv, a->count);
+        return_value = command_exec(a->argv, a->count, env);
     }
     return return_value;
 }
@@ -539,11 +538,16 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
 typedef int (*ast_exec_function)(struct ast *ast, struct environnement *env);
 
 static ast_exec_function ast_exec[] = {
-    [NODE_IF] = exec_ast_if,           [NODE_ELIF] = exec_ast_elif,
-    [NODE_ELSE] = exec_ast_else,       [NODE_COMMAND] = exec_ast_command,
-    [NODE_IF_ROOT] = exec_ast_if_root, [NODE_ROOT] = exec_ast_root,
-    [NODE_WHILE] = exec_ast_while,     [NODE_OR] = exec_ast_or,
-    [NODE_AND] = exec_ast_and,         [NODE_NEG] = exec_ast_neg,
+    [NODE_IF] = exec_ast_if,
+    [NODE_ELIF] = exec_ast_elif,
+    [NODE_ELSE] = exec_ast_else,
+    [NODE_COMMAND] = exec_ast_command,
+    [NODE_IF_ROOT] = exec_ast_if_root,
+    [NODE_ROOT] = exec_ast_root,
+    [NODE_WHILE] = exec_ast_while,
+    [NODE_OR] = exec_ast_or,
+    [NODE_AND] = exec_ast_and,
+    [NODE_NEG] = exec_ast_neg,
     [NODE_PIPE] = exec_ast_pipe,
 };
 
@@ -563,6 +567,5 @@ int execution(struct ast *ast, struct environnement *env)
         return 1;
     if (env->exit_status != -1)
         return 0;
-    // printf("execution\n");
     return exec_ast(ast, env);
 }

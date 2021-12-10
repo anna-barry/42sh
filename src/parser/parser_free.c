@@ -13,12 +13,10 @@ void free_ast_if_root(struct ast *ast)
 {
     //freef("if root\n");
     /*
-    *struct ast_if_root
-{
+    *
     int nb_children;
     int status;
     struct ast **children;
-};
     */
     struct ast_if_root *a = ast->data.ast_if_root;
     for (int i = 0; i < a->nb_children; i++)
