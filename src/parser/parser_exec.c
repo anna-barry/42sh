@@ -81,7 +81,7 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
     struct ast_while *a = ast->data.ast_while;
     int bool_et_bool_et_ratatam = 0;
     env.flag_loop_break += 1;
-    int tmp0 = env.flag_loop_break;
+    int tmp = env.flag_loop_break;
     while (exec_ast(a->cond, inter) == 0)
     {
         if (env.flag_loop_break != tmp)

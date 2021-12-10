@@ -2,8 +2,8 @@
 
 #include <err.h>
 
+#include "../functionnal/functionnal.h"
 #include "echo.h"
-#include "functionnal.h"
 //#include <errno.h>
 //#include <fcntl.h>
 //#include <stddef.h>
