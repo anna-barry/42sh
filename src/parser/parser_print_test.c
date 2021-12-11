@@ -2,6 +2,7 @@
 #include "parser.h"
 #include "parser_free.h"
 #include "../lexer/token.h"
+//#include "../lexer/lexer_added.c"
 #include "../lexer/lexer.h"
 
 #include <stdio.h>
@@ -20,8 +21,10 @@ int main()
     //struct lexer *lexer = lexer_new("until echo a || echo b; do echo b; done");
     //struct lexer *lexer = lexer_new("until echo a || echo b; do echo b; done");
     //struct lexer *lexer = lexer_new("for i in word; do echo a; done");
-    struct lexer *lexer = lexer_new("if ! echo a; then echo b; fi");
-    struct ast *ast = build_ast(lexer, NODE_ROOT);
+    char *input = "if ! echo a; then echo b; fi";
+    struct info_lexer *new = lexer_init();
+    lexer_new(input, new);
+    struct ast *ast = build_ast(new, NODE_ROOT);
     /*printf("\n build ast with nb %i[ok]\n\n", ast->data.ast_main_root->nb_children);
     if (ast->type == NODE_ROOT)
     {
@@ -30,6 +33,7 @@ int main()
     printf("before pretty print\n");*/
     my_pretty_print(ast);
     my_pretty_free(ast);
-    lexer_free(lexer);
+    token_free(lexer_pop(new->lexer));
+    lexer_info_free(new);
     return 0;
 }
