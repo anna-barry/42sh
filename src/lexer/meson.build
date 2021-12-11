@@ -3,4 +3,5 @@ all_sources += files(
     'token.c',
     'lexer.c',
     'for_lexer.c',
+    'lexer_added.c',
 )

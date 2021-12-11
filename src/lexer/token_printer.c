@@ -14,11 +14,9 @@ char *tab[] = {
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
-        return 1;
-
-    struct lexer *lexer = lexer_new(argv[1]);
-    struct token *token = lexer_pop(lexer);
+    struct info_lexer *new = lexer_init();
+    lexer_new(argv[1], new);
+    struct token *token = lexer_pop(new->lexer);
     while (token->type != TOKEN_EOF && token->type != TOKEN_ERROR)
     {
         if (token->type == TOKEN_SIMPLE_QUOTE
@@ -39,14 +37,48 @@ int main(int argc, char *argv[])
             printf("%s\n", tab[token->type]);
 
         token_free(token);
-        token = lexer_pop(lexer);
+        token = lexer_pop(new->lexer);
     }
 
     if (token->type == TOKEN_EOF)
         printf("EOF\n");
 
-    token_free(token);
-    lexer_free(lexer);
+    //token_free(token);
+    if (argc > 1)
+    {
+        printf("clear\n\n");
+        clear_info(new);
+        lexer_new(argv[2], new);
+        token = lexer_pop(new->lexer);
+        while (token->type != TOKEN_EOF && token->type != TOKEN_ERROR)
+        {
+            if (token->type == TOKEN_SIMPLE_QUOTE
+            || token->type == TOKEN_WORDS 
+            || token->type == TOKEN_REDIR_SORTIE 
+            || token->type == TOKEN_REDIR_ENTREE 
+            || token->type == TOKEN_REDIR_DESCRIPEUR
+            || token->type == TOKEN_REDIR_INPUT_DESCRIPEUR
+            || token->type == TOKEN_REDIR_RW
+            || token->type == TOKEN_DOUBLE_QUOTE
+            || token->type == TOKEN_FOR_WORD
+            || token->type == TOKEN_FOR_SINGLE_QUOTE
+            || token->type == TOKEN_FOR_DOUBLE_QUOTE
+            || token->type == TOKEN_FOR_INT
+            || token->type == TOKEN_REDIR_PIPE)
+                printf("%s\n", token->value);
+            else
+                printf("%s\n", tab[token->type]);
+
+            token_free(token);
+            token = lexer_pop(new->lexer);
+        }
+        if (token->type == TOKEN_EOF)
+        printf("EOF\n");
+
+        token_free(token);
+    }
+    lexer_info_free(new);
+    //lexer_free(new->lexer);
 
     return 0;
 }

@@ -162,8 +162,9 @@ int main(int argc, char *argv[])
     const char *input = (const char *)find_input(argc, argv);
     if (input == NULL)
       return 1;
-    struct lexer *lexer = lexer_new(input);
-    struct ast *ast = build_ast(lexer, NODE_ROOT);
+    struct info_lexer *new = lexer_init();
+    lexer_new(input, new);
+    struct ast *ast = build_ast(new->lexer, NODE_ROOT);
     if (pretty_print == 1)
     {
         printf("______ start of pretty print ________ \n");
@@ -171,8 +172,8 @@ int main(int argc, char *argv[])
         printf("\n ______ end of pretty print ________ \n");
     }
     res_e = execution(ast, env);
-    token_free(lexer_pop(lexer));
-    lexer_free(lexer);
+    token_free(lexer_pop(new->lexer));
+    lexer_info_free(new);
     my_pretty_free(ast);
     free_environnement(env);
     free((void *)input);

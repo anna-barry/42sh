@@ -24,6 +24,13 @@ struct lexer
     struct token *current_tok; ///< The next token, if processed
 };
 
+struct info_lexer
+{
+    struct lexer *lexer; ///< The lexer
+    size_t *cap; ///< Capacity of lexer
+    size_t *index; ///< Number of tokens (always min 1 for EOF)
+};
+
 struct read_for_int
 {
     size_t step; ///< Step
@@ -38,13 +45,20 @@ struct cap_and_i
 };
 
 /**
- * \brief Creates a new lexer given an input string.
+ * \brief Creates a new lexer
  */
-struct lexer *lexer_new(const char *input);
+struct info_lexer *lexer_init();
+
+/**
+ * \brief Adds in lexer given an input string.
+ */
+void lexer_new(const char *input, struct info_lexer *info);
 
 /**
  ** \brief Free the given lexer, but not its input.
  */
+void clear_info(struct info_lexer *new);
+void lexer_info_free(struct info_lexer *info);
 void lexer_free(struct lexer *lexer);
 
 /**
