@@ -4,6 +4,11 @@ echo "*********** Test 0 with echo ***********"
 diff <(./builddir/42sh -c "echo a") <(printf "a
 ")
 
+echo "*********** Test 0.1 with echo ***********"
+diff <(./builddir/42sh -c "echo a; echo b") <(printf "a
+b
+")
+
 echo "*********** Test 1 with if and echo ***********"
 diff <(./builddir/42sh -c "if echo a; then echo b; else echo 2; fi") <(printf "a
 b
