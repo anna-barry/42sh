@@ -58,11 +58,13 @@ int my_dot(char *argv[], int count, struct environnement *env)
     if (count > 0 && strcmp(argv[0], ".") == 0)
     { 
         const char *input = (const char *)get_input(argv[1]);
-        struct lexer *lexer = lexer_new(input);
-        struct ast *ast = build_ast(lexer, NODE_ROOT);
+        struct info_lexer *new = lexer_init();
+        lexer_new(input, new);
+       // struct lexer *lexer = lexer_new(input);
+        struct ast *ast = build_ast(new, NODE_ROOT);
         res_e = execution(ast, env);
-        token_free(lexer_pop(lexer));
-        lexer_free(lexer);
+        token_free(lexer_pop(new->lexer));
+        lexer_info_free(new);
         my_pretty_free(ast);
         //free((void *)input);
     }
@@ -70,12 +72,14 @@ int my_dot(char *argv[], int count, struct environnement *env)
     {   
         printf("in else with (%s)\n", argv[0]);
         const char *input = (const char *)get_input(argv[0]);
-        struct lexer *lexer = lexer_new(input);
-        struct ast *ast = build_ast(lexer, NODE_ROOT);
+        struct info_lexer *new = lexer_init();
+        lexer_new(input, new);
+        //struct lexer *lexer = lexer_new(input);
+        struct ast *ast = build_ast(new, NODE_ROOT);
         struct environnement *env2 = init_env();
         res_e = execution(ast, env2);
-        token_free(lexer_pop(lexer));
-        lexer_free(lexer);
+        token_free(lexer_pop(new->lexer));
+        lexer_info_free(new);
         my_pretty_free(ast);
         free_environnement(env2);
         //free((void *)input);
