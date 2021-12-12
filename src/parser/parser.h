@@ -160,17 +160,17 @@ struct ast_else *create_else();
 struct ast_if *create_if();
 struct ast_command *create_command();
 struct ast_elif *create_elif();
-struct lexer *ask_entry(void);
-void get_pipe(struct ast_main_root *ast, struct lexer *lex);
-void get_and(struct ast *ast, struct lexer *lex, enum ast_type mode);
-void get_or(struct ast *ast, struct lexer *lex, enum ast_type mode);
-int get_command(struct lexer *lex, struct ast_command *new);
-struct ast *get_then(struct lexer *lex, enum ast_type mode);
-int build_if(struct lexer *lex, struct ast_if_root *root);
-int build_else(struct lexer *lex, struct ast_if_root *root);
-int build_elif(struct lexer *lex, struct ast_if_root *root);
-struct ast_if_root *build_ast_if(struct lexer *lex);
+void ask_entry(struct info_lexer *i_lex);
+void get_pipe(struct ast_main_root *ast, struct info_lexer *i_lex);
+void get_and(struct ast *ast, struct info_lexer *i_lex, enum ast_type mode);
+void get_or(struct ast *ast, struct info_lexer *i_lex, enum ast_type mode);
+int get_command(struct info_lexer *i_lex, struct ast_command *new);
+struct ast *get_then(struct info_lexer *i_lex, enum ast_type mode);
+int build_if( struct info_lexer *i_lex, struct ast_if_root *root);
+int build_else( struct info_lexer *i_lex, struct ast_if_root *root);
+int build_elif( struct info_lexer *i_lex, struct ast_if_root *root);
+struct ast_if_root *build_ast_if( struct info_lexer *i_lex);
 int check_break(enum ast_type mode, enum token_type type);
-struct ast *build_ast(struct lexer *lex, enum ast_type mode);
+struct ast *build_ast( struct info_lexer *i_lex, enum ast_type mode);
 
 #endif
