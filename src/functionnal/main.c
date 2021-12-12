@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
       return 1;
     struct info_lexer *new = lexer_init();
     lexer_new(input, new);
-    struct ast *ast = build_ast(new->lexer, NODE_ROOT);
+    struct ast *ast = build_ast(new, NODE_ROOT);
     if (pretty_print == 1)
     {
         printf("______ start of pretty print ________ \n");
