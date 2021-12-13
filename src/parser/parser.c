@@ -420,8 +420,6 @@ struct ast_if_root *build_ast_if(struct info_lexer *i_lex)
     if (!lex)
         ask_entry(i_lex);
     type = lexer_peek(lex)->type;
-    if (type != TOKEN_SEMICOLON && type != TOKEN_EOF)
-      errx(2, "needed FI to be followed by a ; or nothing");
     if (type == TOKEN_SEMICOLON)
       token_free(lexer_pop(lex));
     return new_root;
@@ -456,8 +454,6 @@ struct ast_while *build_ast_while(struct info_lexer *i_lex, int until)
     token_free(lexer_pop(lex));
     if (!lex)
         ask_entry(i_lex);
-    if (lexer_peek(lex)->type != TOKEN_SEMICOLON && lexer_peek(lex)->type != TOKEN_EOF)
-      errx(2, "needed DONE to be followed by a ; or nothing");
     //token_free(lexer_pop(lex));
     return new_root;
 }
@@ -509,8 +505,6 @@ struct ast_for *build_ast_for(struct info_lexer *i_lex)
   token_free(lexer_pop(lex));
   if (!lex)
       ask_entry(i_lex);
-  if (lexer_peek(lex)->type != TOKEN_SEMICOLON && lexer_peek(lex)->type != TOKEN_EOF)
-    errx(2, "needed DONE to be followed by a ; or nothing");
   //token_free(lexer_pop(lex));
   return new_for;
 }
@@ -621,7 +615,7 @@ int check_break(enum ast_type mode, enum token_type type)
       if (type == TOKEN_DO) //|| type == TOKEN_SEMICOLON)
         return 0;
     }
-    if (mode == NODE_PIPE && type == TOKEN_SEMICOLON)
+    if (mode == NODE_PIPE && (type == TOKEN_SEMICOLON || type == TOKEN_EOF || type == TOKEN_LINE_BREAK || type == TOKEN_PIPE))
         return 0;
     if (mode == NODE_DO && type == TOKEN_DONE)
         return 0;
@@ -667,7 +661,6 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             make_if(ast, i_lex);
         else if (type == TOKEN_EOF)
         {
-            printf("hereeeeee\n");
             ask_entry(i_lex);
         }
         // IF WORD IS WORD OR SEMICOLON MAKE COMMAND
@@ -694,12 +687,14 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
         else if (type == TOKEN_PIPE)
         {
           get_pipe(ast, i_lex);
-          break;
         }
         else
           errx(2, "wrong implementation");
         if (lexer_peek(lex))
           type = lexer_peek(lex)->type;
+        print(lex);
+        printf("MODE = %d\n", mode);
+        printf("TYPE = %d\n", type);
     }
     new_ast->data.ast_main_root = ast;
     new_ast->type = NODE_ROOT;
