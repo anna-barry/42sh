@@ -26,12 +26,23 @@ void lexer_info_free(struct info_lexer *info)
 
 void clear_info(struct info_lexer *new)
 {
-    struct token *token = lexer_pop(new->lexer);
+    while (new->lexer->current_tok->type != TOKEN_EOF)
+    {
+        struct token *token = lexer_pop(new->lexer);
+        while (token->type != TOKEN_EOF && token->type != TOKEN_ERROR)
+        {
+            token_free(token);
+            token = lexer_pop(new->lexer);
+        }
+        token_free(token);
+    }
+    
+    /*struct token *token = lexer_pop(new->lexer);
     while (token->type != TOKEN_EOF && token->type != TOKEN_ERROR)
     {
         token_free(token);
         token = lexer_pop(new->lexer);
     }
-    token_free(token);
+    token_free(token);*/
     *new->index = 1;
 }

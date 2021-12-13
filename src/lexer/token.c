@@ -34,4 +34,5 @@ void token_free(struct token *token)
     if (token->value != NULL)
         free(token->value);
     free(token);
+    token = NULL;
 }
