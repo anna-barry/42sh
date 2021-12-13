@@ -38,3 +38,35 @@ fi
 echo "*********** Test 6 with big implementation **********"
 diff <(./builddir/42sh -c "if false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; else echo b; fi") <(printf "b
 ")
+
+echo "************ Test 7 with double quotes etc ********* "
+diff <(./builddir/42sh -c "if echo \"ls\"; then echo 'foo' bar; echo okay; elif echo bebe; echo a ; then echo christian; echo anna laime; fi
+")
+
+echo "************ Test 8  if in a if************"
+diff <(./builddir/42sh -c "until echo a || echo b; do echo b; done") <(printf "a
+")
+
+echo "************ Test 9 echo ************"
+diff <(./builddir/42sh -c "for i in word; do echo a; done") <(printf "a
+")
+
+echo "************ Test 10 echo_var ************"
+diff <(./builddir/42sh -c "for i in word; do echo $i; done") <(printf "word
+")
+
+echo "************ Test 11 nothing to print ************"
+diff <(./builddir/42sh -c "if ! echo a; then echo b; fi") <(printf "
+")
+
+echo "*************Test 12 if with errors **************"
+diff <(./builddir/42sh -c "if echo b; echo a; then echo a; fi; else echo a") <(printf "42sh: wrong implementation
+")
+var1=$?
+if [ $var1 -ne 2 ]; 
+then
+echo $var1
+exit 1;
+fi
+
+
