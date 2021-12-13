@@ -177,6 +177,7 @@ void concat_node(struct ast *node1, struct ast *node2,
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_simple_quote *a2 = node2->data.ast_simple_quote;
         char **res = malloc(sizeof(char *) * (1 + a1->count));
+        res[a1->count + 1] = NULL;
         int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
@@ -191,6 +192,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
+                free(a1->argv[a]);
                 index += 1;
             }
             else
@@ -201,6 +203,7 @@ void concat_node(struct ast *node1, struct ast *node2,
         if (a2->argv != NULL)
         {
             res[index] = strndup(a2->argv, strlen(a2->argv));
+            free(a2->argv);
             a1->count += 1;
         }
         free(a1->argv);
@@ -263,6 +266,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
+                free(a1->argv[a]);
                 index += 1;
             }
             else
@@ -283,11 +287,13 @@ void concat_node(struct ast *node1, struct ast *node2,
             if (a2->argv[a] != NULL)
             {
                 res[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
+                free(a2->argv[a]);
                 index += 1;
                 a1->count += 1;
             }
         }
         free(a1->argv);
+        free(a2->argv);
         a1->argv = res;
     }
 }
