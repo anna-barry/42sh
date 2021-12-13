@@ -22,7 +22,11 @@ int exec_ast_if_root(struct ast *ast, struct environnement *env)
     struct ast_if_root *a = ast->data.ast_if_root;
     for (int i = 0; i < a->nb_children; i++)
     {
+        if (env->exit_status != -1)
+            return env->exit_status;
         a->status = exec_ast(a->children[i], env);
+        if (env->exit_status != -1)
+            return env->exit_status;
         if (a->status == 0)
             break;
     }
@@ -183,20 +187,19 @@ char *transform_char(char *argv, struct environnement *env, int *index)
         }
     }
     indice[interm] = '\0';
-    // printf("indice is %s \n", indice);
     struct variable *inter = env->var;
     while (inter)
     {
+        // printf("inter is %s\n", inter->name);
         if (strcmp(indice, inter->name) == 0)
             break;
         inter = inter->next;
     }
     free(indice);
-
     if (inter == NULL)
     {
-        char *res = malloc(sizeof(char) * 1);
-        res = "\0";
+        char *res = malloc(sizeof(char));
+        res = NULL;
         free(argv);
         return res;
     }
@@ -256,28 +259,30 @@ void transform_command(struct ast *ast, struct environnement *env)
             if (a->argv[index] == '$')
             {
                 char *new = transform_char(a->argv, env, &index);
+                // printf("new char is %s\n", new);
                 a->argv = new;
             }
         }
     }
     else if (ast->type == NODE_COMMAND)
     {
-        // printf("transform command1\n");
         struct ast_command *a = ast->data.ast_command;
         for (int j = 0; j < a->count; j++)
         {
             if (a->argv[j] == NULL)
                 break;
-            for (int index = 0; a->argv[j][index] != '\0'; index++)
+            for (int index = 0; index < (int)strlen(a->argv[j]); index++)
             {
                 if (a->argv[j][index] == '$')
                 {
                     char *new = transform_char(a->argv[j], env, &index);
-                    // printf("the new string is %s\n", new);
                     a->argv[j] = new;
                 }
+                if (a->argv[j] == NULL)
+                    break;
             }
         }
+        return;
     }
     // printf("transform command2\n");
     return;
@@ -406,16 +411,14 @@ void concat_node(struct ast *node1, struct ast *node2,
 
 void concat_command(struct ast_main_root *a, int *i, struct environnement *env)
 {
-    // printf("concat command\n");
+    // print_variables(env);
     if (env == NULL)
         fprintf(stderr, "concat_command");
     int inter = *i;
     // printf("child = %d\n", a->nb_children);
     // printf("inter = %d\n", inter);
     int ii = *i;
-    // printf("pere = %d\n", ii);
     transform_command(a->children[inter], env);
-    // printf("coucou\n");
     if (is_nullf(a->children[inter]))
     {
         return;
@@ -542,7 +545,7 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
-        return 0;
+        return env->exit_status;
     struct ast_command *a = ast->data.ast_command;
     char **tab = get_all_var(a->argv[0]);
     if (tab != NULL)
