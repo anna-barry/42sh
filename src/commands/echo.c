@@ -6,6 +6,9 @@
 
 int echo(char *argv[], int count)
 {
+    printf("count is = %d\n", count);
+    for (int i = 0; i < count; i++)
+        printf("elt %d is = %s\n", i, argv[i]);
     int flag = 0;
     if (count == 2 && argv[1] == NULL)
     {
@@ -58,8 +61,9 @@ int echo(char *argv[], int count)
             else
                 printf("%c", argv[i][j]);
         }
-        //printf("\ncount is %i\n", count);
-        if (count > 1 && i != count - 1)
+        if (argv[i + 1] == NULL)
+            continue;
+        if (i != count - 1)
         {
             printf(" ");
         }
