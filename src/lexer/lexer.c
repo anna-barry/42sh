@@ -190,43 +190,38 @@ struct cap_and_i * spe_token(const char *input, size_t *index, struct cap_and_i 
   return for_s;
 }
 
-struct lexer *lexer_new(const char *input)
+void lexer_new(const char *input, struct info_lexer *info)
 {
-    size_t *cap = malloc(sizeof(size_t));
-    *cap = 20;
-    struct lexer *new = malloc(20 * sizeof(struct lexer));
     size_t *i = malloc(sizeof(size_t));
     *i = 0;
-    size_t *index = malloc(sizeof(size_t));
-    *index = 1;
     size_t nb = 0;
     for (; *i <= strlen(input); *i = *i + 1)
     {
       nb = 0;
       if (is_space(input[*i]) || input[*i] == '[' || input[*i] == ']')
         continue;
-      if (*cap < (*index + 2))
+      if (*info->cap < (*info->index + 2))
       {
-          *cap *= 2;
-          new = realloc(new, *cap * sizeof(struct lexer));
+          *info->cap *= 2;
+          info->lexer = realloc(info->lexer, *info->cap * sizeof(struct lexer));
       }
       switch (input[*i])
       {
           case ('\n'):
-              new[*index - 1].current_tok = token_new(TOKEN_LINE_BREAK);
-              new[*index - 1].current_tok->value = NULL;
+              info->lexer[*info->index - 1].current_tok = token_new(TOKEN_LINE_BREAK);
+              info->lexer[*info->index - 1].current_tok->value = NULL;
               break;
              /*
                * Testing for end of file
                */
           case ('\0'):
-              new[*index - 1].current_tok = token_new(TOKEN_EOF);
-              new[*index - 1].current_tok->value = NULL;
+              info->lexer[*info->index - 1].current_tok = token_new(TOKEN_EOF);
+              info->lexer[*info->index - 1].current_tok->value = NULL;
               //printf("end of file \n");
               break;
           case (';'):
-              new[*index - 1].current_tok = token_new(TOKEN_SEMICOLON);
-              new[*index - 1].current_tok->value = NULL;
+              info->lexer[*info->index - 1].current_tok = token_new(TOKEN_SEMICOLON);
+              info->lexer[*info->index - 1].current_tok->value = NULL;
               //printf("lol;;;;;lol\n");
               break;
               /*
@@ -235,19 +230,19 @@ struct lexer *lexer_new(const char *input)
           case ('|'):
               if (*i + 1 < strlen(input) && input[*i + 1] == '|')
               {
-                new[*index - 1].current_tok = token_new(TOKEN_OR);
-                new[*index - 1].current_tok->value = NULL;
+                info->lexer[*info->index - 1].current_tok = token_new(TOKEN_OR);
+                info->lexer[*info->index - 1].current_tok->value = NULL;
                 nb++;
               }
               else
               {
-                new[*index - 1].current_tok = token_new(TOKEN_PIPE);
-                new[*index - 1].current_tok->value = NULL;
+                info->lexer[*info->index - 1].current_tok = token_new(TOKEN_PIPE);
+                info->lexer[*info->index - 1].current_tok->value = NULL;
               }
               break;
           case ('!'):
-              new[*index - 1].current_tok = token_new(TOKEN_NEG);
-              new[*index - 1].current_tok->value = NULL;
+              info->lexer[*info->index - 1].current_tok = token_new(TOKEN_NEG);
+              info->lexer[*info->index - 1].current_tok->value = NULL;
               break;
               /*
                * Testing for Redirections
@@ -255,7 +250,7 @@ struct lexer *lexer_new(const char *input)
           case ('<'):
               if (*i + 1 < strlen(input) && input[*i + 1] == '&')
               {
-                new[*index - 1].current_tok = token_new(TOKEN_REDIR_INPUT_DESCRIPEUR);
+                info->lexer[*info->index - 1].current_tok = token_new(TOKEN_REDIR_INPUT_DESCRIPEUR);
                 nb = 2;
                 while (input[*i + nb] == ' ')
                 {
@@ -268,8 +263,8 @@ struct lexer *lexer_new(const char *input)
                   {
                     nb++;
                   }
-                  new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
-                  new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                  info->lexer[*info->index - 1].current_tok->value = strndup(input + *i + tmp, nb);
+                  info->lexer[*info->index - 1].current_tok->value[nb - tmp] = '\0';
                   nb--;
                 }
                 else
@@ -277,13 +272,13 @@ struct lexer *lexer_new(const char *input)
                   char *tmp = malloc(2 * sizeof(char));
                   tmp[0] = '0';
                   tmp[1] = '\0';
-                  new[*index - 1].current_tok->value = tmp;
+                  info->lexer[*info->index - 1].current_tok->value = tmp;
                   nb--;
                 }
               }
               else if (*i + 1 < strlen(input) && input[*i + 1] == '>')
               {
-                new[*index - 1].current_tok = token_new(TOKEN_REDIR_RW);
+                info->lexer[*info->index - 1].current_tok = token_new(TOKEN_REDIR_RW);
                 nb = 2;
                 while (input[*i + nb] == ' ')
                 {
@@ -294,13 +289,13 @@ struct lexer *lexer_new(const char *input)
                 {
                   nb++;
                 }
-                new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
-                new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                info->lexer[*info->index - 1].current_tok->value = strndup(input + *i + tmp, nb);
+                info->lexer[*info->index - 1].current_tok->value[nb - tmp] = '\0';
                 nb--;
               }
               else
               {
-                new[*index - 1].current_tok = token_new(TOKEN_REDIR_ENTREE);
+                info->lexer[*info->index - 1].current_tok = token_new(TOKEN_REDIR_ENTREE);
                 nb = 1;
                 while (input[*i + nb] == ' ')
                 {
@@ -311,8 +306,8 @@ struct lexer *lexer_new(const char *input)
                 {
                   nb++;
                 }
-                new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
-                new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                info->lexer[*info->index - 1].current_tok->value = strndup(input + *i + tmp, nb);
+                info->lexer[*info->index - 1].current_tok->value[nb - tmp] = '\0';
                 nb--;
               }
               break;
@@ -320,7 +315,7 @@ struct lexer *lexer_new(const char *input)
           case ('>'):
               if (*i + 1 < strlen(input) && input[*i + 1] == '&')
               {
-                new[*index - 1].current_tok = token_new(TOKEN_REDIR_DESCRIPEUR);
+                info->lexer[*info->index - 1].current_tok = token_new(TOKEN_REDIR_DESCRIPEUR);
                 nb = 2;
                 while (input[*i + nb] == ' ')
                 {
@@ -333,8 +328,8 @@ struct lexer *lexer_new(const char *input)
                   {
                     nb++;
                   }
-                  new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
-                  new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                  info->lexer[*info->index - 1].current_tok->value = strndup(input + *i + tmp, nb);
+                  info->lexer[*info->index - 1].current_tok->value[nb - tmp] = '\0';
                   nb--;
                 }
                 else
@@ -342,13 +337,13 @@ struct lexer *lexer_new(const char *input)
                   char *tmp = malloc(2 * sizeof(char));
                   tmp[0] = '1';
                   tmp[1] = '\0';
-                  new[*index - 1].current_tok->value = tmp;
+                  info->lexer[*info->index - 1].current_tok->value = tmp;
                   nb--;
                 }
               }
               else if (*i + 1 < strlen(input) && input[*i + 1] == '>')
               {
-                new[*index - 1].current_tok = token_new(TOKEN_REDIR_FIN_FICHIER);
+                info->lexer[*info->index - 1].current_tok = token_new(TOKEN_REDIR_FIN_FICHIER);
                 nb = 2;
                 while (input[*i + nb] == ' ')
                 {
@@ -359,13 +354,13 @@ struct lexer *lexer_new(const char *input)
                 {
                   nb++;
                 }
-                new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
-                new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                info->lexer[*info->index - 1].current_tok->value = strndup(input + *i + tmp, nb);
+                info->lexer[*info->index - 1].current_tok->value[nb - tmp] = '\0';
                 nb--;
               }
               else if (*i + 1 < strlen(input) && input[*i + 1] == '|')
               {
-                new[*index - 1].current_tok = token_new(TOKEN_REDIR_PIPE);
+                info->lexer[*info->index - 1].current_tok = token_new(TOKEN_REDIR_PIPE);
                 nb = 2;
                 while (input[*i + nb] == ' ')
                 {
@@ -376,13 +371,13 @@ struct lexer *lexer_new(const char *input)
                 {
                   nb++;
                 }
-                new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
-                new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                info->lexer[*info->index - 1].current_tok->value = strndup(input + *i + tmp, nb);
+                info->lexer[*info->index - 1].current_tok->value[nb - tmp] = '\0';
                 nb--;
               }
               else
               {
-                new[*index - 1].current_tok = token_new(TOKEN_REDIR_SORTIE);
+                info->lexer[*info->index - 1].current_tok = token_new(TOKEN_REDIR_SORTIE);
                 nb = 1;
                 while (input[*i + nb] == ' ')
                 {
@@ -393,32 +388,32 @@ struct lexer *lexer_new(const char *input)
                 {
                   nb++;
                 }
-                new[*index - 1].current_tok->value = strndup(input + *i + tmp, nb);
-                new[*index - 1].current_tok->value[nb - tmp] = '\0';
+                info->lexer[*info->index - 1].current_tok->value = strndup(input + *i + tmp, nb);
+                info->lexer[*info->index - 1].current_tok->value[nb - tmp] = '\0';
                 nb--;
               }
               break;
           case ('\''):
-              new[*index - 1].current_tok = token_new(TOKEN_SIMPLE_QUOTE);
+              info->lexer[*info->index - 1].current_tok = token_new(TOKEN_SIMPLE_QUOTE);
               nb = 1;
               while (*i + nb < strlen(input) && input[*i + nb] != '\0'
               && input[*i + nb] != '\'')
               {
                 nb++;
               }
-              new[*index - 1].current_tok->value = strndup(input + *i + 1, nb - 1);
-              new[*index - 1].current_tok->value[nb - 1] = '\0';
+              info->lexer[*info->index - 1].current_tok->value = strndup(input + *i + 1, nb - 1);
+              info->lexer[*info->index - 1].current_tok->value[nb - 1] = '\0';
               break;
           case ('\"'):
-              new[*index - 1].current_tok = token_new(TOKEN_DOUBLE_QUOTE);
+              info->lexer[*info->index - 1].current_tok = token_new(TOKEN_DOUBLE_QUOTE);
               nb = 1;
               while (*i + nb < strlen(input) && input[*i + nb] != '\0'
               && input[*i + nb] != '\"')
               {
                 nb++;
               }
-              new[*index - 1].current_tok->value = strndup(input + *i + 1, nb - 1);
-              new[*index - 1].current_tok->value[nb - 1] = '\0';
+              info->lexer[*info->index - 1].current_tok->value = strndup(input + *i + 1, nb - 1);
+              info->lexer[*info->index - 1].current_tok->value[nb - 1] = '\0';
               break;
           default:
           if (*i < strlen(input))
@@ -428,12 +423,12 @@ struct lexer *lexer_new(const char *input)
               for_s->i = malloc(sizeof(size_t));
               for_s->cap = malloc(sizeof(size_t));
               *for_s->i = *i;
-              *for_s->cap = *cap;
+              *for_s->cap = *info->cap;
               //printf("before input[i]=%c\n", input[*for_s->i]);
-              for_s = spe_token(input, index, for_s, new);
+              for_s = spe_token(input, info->index, for_s, info->lexer);
               //printf("after input[i]=%c\n", input[*for_s->i]);
               *i = *for_s->i;
-              *cap = *for_s->cap;
+              *info->cap = *for_s->cap;
               free(for_s->i);
               free(for_s->cap);
               free(for_s);
@@ -441,15 +436,12 @@ struct lexer *lexer_new(const char *input)
           }
               break;
         }
-        new[*index].input = input;
-        new[*index].pos = *i;
+        info->lexer[*info->index].input = input;
+        info->lexer[*info->index].pos = *i;
         *i = *i + nb;
-        *index = *index + 1;
+        *info->index = *info->index + 1;
     }
-    free(index);
     free(i);
-    free(cap);
-    return new;
 }
 
 void lexer_free(struct lexer *lexer)
