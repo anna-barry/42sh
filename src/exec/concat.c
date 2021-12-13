@@ -79,10 +79,10 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     free(indice);
     if (inter == NULL)
     {
-        // char *res = malloc(sizeof(char));
-        // res = NULL;
+        char *res = malloc(sizeof(char));
+        res = NULL;
         free(argv);
-        return NULL;
+        return res;
     }
     cap = 200;
     char *res = malloc(sizeof(char) * cap);
