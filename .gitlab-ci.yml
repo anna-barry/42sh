@@ -77,6 +77,13 @@ week_3:
   script:
     - tests/week3/test_dot builddir/42sh
 
+elif_is_a_bitch:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - tests/week3/test_elif builddir/42sh
+
 clang-format:
   stage: qa
   needs: []
