@@ -207,7 +207,7 @@ int get_command(struct info_lexer *i_lex, struct ast_command *new)
         token_free(lexer_pop(lex));
         return 0;
     }
-    if (type != TOKEN_WORDS && type != TOKEN_FOR_WORD)
+    if (type != TOKEN_WORDS && type != TOKEN_FOR_WORD && !(type >= 11 && type <= 17))
         return 1;
     int capy = 30;
     new->argv = malloc(sizeof(char *) * 30);
@@ -668,7 +668,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             ast->nb_children--;
         }
         // IF WORD IS WORD OR SEMICOLON MAKE COMMAND
-        else if (type == TOKEN_WORDS || type == TOKEN_FOR_WORD || type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
+        else if (type == TOKEN_WORDS || type == TOKEN_FOR_WORD || type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK || (type >= 11 && type <= 17))
             make_command(ast, i_lex, mode);
         else if (type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE)
             make_simple_quote(ast, lex);
