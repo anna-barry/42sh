@@ -1,4 +1,5 @@
 subdir('lexer')
 subdir('functionnal')
 subdir('parser')
+subdir('exec')
 subdir('commands')
