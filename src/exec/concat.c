@@ -79,8 +79,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     free(indice);
     if (inter == NULL)
     {
-        char *res = malloc(sizeof(char));
-        res = NULL;
+        char *res = NULL;
         free(argv);
         return res;
     }
