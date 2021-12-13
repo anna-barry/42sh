@@ -17,7 +17,7 @@ int main()
     //char *input = "if false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; else echo b; fi";
     //char *input = "if echo \"ls\"; then echo 'foo' bar; echo okay; elif echo bebe; echo a ; then echo christian; echo anna laime; fi";
     //char *input = "if echo b; echo a; then echo a; fi; else echo a";
-    //char *input = "while echo a || echo b; do echo b;";
+    char *input = "while echo a || echo b; do echo b;";
     //char *input = "until echo a || echo b; do echo b; done";
     //char *input = "until echo a || echo b; do echo b; done";
     //char *input = "for i in word; do echo a; done";
@@ -28,7 +28,9 @@ int main()
     //char *input = "cat music.mp3 > /dev/audio";
     //char *input = "Mail -s \"Subject\" to-address < Filenam";
     //char *input = "myprogram 2 >errorsfile";
-    char *input = "ls pt ABC > dirlist 2 >&1";
+    //char *input = "ls pt ABC > dirlist 2 >&1";
+    //char *input = "if [ 1 -eq 2 ];then echo aa; elif echo baba; then echo b; fi";
+    //char *input = "for i in word; do echo a; done > cat";
     struct info_lexer *new = lexer_init();
     lexer_new(input, new);
     struct ast *ast = build_ast(new, NODE_ROOT);
