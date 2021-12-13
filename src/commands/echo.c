@@ -24,9 +24,11 @@ int echo(char *argv[], int count)
         i = 2;
     for (; i < count; i++)
     {
+        //printf("\ncount %i is %s \n", i, argv[i]);
         if (argv[i] == NULL)
         {
-            continue;
+            //continue;
+            break;
         }
         for (int j = 0; argv[i][j]; j++)
         {
@@ -56,7 +58,8 @@ int echo(char *argv[], int count)
             else
                 printf("%c", argv[i][j]);
         }
-        if (i != count - 1)
+        //printf("\ncount is %i\n", count);
+        if (count > 1 && i != count - 1)
         {
             printf(" ");
         }
