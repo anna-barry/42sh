@@ -211,7 +211,8 @@ void concat_node(struct ast *node1, struct ast *node2,
     {
         struct ast_double_quote *a2 = node2->data.ast_double_quote;
         struct ast_command *a1 = node1->data.ast_command;
-        char **res = malloc(sizeof(char *) * (1 + a1->count));
+        char **res = malloc(sizeof(char *) * (2 + a1->count));
+        res[a1->count + 1] = NULL;
         int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
@@ -226,6 +227,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
+                free(a1->argv[a]);
                 index += 1;
             }
             else
@@ -233,12 +235,13 @@ void concat_node(struct ast *node1, struct ast *node2,
                 a1->count -= 1;
             }
         }
+        free(a1->argv);
         if (a2->argv != NULL)
         {
             res[index] = strndup(a2->argv, strlen(a2->argv));
+            free(a2->argv);
             a1->count += 1;
         }
-        free(a1->argv);
         a1->argv = res;
     }
     else if (node1->type == NODE_COMMAND && node2->type == NODE_COMMAND)
@@ -248,7 +251,6 @@ void concat_node(struct ast *node1, struct ast *node2,
         char **res = malloc(sizeof(char *) * (a1->count + a2->count));
         int index = 0;
         int a = 0;
-        int nb_free = a1->count;
         for (; a < a1->count; a++)
         {
             if (strcmp(a1->argv[a], "exit"))
@@ -286,8 +288,6 @@ void concat_node(struct ast *node1, struct ast *node2,
                 a1->count += 1;
             }
         }
-        for (int i = 0; i < nb_free; i++)
-            free(a1->argv[i]);
         free(a1->argv);
         a1->argv = res;
     }
