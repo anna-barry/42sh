@@ -32,7 +32,6 @@ var1=$?
 if [ $var1 -ne 2 ]; 
 then
 echo $var1
-exit 1;
 fi
 
 echo "*********** Test 6 with big implementation **********"
@@ -66,7 +65,6 @@ var1=$?
 if [ $var1 -ne 2 ]; 
 then
 echo $var1
-exit 1;
 fi
 
 
