@@ -15,6 +15,36 @@
 
 int exec_ast(struct ast *ast, struct environnement *env);
 
+
+
+
+int exec_ast_if(struct ast *ast, struct environnement *env)
+{
+    //printf("____________________________\nif \n");
+    if (env == NULL)
+        return 1;
+    if (env->exit_status != -1)
+        return env->exit_status;
+    struct ast_if *a = ast->data.ast_if;
+    int res = exec_ast(a->cond, env);
+    //printf("res is: %i\n", res);
+    if (env->exit_status != -1)
+        return env->exit_status;
+    if (res == 0)
+    {
+        //printf("in then \n");
+        exec_ast(a->then, env);
+        if (env->exit_status != -1)
+            return env->exit_status;
+    }
+    else
+    {
+        a->then = NULL;
+    }
+    //printf("end if \n");
+    return res;
+}
+
 int exec_ast_if_root(struct ast *ast, struct environnement *env)
 {
     //("if root \n");
@@ -29,11 +59,28 @@ int exec_ast_if_root(struct ast *ast, struct environnement *env)
         if (env->exit_status != -1)
             return env->exit_status;
         a->status = exec_ast(a->children[i], env);
+        //printf("after exec ast %i: status\n", a->status);
+        /*if (a->children[i]->type == NODE_IF)
+        {
+            //printf("\n node if \n");
+            if (a->status == 127)
+                break;
+        }
+        if (a->children[i]->type == NODE_ELIF)
+        {
+            printf("\n node elif \n");
+            //if (a->status == 127)
+            //break;
+        }*/
         if (env->exit_status != -1)
             return env->exit_status;
         if (a->status == 0)
+        {
+           // printf("in if status %i\n", a->status);
             break;
+        }
     }
+    //printf("end if root\n");
     return a->status;
 }
 
@@ -210,25 +257,6 @@ int exec_ast_root(struct ast *ast, struct environnement *env)
     return res;
 }
 
-int exec_ast_if(struct ast *ast, struct environnement *env)
-{
-    if (env == NULL)
-        return 1;
-    if (env->exit_status != -1)
-        return env->exit_status;
-    struct ast_if *a = ast->data.ast_if;
-    int res = exec_ast(a->cond, env);
-    if (env->exit_status != -1)
-        return env->exit_status;
-    if (res == 0)
-    {
-        exec_ast(a->then, env);
-        if (env->exit_status != -1)
-            return env->exit_status;
-    }
-    return res;
-}
-
 int exec_ast_elif(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
@@ -238,9 +266,13 @@ int exec_ast_elif(struct ast *ast, struct environnement *env)
     // printf("elif\n");
     struct ast_elif *a = ast->data.ast_elif;
     int res = exec_ast(a->cond, env);
+    if (env->exit_status != -1)
+        return env->exit_status;
     if (res == 0)
     {
         exec_ast(a->then, env);
+        if (env->exit_status != -1)
+            return env->exit_status;
     }
     return res;
 }
@@ -279,6 +311,12 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     if (env->exit_status != -1)
         return env->exit_status;
     struct ast_command *a = ast->data.ast_command;
+   /* printf("___________________________________\n");
+    for (int i = 0; i < a->count; i++)
+    {
+        printf("command: %s\n", a->argv[i]);
+    }*/
+    
     char **tab = get_all_var(a->argv[0]);
     if (tab != NULL)
     {
@@ -320,6 +358,9 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     }
     if (env->exit_status != -1)
         return env->exit_status;
+    //printf("return value is %i\n", return_value);
+    //printf("___________________________________\n");
+    
     return return_value;
 }
 
@@ -354,6 +395,7 @@ int execution(struct ast *ast, struct environnement *env)
     if (env->exit_status != -1)
         return env->exit_status;
     int res = exec_ast(ast, env);
+   // printf("end of execution\n");
     if (env->exit_status != -1)
         return env->exit_status;
     return res;

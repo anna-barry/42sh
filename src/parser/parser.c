@@ -156,12 +156,13 @@ struct ast_for *create_for()
 void ask_entry(struct info_lexer *i_lex)
 {
     write(1, ">", 1);
-    char buf[500]; // chiffre basic jsp mettre on testera
+    char buf[500];
     scanf("%499[^\n]", buf);
     clear_info(i_lex);
     lexer_new(buf, i_lex);
 }
 
+//gets the type of redir of chars if existing, else does nothing
 int get_opt(struct lexer *lex, struct ast_command *new)
 {
     enum token_type type = lexer_peek(lex)->type;
@@ -263,6 +264,9 @@ struct ast *get_then(struct info_lexer *i_lex, enum ast_type mode)
     return new;
 }
 
+//when a pipe is found: replaces child by a pipe and puts child as the 
+//left child of root
+//right is the next args
 void get_pipe(struct ast_main_root *ast, struct info_lexer *i_lex)
 {
     struct ast_pipe *new_pipe = create_pipe();
@@ -277,6 +281,7 @@ void get_pipe(struct ast_main_root *ast, struct info_lexer *i_lex)
     ast->children[ast->nb_children - 1]->data.ast_pipe = new_pipe;
 }
 
+//same as pipe with and
 void get_and(struct ast *ast, struct info_lexer *i_lex, enum ast_type mode)
 {
     struct ast_and *new_and = create_and();
@@ -290,6 +295,7 @@ void get_and(struct ast *ast, struct info_lexer *i_lex, enum ast_type mode)
     ast->data.ast_and = new_and;
 }
 
+//same as or with or
 void get_or(struct ast *ast, struct info_lexer *i_lex, enum ast_type mode)
 {
     struct ast_or *new_or = create_or();

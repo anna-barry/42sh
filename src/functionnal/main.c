@@ -131,20 +131,20 @@ char *find_input(int argc, char *argv[])
 *
 * Catching sigint
 *
-*/
+*
 
 static void sigintHandler(int sig)
 {
     printf("int sig %i \n", sig);
 }
-
+*/
 
 int main(int argc, char *argv[])
 {
     if (argc < 1)
         fprintf(stderr, "Number of arguments not correct");
 
-    signal(SIGINT, sigintHandler);
+   // signal(SIGINT, sigintHandler);
 
     int res_e = 2;
     int pretty_print = 0;
