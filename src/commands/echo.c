@@ -7,15 +7,18 @@
 int echo(char *argv[], int count)
 {
     int flag = 0;
-    if (argv[1] == NULL)
+    if (count == 2 && argv[1] == NULL)
     {
-        printf("\n");
         return 0;
     }
-    else if (count > 1 && strcmp("-n", argv[1]) == 0)
+    else if (argv[1] != NULL && count > 2 && strcmp("-n", argv[1]) == 0)
+    {
         flag = 2;
-    else if (count > 1 && strcmp("-e", argv[1]) == 0)
+    }
+    else if (argv[1] != NULL && count > 2 && strcmp("-e", argv[1]) == 0)
+    {
         flag = 1;
+    }
     int i = 1;
     if (flag > 0)
         i = 2;
@@ -23,7 +26,7 @@ int echo(char *argv[], int count)
     {
         if (argv[i] == NULL)
         {
-            break;
+            continue;
         }
         for (int j = 0; argv[i][j]; j++)
         {
