@@ -275,6 +275,7 @@ void concat_node(struct ast *node1, struct ast *node2,
                 a1->count -= 1;
             }
         }
+        free(a1->argv);
         for (a = 0; a < a2->count; a++)
         {
             if (strcmp(a2->argv[a], "exit"))
@@ -293,7 +294,6 @@ void concat_node(struct ast *node1, struct ast *node2,
                 a1->count += 1;
             }
         }
-        free(a1->argv);
         free(a2->argv);
         a1->argv = res;
     }
