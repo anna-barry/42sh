@@ -43,8 +43,11 @@ int main(int argc, char *argv[])
     if (token->type == TOKEN_EOF)
         printf("EOF\n");
 
-    //token_free(token);
-    if (argc > 1)
+    if (argc == 2)
+    {
+        token_free(token);
+    }
+    if (argc > 2)
     {
         printf("clear\n\n");
         clear_info(new);

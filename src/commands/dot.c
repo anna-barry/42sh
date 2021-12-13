@@ -74,6 +74,7 @@ int my_dot(char *argv[], int count, struct environnement *env)
         token_free(lexer_pop(new->lexer));
         lexer_info_free(new);
         my_pretty_free(ast);
+        free((void *)input);
     }
     else
     {   
@@ -92,7 +93,7 @@ int my_dot(char *argv[], int count, struct environnement *env)
         lexer_info_free(new);
         my_pretty_free(ast);
         free_environnement(env2);
-        //free((void *)input);
+        free((void *)input);
     }
     //}
     return  res_e;
