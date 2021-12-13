@@ -203,7 +203,7 @@ int get_command(struct info_lexer *i_lex, struct ast_command *new)
         new->argv = malloc(sizeof(char *));
         new->argv[0] = NULL;
         new->count = 1;
-        printf("test\n");
+        //printf("test\n");
         token_free(lexer_pop(lex));
         return 0;
     }
@@ -602,7 +602,7 @@ void make_neg(struct ast_main_root *ast, struct info_lexer *i_lex, enum ast_type
 int check_break(enum ast_type mode, enum token_type type)
 {
     // ajouter gestion d'erreur ici avec les ; et les double pipe etc
-    printf("MODE = %d\n, TYPE = %d\n", mode, type);
+    //printf("MODE = %d\n, TYPE = %d\n", mode, type);
     if (mode == NODE_ROOT && type == TOKEN_EOF)// each function must handle asking tnew info
         return 0;
     if (mode == NODE_IF || mode == NODE_ELIF)
@@ -646,9 +646,9 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
     ast->children = malloc(sizeof(struct ast *) * 30);
     while (lex && check_break(mode, type))
     {
-        printf("MODE = %d\n", mode);
-        printf("TYPE = %d\n", type);
-        print(lex);
+        //printf("MODE = %d\n", mode);
+        //printf("TYPE = %d\n", type);
+        //print(lex);
         ast->nb_children++;
         if (ast->nb_children >= count)
         {
@@ -692,9 +692,6 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
           errx(2, "wrong implementation");
         if (lexer_peek(lex))
           type = lexer_peek(lex)->type;
-        print(lex);
-        printf("MODE = %d\n", mode);
-        printf("TYPE = %d\n", type);
     }
     new_ast->data.ast_main_root = ast;
     new_ast->type = NODE_ROOT;
