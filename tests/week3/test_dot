@@ -6,5 +6,5 @@ diff <(./builddir/42sh -c "./tests/week3/test1.sh") <(printf "c
 
 echo "*********** Test 2 dot ***********"
 diff <(./builddir/42sh -c ". tests/week3/test2.sh") <(printf "a 
-c
+b
 ")
