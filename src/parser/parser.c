@@ -698,7 +698,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
           type = lexer_peek(lex)->type;
         //printf("TYPE = %d\n", type);
     }
-    print(lex);
+    //print(lex);
     new_ast->data.ast_main_root = ast;
     new_ast->type = NODE_ROOT;
     return new_ast;
