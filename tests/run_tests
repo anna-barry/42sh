@@ -1,13 +1,3 @@
 #!/bin/sh
 
-gcc src/lexer/lexer.c src/lexer/token.c src/lexer/token_printer.c src/lexer/lexer_added.c src/lexer/for_lexer.c -o token_printer
-echo "********* Testing Lexer 1 ***********"
-./token_printer "If echo 'hello my name is ' Anna; then echo bs"
-var1=$?
-rm ./token_printer
-if [ $var1 -ne 0 ]; 
-then
-echo "error"
-exit 1;
-fi
 echo "done [ok] "
