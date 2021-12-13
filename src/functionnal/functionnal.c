@@ -172,6 +172,12 @@ int is_var(char *command)
 
 char **get_all_var(char *command)
 {
+    //printf("%s is command \n", command);
+    if (command == NULL)
+    {
+       return NULL;
+    }
+    
     int res = is_var(command);
     if (res == -1)
     {
