@@ -1,9 +1,9 @@
 #!/bin/bash
 
 echo "*********** Test 1 dot ***********"
-diff <(./builddir/42sh -c "./test1.sh") <(printf "a
+diff <(./builddir/42sh -c "./tests/week3/test1.sh") <(printf "a
 ")
 
 echo "*********** Test 2 dot ***********"
-diff <(./builddir/42sh -c ". test2.sh") <(printf "a
+diff <(./builddir/42sh -c ". tests/week3/test2.sh") <(printf "a
 ")
