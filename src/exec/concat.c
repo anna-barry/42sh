@@ -248,6 +248,7 @@ void concat_node(struct ast *node1, struct ast *node2,
         char **res = malloc(sizeof(char *) * (a1->count + a2->count));
         int index = 0;
         int a = 0;
+        int nb_free = a1->count;
         for (; a < a1->count; a++)
         {
             if (strcmp(a1->argv[a], "exit"))
@@ -285,6 +286,8 @@ void concat_node(struct ast *node1, struct ast *node2,
                 a1->count += 1;
             }
         }
+        for (int i = 0; i < nb_free; i++)
+            free(a1->argv[i]);
         free(a1->argv);
         a1->argv = res;
     }
