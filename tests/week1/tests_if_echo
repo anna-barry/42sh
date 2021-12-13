@@ -29,7 +29,7 @@ echo "*********** Test 5 with wrong implementation **********"
 diff <(./builddir/42sh -c "if echo b; echo a then echo a fi else echo a") <(printf "42sh: wrong implementation
 ")
 var1=$?
-if [ $var1 -ne 2 ]; 
+if [ $var1 -ne 2 ];
 then
 echo $var1
 fi
@@ -55,16 +55,14 @@ diff <(./builddir/42sh -c "for i in word; do echo $i; done") <(printf "word
 ")
 
 echo "************ Test 11 nothing to print ************"
-diff <(./builddir/42sh -c "if ! echo a; then echo b; fi") <(printf "
+diff <(./builddir/42sh -c "if ! echo a; then echo b; fi") <(printf "a
 ")
 
 echo "*************Test 12 if with errors **************"
 diff <(./builddir/42sh -c "if echo b; echo a; then echo a; fi; else echo a") <(printf "42sh: wrong implementation
 ")
 var1=$?
-if [ $var1 -ne 2 ]; 
+if [ $var1 -ne 2 ];
 then
 echo $var1
 fi
-
-
