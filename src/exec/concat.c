@@ -176,7 +176,7 @@ void concat_node(struct ast *node1, struct ast *node2,
     {
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_simple_quote *a2 = node2->data.ast_simple_quote;
-        char **res = malloc(sizeof(char *) * (1 + a1->count));
+        char **res = malloc(sizeof(char *) * (2 + a1->count));
         res[a1->count + 1] = NULL;
         int index = 0;
         for (int a = 0; a < a1->count; a++)
@@ -250,7 +250,8 @@ void concat_node(struct ast *node1, struct ast *node2,
     {
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_command *a2 = node2->data.ast_command;
-        char **res = malloc(sizeof(char *) * (a1->count + a2->count));
+        char **res = malloc(sizeof(char *) * (a1->count + a2->count + 1));
+        res[a1->count + a2->count] = NULL;
         int index = 0;
         int a = 0;
         for (; a < a1->count; a++)
@@ -274,6 +275,7 @@ void concat_node(struct ast *node1, struct ast *node2,
                 a1->count -= 1;
             }
         }
+        free(a1->argv);
         for (a = 0; a < a2->count; a++)
         {
             if (strcmp(a2->argv[a], "exit"))
@@ -292,7 +294,6 @@ void concat_node(struct ast *node1, struct ast *node2,
                 a1->count += 1;
             }
         }
-        free(a1->argv);
         free(a2->argv);
         a1->argv = res;
     }
