@@ -20,6 +20,8 @@ int is_dot(char *c)
 char *get_input(char *path)
 {
     FILE * fptr = fopen (path, "r");
+    if (fptr == NULL)
+        return NULL;
     size_t cap = 300;
     char *input = malloc(cap * sizeof(char));
     size_t index = 0;
@@ -42,6 +44,7 @@ char *get_input(char *path)
         input[index++] = str1;
 		str1 = fgetc(fptr);
 	}
+    input[index] = '\0';
     fclose (fptr);
     return input;
 }
@@ -58,6 +61,11 @@ int my_dot(char *argv[], int count, struct environnement *env)
     if (count > 0 && strcmp(argv[0], ".") == 0)
     { 
         const char *input = (const char *)get_input(argv[1]);
+        if (input == NULL)
+        {
+            err(2, "Error to open file\n");
+        }
+        
         struct info_lexer *new = lexer_init();
         lexer_new(input, new);
        // struct lexer *lexer = lexer_new(input);
@@ -66,12 +74,14 @@ int my_dot(char *argv[], int count, struct environnement *env)
         token_free(lexer_pop(new->lexer));
         lexer_info_free(new);
         my_pretty_free(ast);
-        //free((void *)input);
     }
     else
     {   
-        printf("in else with (%s)\n", argv[0]);
         const char *input = (const char *)get_input(argv[0]);
+        if (input == NULL)
+        {
+            err(2, "Error to open file\n");
+        }
         struct info_lexer *new = lexer_init();
         lexer_new(input, new);
         //struct lexer *lexer = lexer_new(input);
