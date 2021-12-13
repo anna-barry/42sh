@@ -454,7 +454,8 @@ struct ast_while *build_ast_while(struct info_lexer *i_lex, int until)
     token_free(lexer_pop(lex));
     if (!lex)
         ask_entry(i_lex);
-    //token_free(lexer_pop(lex));
+    if (lexer_peek(lex)->type == TOKEN_SEMICOLON)
+        token_free(lexer_pop(lex));
     return new_root;
 }
 
@@ -505,6 +506,8 @@ struct ast_for *build_ast_for(struct info_lexer *i_lex)
   token_free(lexer_pop(lex));
   if (!lex)
       ask_entry(i_lex);
+  if (lexer_peek(lex)->type == TOKEN_SEMICOLON)
+      token_free(lexer_pop(lex));
   //token_free(lexer_pop(lex));
   return new_for;
 }
@@ -662,6 +665,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
         else if (type == TOKEN_EOF)
         {
             ask_entry(i_lex);
+            ast->nb_children--;
         }
         // IF WORD IS WORD OR SEMICOLON MAKE COMMAND
         else if (type == TOKEN_WORDS || type == TOKEN_FOR_WORD || type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
@@ -692,7 +696,9 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
           errx(2, "wrong implementation");
         if (lexer_peek(lex))
           type = lexer_peek(lex)->type;
+        //printf("TYPE = %d\n", type);
     }
+    print(lex);
     new_ast->data.ast_main_root = ast;
     new_ast->type = NODE_ROOT;
     return new_ast;
