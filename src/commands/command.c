@@ -3,6 +3,7 @@
 #include <err.h>
 
 #include "../functionnal/functionnal.h"
+#include "cd.h"
 #include "echo.h"
 //#include <errno.h>
 //#include <fcntl.h>
@@ -15,6 +16,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+/*
 int command_exit(char *command[], int count, struct environnement *env)
 {
     int start = 0;
@@ -27,6 +29,7 @@ int command_exit(char *command[], int count, struct environnement *env)
     env->exit_status = start;
     return 0;
 }
+*/
 
 int command_break(struct environnement *env)
 {
@@ -40,13 +43,20 @@ int command_continue(struct environnement *env)
     return 0;
 }
 
-int command_exec(char *argv[],
-                 int count, struct environnement *env) // the command should be as : char *argv[4] = {
-                            // "echo", "geoffroy", "geoffroy", NULL };
-                            // the NULL argument is nessessary.
+int command_exec(char *argv[], int count, struct environnement *env)
 {
     if (strcmp("echo", argv[0]) == 0)
         return echo(argv, count);
+    else if (strcmp("exit", argv[0]) == 0)
+    {
+        env->exit_status = atoi(argv[1]);
+        return env->exit_status;
+    }
+    else if (strcmp("cd", argv[0]) == 0)
+        if (count == 2)
+            return cd(argv[1]);
+        else
+            return 1;
     else if (is_dot(argv[0]))
         return my_dot(argv, count, env);
     else
