@@ -1,12 +1,12 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "../commands/command.h"
 #include "../commands/command_pipe.h"
 #include "../commands/command_redir.h"
 #include "../functionnal/functionnal.h"
 #include "../parser/parser.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 int is_nullf(struct ast *ast)
 {
@@ -79,8 +79,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     free(indice);
     if (inter == NULL)
     {
-        char *res = malloc(sizeof(char));
-        res = NULL;
+        char *res = NULL;
         free(argv);
         return res;
     }
@@ -211,7 +210,8 @@ void concat_node(struct ast *node1, struct ast *node2,
     {
         struct ast_double_quote *a2 = node2->data.ast_double_quote;
         struct ast_command *a1 = node1->data.ast_command;
-        char **res = malloc(sizeof(char *) * (1 + a1->count));
+        char **res = malloc(sizeof(char *) * (2 + a1->count));
+        res[a1->count + 1] = NULL;
         int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
@@ -226,6 +226,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
+                free(a1->argv[a]);
                 index += 1;
             }
             else
@@ -233,12 +234,13 @@ void concat_node(struct ast *node1, struct ast *node2,
                 a1->count -= 1;
             }
         }
+        free(a1->argv);
         if (a2->argv != NULL)
         {
             res[index] = strndup(a2->argv, strlen(a2->argv));
+            free(a2->argv);
             a1->count += 1;
         }
-        free(a1->argv);
         a1->argv = res;
     }
     else if (node1->type == NODE_COMMAND && node2->type == NODE_COMMAND)
