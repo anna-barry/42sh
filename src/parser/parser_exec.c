@@ -1,6 +1,9 @@
+
+
 #include "parser_exec.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "../commands/command.h"
@@ -126,6 +129,54 @@ int exec_ast_until(struct ast *ast, struct environnement *env)
     }
     return 0;
 }
+
+/*
+int exec_ast_for(struct ast *ast, struct environnement *env)
+{
+    if (env == NULL)
+        return 1;
+    struct ast_for *a = ast->data.ast_for;
+    struct environnement *e_inter = env;
+    if (a->cond->type == NODE_FOR_INT)
+    {
+        struct ast_for *inter = ast->data.ast_for;
+        struct read_for_int *a_inter = a->cond->data.ast_for_int;
+        for (int i = a_inter->start; i < a_inter->end; a += a_inter->step)
+        {
+            char *val = malloc(sizeof(char) * 1000);
+            memset(val, '\0', sizeof(char) * 1000);
+            itoa(i, val, 10);
+            update_variable(a->var, val, e_inter);
+            exec_ast(ast->then, inter);
+            ast->then = inter->then;
+        }
+    }
+    else if (a->cond->type == NODE_FOR_CHAR)
+    {
+        struct ast_for_char *a_inter1 = a->cond.ast_for_char->var;
+        struct ast_main_root a_inter = a_inter1->data.ast_command;
+        int pere = 0;
+        for (int i = 1; i < a->nb_children; i++)
+        {
+            if (a_inter->children[i]->type == NODE_DOUBLE_QUOTE
+                || a_inter->children[i]->type == NODE_SIMPLE_QUOTE
+                || a_inter->children[i]->type == NODE_COMMAND)
+            {
+                concat_node(a_inter->children[pere], a_inter->children[i], env);
+            }
+        }
+        struct ast *a_par = ast->then;
+        char **command_inter = a_par->argv;
+        for (int e = 0; e < a_par->count; e++)
+        {
+            update_variable(a->var, a_par->argv[e], inter);
+            exect_ast(a->then, inter);
+            ast->then = a_par;
+        }
+    }
+    return 0;
+}
+*/
 
 int is_nullf(struct ast *ast)
 {
