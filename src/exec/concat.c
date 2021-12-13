@@ -1,12 +1,12 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "../commands/command.h"
 #include "../commands/command_pipe.h"
 #include "../commands/command_redir.h"
 #include "../functionnal/functionnal.h"
 #include "../parser/parser.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 int is_nullf(struct ast *ast)
 {
@@ -79,10 +79,10 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     free(indice);
     if (inter == NULL)
     {
-        char *res = malloc(sizeof(char));
-        res = NULL;
+        // char *res = malloc(sizeof(char));
+        // res = NULL;
         free(argv);
-        return res;
+        return NULL;
     }
     cap = 200;
     char *res = malloc(sizeof(char) * cap);
