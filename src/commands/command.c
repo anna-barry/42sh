@@ -43,45 +43,20 @@ int command_continue(struct environnement *env)
     return 0;
 }
 
-int command_exec(char *argv[], int count, struct environnement *env)
+int my_execute(char *argv[])
 {
-    if (strcmp("echo", argv[0]) == 0)
-        return echo(argv, count);
-    else if (strcmp("exit", argv[0]) == 0)
-    {
-        env->exit_status = atoi(argv[1]);
-        return env->exit_status;
-    }
-    else if (strcmp("cd", argv[0]) == 0)
-        if (count == 2)
-            return cd(argv[1]);
-        else
-            return 1;
-    else if (is_dot(argv[0]))
-        return my_dot(argv, count, env);
-    else
-    {
-        printf("argv[0]=%s argv[1]=%s argv[2]=%s\n", argv[0], argv[1], argv[2]);
-        if (argv[count] != NULL)
-        {
-            argv[count] = NULL;
-        }
-        int wstatus = 0;
+    int wstatus = 0;
         int res_exec = 0;
         int pid = fork();
         char *command = argv[0];
         if (pid == 0)
         {
-            printf("in child\n");
-            fflush(stdout);
             res_exec = execvp(command, argv);
             if (res_exec == -1)
                 return 127;
         }
-        else
+        if (pid > 0)
         {
-            printf("in parent\n");
-            fflush(stdout);
             int res_exec = waitpid(pid, &wstatus, 0);
             if (res_exec == -1)
                 err(2, "problem in child");
@@ -94,7 +69,35 @@ int command_exec(char *argv[], int count, struct environnement *env)
                 }
             }
         }
+        if (pid < 0) {
+            printf("null great \n");
+                return -1;
+        }
         return WEXITSTATUS(wstatus); // return the return value of the command
+}
+
+int command_exec(char *argv[], int count, struct environnement *env)
+{
+    if (strcmp("echo", argv[0]) == 0)
+        return echo(argv, count);
+    else if (strcmp("exit", argv[0]) == 0)
+    {
+        env->exit_status = atoi(argv[1]);
+        return env->exit_status;
+    }
+    else if (strcmp("cd", argv[0]) == 0)
+    {
+        if (count == 2)
+            return cd(argv[1]);
+        else
+            return 1;
+    }
+    else if (is_dot(argv[0]))
+        return my_dot(argv, count, env);
+    else
+    {
+        int res = my_execute(argv);
+        return res;
     }
 }
 // int main(int argc, char *argv[])

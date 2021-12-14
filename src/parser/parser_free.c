@@ -54,7 +54,8 @@ void free_ast_if(struct ast *ast)
     free_ast(a->cond);
 
     //freef("}; then {");
-    free_ast(a->then);
+    if (a->then)
+        free_ast(a->then);
     /*if (a->cond)
         free(a->cond);
     if (a->then)
