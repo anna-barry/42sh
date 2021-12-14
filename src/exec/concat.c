@@ -192,7 +192,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
-                free(a1->argv[a]);
+                //free(a1->argv[a]);
                 index += 1;
             }
             else
@@ -209,6 +209,7 @@ void concat_node(struct ast *node1, struct ast *node2,
         free(a1->argv);
         //  ******  Test ******  //
         a1->argv = malloc(sizeof(char *) * (2 + a1->count));
+        a1->count = index;
         for (int i = 0; i < index; i++)
         {
             if (a1->argv[i])
@@ -268,8 +269,33 @@ void concat_node(struct ast *node1, struct ast *node2,
             free(a2->argv);
             a1->count += 1;
         }
-
-        a1->argv = res;
+        //  ******  Test ******  //
+        free(a1->argv);
+        a1->argv = malloc(sizeof(char *) * (2 + a1->count));
+        a1->count = index;
+        for (int i = 0; i < index; i++)
+        {
+            if (a1->argv[i])
+            {
+                free(a1->argv[i]);
+            }
+            
+            if (res[i])
+            {
+                a1->argv[i] = strndup( res[i], strlen(res[i]));
+               // free(res[i]);
+            }
+        }
+        for (int i = 0; i < 2 + a1->count; i++)
+        {
+            if (res[i])
+            {
+                free(res[i]);
+            }
+        }
+        
+        free(res);
+        //a1->argv = res;
     }
     else if (node1->type == NODE_COMMAND && node2->type == NODE_COMMAND)
     {
