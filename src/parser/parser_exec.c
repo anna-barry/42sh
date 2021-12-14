@@ -356,8 +356,8 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
         free(tab);
         return 0;
     }
-    free(tab[1]);
-    free(tab[0]);
+    //free(tab[1]);
+    //free(tab[0]);
     free(tab);
     enum opt flag = a->opt;
     int return_value = -1;
