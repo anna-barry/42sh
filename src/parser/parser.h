@@ -29,7 +29,6 @@ enum ast_type
 
 enum opt
 {
-    NONE,
     REDIR_SORTIE, ///< '>' -> 11
     REDIR_ENTREE, ///< '<' -> 12
     REDIR_DESCRIPEUR, ///< '>&' -> 13
@@ -140,7 +139,7 @@ struct ast_elif
 struct ast_for
 {
     char *var;
-    struct ast *cond; //could be either a list of command //ast_for_word : commands
+    struct ast *cond;
                 // either a struct //read_for_int [1..2..10] : begin, start, step
     struct ast *then;
 };

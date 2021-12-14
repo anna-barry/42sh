@@ -29,7 +29,7 @@ int exec_ast_if(struct ast *ast, struct environnement *env)
         return env->exit_status;
     if (res == 0)
     {
-        //printf("in then \n");
+        // printf("in then \n");
         exec_ast(a->then, env);
         if (env->exit_status != -1)
             return env->exit_status;
@@ -292,7 +292,7 @@ int exec_ast_pipe(struct ast *ast, struct environnement *env)
         return 0;
     return pipe_ast(ast, env);
 }
-/*
+
 int exec_ast_redir(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
@@ -305,32 +305,31 @@ int exec_ast_redir(struct ast *ast, struct environnement *env)
     switch (flag)
     {
     case REDIR_SORTIE: // '>'
-        return_value = ast_redir_r(a->left, a->redir, env);
+        return_value = ast_redir_r(ast, a->redir, env);
         break;
     case REDIR_ENTREE: // '<'
-        return_value = ast_redir_l(a->left, a->redir, env);
+        return_value = ast_redir_l(ast, a->redir, env);
         break;
     case REDIR_FIN_FICHIER: // '>>'
-        return_value = ast_redir_rr(a->left, a->redir, env);
+        return_value = ast_redir_rr(ast, a->redir, env);
         break;
     case REDIR_PIPE: // '>|'
-        return_value = ast_redir_r_pipe(a->left, a->redir, env);
+        return_value = ast_redir_r_pipe(ast, a->redir, env);
         break;
     case REDIR_RW: // '<>'
-        return_value = ast_redir_l(a->left, a->redir, env);
+        return_value = ast_redir_l(ast, a->redir, env);
         break;
     case REDIR_DESCRIPEUR: // '>&'
-        return_value = ast_redir_r_and(a->left, a->redir);
+        return_value = command_redir_r_and(a->command->argv, a->redir);
         break;
     case REDIR_INPUT_DESCRIPEUR: // '<&'
-        return_value = ast_redir_r_and(a->left, a->redir);
+        return_value = command_redir_r_and(a->command->argv, a->redir);
         break;
     }
     if (env->exit_status != -1)
         return env->exit_status;
     return return_value;
 }
-*/
 
 int exec_ast_command(struct ast *ast, struct environnement *env)
 {
@@ -339,23 +338,23 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     if (env->exit_status != -1)
         return env->exit_status;
     struct ast_command *a = ast->data.ast_command;
-    //printf("___________________________________\n");
+    // printf("___________________________________\n");
     /*
     for (int i = 0; i < a->count; i++)
     {
         printf("command: %s\n", a->argv[i]);
     }*/
-    //print_variables(env);
+    // print_variables(env);
     char **tab = get_all_var(a->argv[0]);
     if (tab != NULL)
     {
         // printf("adding %s %s \n", tab[0], tab[1]);
-        //char *z = strndup(tab[0], strlen(tab[0]));
-        //char *f = strndup(tab[1], strlen(tab[1]));
-        //printf("tab%s");
+        // char *z = strndup(tab[0], strlen(tab[0]));
+        // char *f = strndup(tab[1], strlen(tab[1]));
+        // printf("tab%s");
         insert_variable(tab[0], tab[1], env);
-        //print_variables(env);
-        //free(tab);
+        // print_variables(env);
+        // free(tab);
         /*if (tab[1] != NULL)
             free(tab[1]);
         if (tab[0] != NULL)
@@ -363,37 +362,37 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
         free(tab);
         return 0;
     }
-    //free(tab[1]);
-    //free(tab[0]);
-    //free(tab);
-    enum opt flag = a->opt;
+    // free(tab[1]);
+    // free(tab[0]);
+    // free(tab);
+    // enum opt flag = a->opt;
     int return_value = -1;
-    switch (flag)
-    {
-    case REDIR_SORTIE: // '>'
-        return_value = command_redir_r(a->argv, a->count, a->redir, env);
-        break;
-    case REDIR_ENTREE: // '<'
-        return_value = command_redir_l(a->argv, a->count, a->redir, env);
-        break;
-    case REDIR_FIN_FICHIER: // '>>'
-        return_value = command_redir_rr(a->argv, a->count, a->redir, env);
-        break;
-    case REDIR_PIPE: // '>>'
-        return_value = command_redir_r_pipe(a->argv, a->count, a->redir, env);
-        break;
-    case REDIR_RW: // '<>'
-        return_value = command_redir_l(a->argv, a->count, a->redir, env);
-        break;
-    case REDIR_DESCRIPEUR: // '>&'
-        return_value = command_redir_r_and(a->argv, a->redir);
-        break;
-    case REDIR_INPUT_DESCRIPEUR: // '<&'
-        return_value = command_redir_r_and(a->argv, a->redir);
-        break;
-    default:
-        return_value = command_exec(a->argv, a->count, env);
-    }
+    // switch (flag)
+    // {
+    // case REDIR_SORTIE: // '>'
+    //     return_value = command_redir_r(a->argv, a->count, a->redir, env);
+    //     break;
+    // case REDIR_ENTREE: // '<'
+    //     return_value = command_redir_l(a->argv, a->count, a->redir, env);
+    //     break;
+    // case REDIR_FIN_FICHIER: // '>>'
+    //     return_value = command_redir_rr(a->argv, a->count, a->redir,
+    //     env); break;
+    // case REDIR_PIPE: // '>>'
+    //     return_value = command_redir_r_pipe(a->argv, a->count, a->redir,
+    //     env); break;
+    // case REDIR_RW: // '<>'
+    //     return_value = command_redir_l(a->argv, a->count, a->redir, env);
+    //     break;
+    // case REDIR_DESCRIPEUR: // '>&'
+    //     return_value = command_redir_r_and(a->argv, a->redir);
+    //     break;
+    // case REDIR_INPUT_DESCRIPEUR: // '<&'
+    //     return_value = command_redir_r_and(a->argv, a->redir);
+    //     break;
+    // default:
+    return_value = command_exec(a->argv, a->count, env);
+    // }
     if (env->exit_status != -1)
         return env->exit_status;
     // printf("return value is %i\n", return_value);
