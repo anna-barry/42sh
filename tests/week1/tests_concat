@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "*********** Test 3 with if/echo/ \$ **********"
-diff <(./builddir/42sh -c "a=2; if echo \$a b ; then echo 'foo' \"coucou\" tchoin ; fi") <(printf "2 b
+diff <(./builddir/42sh tests/week1/test_var.sh) <(printf "2 b
 foo coucou tchoin
 ")
 

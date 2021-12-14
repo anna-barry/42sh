@@ -11,13 +11,6 @@ void free_ast(struct ast *ast);
 
 void free_ast_if_root(struct ast *ast)
 {
-    //freef("if root\n");
-    /*
-    *
-    int nb_children;
-    int status;
-    struct ast **children;
-    */
     struct ast_if_root *a = ast->data.ast_if_root;
     for (int i = 0; i < a->nb_children; i++)
     {
@@ -29,7 +22,6 @@ void free_ast_if_root(struct ast *ast)
         free(a);
     if (ast)
         free(ast);
-    //freef("end if root\n");
 }
 
 void free_ast_root(struct ast *ast)
@@ -50,53 +42,33 @@ void free_ast_root(struct ast *ast)
 void free_ast_if(struct ast *ast)
 {
     struct ast_if *a = ast->data.ast_if;
-    //freef("if { ");
     free_ast(a->cond);
-
-    //freef("}; then {");
-    //if (a->then)
-        free_ast(a->then);
-    /*if (a->cond)
-        free(a->cond);
-    if (a->then)
-        free(a->then);*/
+    free_ast(a->then);
     if (a)
         free(a);
     if (ast)
         free(ast);
-    //freef("; }");
 }
 
 void free_ast_elif(struct ast *ast)
 {
     struct ast_elif *a = ast->data.ast_elif;
-    //freef("elif { ");
     free_ast(a->cond);
-    //freef("}; then {");
     free_ast(a->then);
-    /*if (a->cond)
-        free(a->cond);
-    if (a->then)
-        free(a->then);*/
     if (a)
         free(a);
     if (ast)
         free(ast);
-    //freef(" }");
 }
 
 void free_ast_else(struct ast *ast)
 {
     struct ast_else *a = ast->data.ast_else;
-    //freef("else { ");
     free_ast(a->then);
-    /*if (a->then)
-        free(a->then);*/
     if (a)
         free(a);
     if (ast)
         free(ast);
-    //freef("}");
 }
 
 void free_ast_command(struct ast *ast)
@@ -114,55 +86,44 @@ void free_ast_command(struct ast *ast)
 void free_ast_neg(struct ast *ast)
 {
     struct ast_neg *a = ast->data.ast_neg;
-    //freef("! { ");
     free_ast(a->node);
     if (a)
         free(a);
     if (ast)
         free(ast);
-    //freef("}");
 }
 
 void free_ast_and(struct ast *ast)
 {
     struct ast_and *a = ast->data.ast_and;
-    //freef("{ ");
     free_ast(a->left);
-    //freef("} && { ");
     free_ast(a->right);
     if (a)
         free(a);
     if (ast)
         free(ast);
-    //freef("}");
 }
 
 void free_ast_or(struct ast *ast)
 {
     struct ast_or *a = ast->data.ast_or;
-    //freef("{ ");
     free_ast(a->left);
-    //freef("} || { ");
     free_ast(a->right);
     if (a)
         free(a);
     if (ast)
         free(ast);
-    //freef("}");
 }
 
 void free_ast_pipe(struct ast *ast)
 {
     struct ast_pipe *a = ast->data.ast_pipe;
-    //freef("{ ");
     free_ast(a->left);
-    //freef("} | { ");
     free_ast(a->right);
     if (a)
         free(a);
     if (ast)
         free(ast);
-    //freef("}");
 }
 
 void free_ast_simple_quote(struct ast *ast)
@@ -187,30 +148,24 @@ void free_ast_double_quote(struct ast *ast)
 void free_ast_while(struct ast *ast)
 {
     struct ast_while *a = ast->data.ast_while;
-    //freef("while ( ");
     free_ast(a->cond);
-    //freef("); then {");
     free_ast(a->then);
     if (a)
         free(a);
     if (ast)
         free(ast);
-    //freef("; }");
 }
 
 void free_ast_for(struct ast *ast)
 {
     struct ast_for *a = ast->data.ast_for;
-    //freef("for %s in [ ", a->var);
     free(a->var);
     free_ast(a->cond);
-    //freef(" ] do {");
     free_ast(a->then);
     if (a)
         free(a);
     if (ast)
         free(ast);
-    //freef(" }");
 }
 
 void free_ast_for_int(struct ast *ast)
@@ -251,7 +206,6 @@ static ast_free_function ast_freeers[] =
 
 void free_ast(struct ast *ast) {
     ast_freeers[ast->type](ast);
-    //free(ast);
 }
 
 void my_pretty_free(struct ast *ast)

@@ -32,11 +32,12 @@ int getnb(char *filepath)
             else
                 fprintf(stderr, "ERROR in getnb");
         }
+        fclose(file);
         return counter + 1;
     }
     else
         fprintf(stderr, "ERROR in getnb");
-    fclose(file);
+    //fclose(file);
     return -1;
 }
 
