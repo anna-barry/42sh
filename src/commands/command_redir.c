@@ -28,6 +28,24 @@ int command_redir_r(char *command[], int count, char *file,
     return 0;
 }
 
+/*
+int ast_redir_r(struct ast *ast, char *file, struct environnement *env)
+{
+    struct ast_redir *redir_ast = ast->data.ast_redir;
+    int old_fd = dup(STDOUT_FILENO);
+    int fd = open(file, O_CREAT | O_WRONLY, 0644);
+    if (dup2(fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    if (exec_ast(ast, env) != 0)
+        return 2;
+    fflush(stdout);
+    if (dup2(old_fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    return 0;
+}
+*/
+
 // redirection exit in the begin of a file
 int command_redir_l(char *command[], int count, char *file,
                     struct environnement *env)
@@ -140,19 +158,16 @@ int command_redir_r_pipe(char *command[], int count, char *file,
 {
     if (open(file, O_RDONLY, 0644) >= 0)
         err(2, "the file %s already exist, you can not overwrite it", file);
-    else
-    {
-        int old_fd = dup(STDOUT_FILENO);
-        int fd = open(file, O_CREAT | O_WRONLY, 0644);
-        if (dup2(fd, STDOUT_FILENO) == -1)
-            fprintf(stderr, "Error with dup2");
-        if (command_exec(command, count, env) != 0)
-            return 2;
-        fflush(stdout);
-        if (dup2(old_fd, STDOUT_FILENO) == -1)
-            fprintf(stderr, "Error with dup2");
-        fcntl(old_fd, F_SETFD, FD_CLOEXEC);
-    }
+    int old_fd = dup(STDOUT_FILENO);
+    int fd = open(file, O_CREAT | O_WRONLY, 0644);
+    if (dup2(fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    if (command_exec(command, count, env) != 0)
+        return 2;
+    fflush(stdout);
+    if (dup2(old_fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    fcntl(old_fd, F_SETFD, FD_CLOEXEC);
     return 0;
 }
 

@@ -292,6 +292,45 @@ int exec_ast_pipe(struct ast *ast, struct environnement *env)
         return 0;
     return pipe_ast(ast, env);
 }
+/*
+int exec_ast_redir(struct ast *ast, struct environnement *env)
+{
+    if (env == NULL)
+        return 1;
+    if (env->exit_status != -1)
+        return env->exit_status;
+    struct ast_redir *a = ast->data.ast_redir;
+    enum opt flag = a->opt;
+    int return_value = -1;
+    switch (flag)
+    {
+    case REDIR_SORTIE: // '>'
+        return_value = ast_redir_r(a->left, a->redir, env);
+        break;
+    case REDIR_ENTREE: // '<'
+        return_value = ast_redir_l(a->left, a->redir, env);
+        break;
+    case REDIR_FIN_FICHIER: // '>>'
+        return_value = ast_redir_rr(a->left, a->redir, env);
+        break;
+    case REDIR_PIPE: // '>|'
+        return_value = ast_redir_r_pipe(a->left, a->redir, env);
+        break;
+    case REDIR_RW: // '<>'
+        return_value = ast_redir_l(a->left, a->redir, env);
+        break;
+    case REDIR_DESCRIPEUR: // '>&'
+        return_value = ast_redir_r_and(a->left, a->redir);
+        break;
+    case REDIR_INPUT_DESCRIPEUR: // '<&'
+        return_value = ast_redir_r_and(a->left, a->redir);
+        break;
+    }
+    if (env->exit_status != -1)
+        return env->exit_status;
+    return return_value;
+}
+*/
 
 int exec_ast_command(struct ast *ast, struct environnement *env)
 {

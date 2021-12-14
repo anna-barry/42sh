@@ -32,10 +32,10 @@ enum opt
     REDIR_SORTIE, ///< '>' -> 11
     REDIR_ENTREE, ///< '<' -> 12
     REDIR_DESCRIPEUR, ///< '>&' -> 13
-    REDIR_FIN_FICHIER,
-    REDIR_INPUT_DESCRIPEUR,
-    REDIR_PIPE,
-    REDIR_RW,
+    REDIR_FIN_FICHIER, // '>>'
+    REDIR_INPUT_DESCRIPEUR, // '<&'
+    REDIR_PIPE, // '>|'
+    REDIR_RW, // '<>'
 };
 
 union ast_data
