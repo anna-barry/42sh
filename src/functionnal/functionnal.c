@@ -128,6 +128,13 @@ void insert_variable(char *name, char *value, struct environnement *new)
     struct variable *new_v = malloc(sizeof(struct variable));
     if (!new_v)
         err(2, "Error with malloc\n");
+   /* new_v->name = strndup(name, strlen(name));
+    if (value == NULL)
+    {
+       new_v->value = NULL;
+    }
+    else
+        new_v->value = strndup(value, strlen(value));*/
     new_v->name = name;
     new_v->value = value;
     if (new->nb_variables == 0)
@@ -184,10 +191,11 @@ char **get_all_var(char *command)
         return NULL;
     }
     char **result = malloc(sizeof(char *) * 2);
-    char *first = strndup(command, res);
-    char *second = strndup(command + res + 1, strlen(command) - res);
-    result[0] = first; // name
-    result[1] = second; // value
+    //char *first = strndup(command, res);
+    //char *second = strndup(command + res + 1, strlen(command) - res);
+    result[0] = strndup(command, res); // name
+    result[1] = strndup(command + res + 1, strlen(command) - res); // value
+    printf("first is %s and second is %s \n", result[0], result[1]);
     return result;
 }
 

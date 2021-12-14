@@ -176,57 +176,88 @@ void concat_node(struct ast *node1, struct ast *node2,
     {
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_simple_quote *a2 = node2->data.ast_simple_quote;
-        char **res = malloc(sizeof(char *) * (2 + a1->count));
-        res[a1->count + 1] = NULL;
-        int index = 0;
+        //char **res = malloc(sizeof(char *) * (2 + a1->count));
+        //res[a1->count + 1] = NULL;
+        //int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
             if (strcmp(a1->argv[a], "exit"))
             {
+                //printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
                     env->exit_status = 0;
                 return;
             }
-            if (a1->argv[a] != NULL)
+            /*if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
-                free(a1->argv[a]);
+                //free(a1->argv[a]);
                 index += 1;
             }
             else
             {
                 a1->count -= 1;
-            }
+            }*/
         }
         if (a2->argv != NULL)
         {
-            res[index] = strndup(a2->argv, strlen(a2->argv));
-            free(a2->argv);
+            //res[index] = strndup(a2->argv, strlen(a2->argv));
+            a1->argv[a1->count] = strndup(a2->argv, strlen(a2->argv));
+            //free(a2->argv);
             a1->count += 1;
         }
-        free(a1->argv);
-        a1->argv = res;
+        //free(a1->argv);
+        //  ******  Test ******  //
+        /*
+        a1->argv = malloc(sizeof(char *) * (2 + a1->count));
+        a1->count = index;
+        for (int i = 0; i < index; i++)
+        {
+            if (a1->argv[i])
+            {
+                free(a1->argv[i]);
+            }
+            
+            if (res[i])
+            {
+                a1->argv[i] = strndup( res[i], strlen(res[i]));
+               // free(res[i]);
+            }
+        }
+        for (int i = 0; i < 2 + a1->count; i++)
+        {
+            if (res[i])
+            {
+                free(res[i]);
+            }
+        }
+        
+        free(res);*/
+        //a1->argv = res;
     }
     else if (node1->type == NODE_COMMAND && node2->type == NODE_DOUBLE_QUOTE)
     {
         struct ast_double_quote *a2 = node2->data.ast_double_quote;
         struct ast_command *a1 = node1->data.ast_command;
-        char **res = malloc(sizeof(char *) * (2 + a1->count));
-        res[a1->count + 1] = NULL;
-        int index = 0;
+        //char **res = malloc(sizeof(char *) * (2 + a1->count));
+        //a1->argv = realloc(a1->argv, sizeof(char *) * (2 + a1->count));
+        //res[a1->count + 1] = NULL;
+        a1->argv[a1->count + 1] = NULL;
+        //int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
             if (strcmp(a1->argv[a], "exit"))
             {
+                printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
                     env->exit_status = 0;
                 return;
             }
-            if (a1->argv[a] != NULL)
+            /*if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
                 free(a1->argv[a]);
@@ -235,33 +266,66 @@ void concat_node(struct ast *node1, struct ast *node2,
             else
             {
                 a1->count -= 1;
-            }
+            }*/
         }
-        free(a1->argv);
+        //free(a1->argv);
         if (a2->argv != NULL)
         {
-            res[index] = strndup(a2->argv, strlen(a2->argv));
-            free(a2->argv);
+            //res[index] = strndup(a2->argv, strlen(a2->argv));
+
+            a1->argv[a1->count] = strndup(a2->argv, strlen(a2->argv));
+            //free(a2->argv);
             a1->count += 1;
         }
-        a1->argv = res;
+        //  ******  Test ******  
+        //free(a1->argv);
+        //a1->argv = malloc(sizeof(char *) * (2 + a1->count));
+        /*
+        a1->count = index;
+        for (int i = 0; i < index; i++)
+        {
+            if (a1->argv[i])
+            {
+                free(a1->argv[i]);
+            }
+            
+            if (res[i])
+            {
+                a1->argv[i] = strndup( res[i], strlen(res[i]));
+               // free(res[i]);
+            }
+        }
+        for (int i = 0; i < 2 + a1->count; i++)
+        {
+            if (res[i])
+            {
+                free(res[i]);
+            }
+        }
+        
+        free(res);*/
+        //a1->argv = res;
     }
     else if (node1->type == NODE_COMMAND && node2->type == NODE_COMMAND)
     {
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_command *a2 = node2->data.ast_command;
-        char **res = malloc(sizeof(char *) * (a1->count + a2->count + 1));
-        res[a1->count + a2->count] = NULL;
+        //char **res = malloc(sizeof(char *) * (a1->count + a2->count + 1));
+        a1->argv = realloc(a1->argv, sizeof(char *) * (a1->count + a2->count + 1));
+        //res[a1->count + a2->count] = NULL;
+        a1->argv[a1->count + a2->count] = NULL;
         int index = 0;
         int a = 0;
-        for (; a < a1->count; a++)
+        /*for (; a < a1->count; a++)
         {
             if (strcmp(a1->argv[a], "exit"))
             {
+                printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
                     env->exit_status = 0;
+                free(res);
                 return;
             }
             if (a1->argv[a] != NULL)
@@ -275,27 +339,31 @@ void concat_node(struct ast *node1, struct ast *node2,
                 a1->count -= 1;
             }
         }
-        free(a1->argv);
+        free(a1->argv);*/
+        index = a1->count;
         for (a = 0; a < a2->count; a++)
         {
-            if (strcmp(a2->argv[a], "exit"))
+            if (a2->argv[a] && strcmp(a2->argv[a], "exit"))
             {
-                if (a2->count > a + 1 && a1->argv[a + 1] != NULL)
-                    env->exit_status = atoi(a1->argv[a + 1]);
+                printf("in if\n");
+                if (a2->count > a + 1 && a2->argv[a + 1] != NULL)
+                    env->exit_status = atoi(a2->argv[a + 1]);
                 else
                     env->exit_status = 0;
+                //free(res);
                 return;
             }
             if (a2->argv[a] != NULL)
             {
-                res[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
-                free(a2->argv[a]);
+                //res[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
+                a1->argv[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
+                //free(a2->argv[a]);
                 index += 1;
                 a1->count += 1;
             }
         }
-        free(a2->argv);
-        a1->argv = res;
+        //free(a2->argv);
+        //a1->argv = res;
     }
 }
 

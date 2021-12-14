@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo "*********** Test 3 with if/echo/ \$ **********"
+diff <(./builddir/42sh -c "a=2; if echo \$a b ; then echo 'foo' \"coucou\" tchoin ; fi") <(printf "2 b
+foo coucou tchoin
+")
+
+echo "*********** Test 4 with if/echo/ \$ **********"
+diff <(./builddir/42sh -c "if echo \"ls\"; then echo 'foo' bar; echo okay; elif echo bebe; echo a ; then echo christian; echo anna laime; fi") <(printf "ls
+foo bar
+okay
+")

@@ -70,6 +70,13 @@ week_1:
   script:
     - tests/week1/tests_if_echo builddir/42sh
 
+concat:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - tests/week1/tests_concat builddir/42sh
+
 week_2_pipe:
   stage: test
   dependencies:
