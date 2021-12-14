@@ -183,6 +183,7 @@ void concat_node(struct ast *node1, struct ast *node2,
         {
             if (strcmp(a1->argv[a], "exit"))
             {
+                printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
@@ -245,6 +246,7 @@ void concat_node(struct ast *node1, struct ast *node2,
         {
             if (strcmp(a1->argv[a], "exit"))
             {
+                printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
@@ -309,10 +311,12 @@ void concat_node(struct ast *node1, struct ast *node2,
         {
             if (strcmp(a1->argv[a], "exit"))
             {
+                printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
                     env->exit_status = 0;
+                free(res);
                 return;
             }
             if (a1->argv[a] != NULL)
@@ -331,10 +335,12 @@ void concat_node(struct ast *node1, struct ast *node2,
         {
             if (strcmp(a2->argv[a], "exit"))
             {
+                printf("in if\n");
                 if (a2->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
                     env->exit_status = 0;
+                free(res);
                 return;
             }
             if (a2->argv[a] != NULL)
