@@ -352,7 +352,8 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
         // printf("adding %s %s \n", tab[0], tab[1]);
         //char *z = strndup(tab[0], strlen(tab[0]));
         //char *f = strndup(tab[1], strlen(tab[1]));
-        insert_variable(tab[1], tab[0], env);
+        //printf("tab%s");
+        insert_variable(tab[0], tab[1], env);
         //print_variables(env);
         //free(tab);
         /*if (tab[1] != NULL)
