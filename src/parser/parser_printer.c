@@ -138,12 +138,6 @@ void print_ast_for(struct ast *ast)
     printf(" }");
 }
 
-void print_ast_for_char(struct ast *ast)
-{
-    struct ast_for_char *a = ast->data.ast_for_char;
-    print_ast(a->var);
-}
-
 void print_ast_for_int(struct ast *ast)
 {
     struct read_for_int *a = ast->data.ast_for_int;
@@ -176,7 +170,6 @@ static ast_print_function ast_printers[] =
     [NODE_DOUBLE_QUOTE] = print_ast_double_quote,
     [NODE_WHILE] = print_ast_while,
     [NODE_FOR] = print_ast_for,
-    [NODE_FOR_CHAR] = print_ast_for_char,
     [NODE_FOR_INT] = print_ast_for_int,
     [NODE_REDIR] = print_ast_redir,
 };

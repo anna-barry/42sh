@@ -28,10 +28,10 @@ int main()
     //char *input = "cat music.mp3 > /dev/audio";
     //char *input = "Mail -s \"Subject\" to-address < Filenam";
     //char *input = "myprogram 2 >errorsfile";
-    char *input = "ls pt ABC > dirlist 2 >&1";
+    //char *input = "ls pt ABC > dirlist 2 >&1";
     //char *input = "if [ 1 -eq 2 ];then echo aa; elif echo baba; then echo b; fi";
     //char *input = "i=2; while [ $i -eq 3 ]; do echo $i; done; echo b";
-    //char *input = "for i in word; do echo a; done > cat";
+    char *input = "for i in word; do echo a; done";
     struct info_lexer *new = lexer_init();
     lexer_new(input, new);
     struct ast *ast = build_ast(new, NODE_ROOT);

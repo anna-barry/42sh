@@ -55,7 +55,7 @@ union ast_data
     struct ast_or *ast_or;
     struct ast_neg *ast_neg;
     struct ast_for *ast_for;
-    struct ast_for_char* ast_for_char;
+    //struct ast_for_char* ast_for_char;
     struct read_for_int* ast_for_int;
     struct ast_redir* ast_redir;
 };
@@ -145,10 +145,10 @@ struct ast_for
     struct ast *then;
 };
 
-struct ast_for_char
+/*struct ast_for_char
 {
     struct ast *var;
-};
+};*/
 
 struct ast_main_root
 {
