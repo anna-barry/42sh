@@ -219,9 +219,17 @@ void concat_node(struct ast *node1, struct ast *node2,
             if (res[i])
             {
                 a1->argv[i] = strndup( res[i], strlen(res[i]));
+               // free(res[i]);
+            }
+        }
+        for (int i = 0; i < 2 + a1->count; i++)
+        {
+            if (res[i])
+            {
                 free(res[i]);
             }
         }
+        
         free(res);
         //a1->argv = res;
     }
