@@ -109,12 +109,46 @@ void update_variable(char *name, char *value, struct environnement *new)
     else
     {
         struct variable *index = new->var;
-        for (; index != NULL; index = index->next)
+        if (strcmp(index->name, name) == 0)
         {
-            if (strcmp(index->name, name) == 0)
+            if (value == NULL)
             {
-                index->value = value;
+                new->var = new->var->next;
+                if (index->name)
+                    free(index->name);
+                if (index->value)
+                    free(index->value);
+                if (index)
+                {
+                    free(index);
+                }
             }
+            else
+                index->value = value;
+        }
+        else
+        {
+        for (; index->next != NULL; index = index->next)
+        {
+            if (strcmp(index->next->name, name) == 0)
+            {
+                if (value == NULL)
+                {
+                    struct variable *tmp = index->next;
+                    index->next = index->next->next;
+                    if (tmp->name)
+                        free(tmp->name);
+                    if (tmp->value)
+                        free(tmp->value);
+                    if (tmp)
+                    {
+                        free(tmp);
+                    }
+                }
+                else
+                    index->value = value;
+            }
+        }
         }
     }
 }
