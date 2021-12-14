@@ -245,6 +245,7 @@ int exec_ast_root(struct ast *ast, struct environnement *env)
             || a->children[i]->type == NODE_SIMPLE_QUOTE
             || a->children[i]->type == NODE_COMMAND)
         {
+            //printf("HEEERREEE concat command\n");
             concat_command(a, &i, env);
         }
         // printf("hihihi%d\n", inter);
@@ -311,7 +312,7 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     if (env->exit_status != -1)
         return env->exit_status;
     struct ast_command *a = ast->data.ast_command;
-   /* printf("___________________________________\n");
+    /*printf("___________________________________\n");
     for (int i = 0; i < a->count; i++)
     {
         printf("command: %s\n", a->argv[i]);
@@ -320,6 +321,7 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     char **tab = get_all_var(a->argv[0]);
     if (tab != NULL)
     {
+        //printf("adding %s %s \n", tab[0], tab[1]);
         insert_variable(tab[0], tab[1], env);
         free(tab);
         return 0;
