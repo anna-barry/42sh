@@ -10,9 +10,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "../parser/parser.h"
+#include "../parser/parser_exec.h"
 #include "command.h"
 #include "echo.h"
-#include "parser.h"
 
 // int exec_pipe(char *argv_left[], char *argv_right[], int count_left,
 //               int count_right)
@@ -129,7 +130,7 @@
 
 int pipe_ast(struct ast *ast, struct environnement *env)
 {
-    struct ast_and *pipe = ast->data.ast_pipe;
+    struct ast_pipe *pipe_ast = ast->data.ast_pipe;
     int fd[2];
     // argv_left[count_left] = NULL;
     // argv_right[count_right] = NULL;
@@ -145,7 +146,7 @@ int pipe_ast(struct ast *ast, struct environnement *env)
         dup2(fd[1], STDOUT_FILENO);
         close(fd[0]);
         close(fd[1]);
-        exec_ast(pipe->left, env);
+        exec_ast(pipe_ast->left, env);
     }
     int pid2 = fork();
     if (pid2 < 0)
@@ -155,7 +156,7 @@ int pipe_ast(struct ast *ast, struct environnement *env)
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
         close(fd[1]);
-        exec_ast(pipe->right, env);
+        exec_ast(pipe_ast->right, env);
     }
     close(fd[0]);
     close(fd[1]);
