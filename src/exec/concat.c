@@ -176,21 +176,21 @@ void concat_node(struct ast *node1, struct ast *node2,
     {
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_simple_quote *a2 = node2->data.ast_simple_quote;
-        char **res = malloc(sizeof(char *) * (2 + a1->count));
-        res[a1->count + 1] = NULL;
-        int index = 0;
+        //char **res = malloc(sizeof(char *) * (2 + a1->count));
+        //res[a1->count + 1] = NULL;
+        //int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
             if (strcmp(a1->argv[a], "exit"))
             {
-                printf("in if\n");
+                //printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
                     env->exit_status = 0;
                 return;
             }
-            if (a1->argv[a] != NULL)
+            /*if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
                 //free(a1->argv[a]);
@@ -199,16 +199,18 @@ void concat_node(struct ast *node1, struct ast *node2,
             else
             {
                 a1->count -= 1;
-            }
+            }*/
         }
         if (a2->argv != NULL)
         {
-            res[index] = strndup(a2->argv, strlen(a2->argv));
-            free(a2->argv);
+            //res[index] = strndup(a2->argv, strlen(a2->argv));
+            a1->argv[a1->count] = strndup(a2->argv, strlen(a2->argv));
+            //free(a2->argv);
             a1->count += 1;
         }
-        free(a1->argv);
+        //free(a1->argv);
         //  ******  Test ******  //
+        /*
         a1->argv = malloc(sizeof(char *) * (2 + a1->count));
         a1->count = index;
         for (int i = 0; i < index; i++)
@@ -232,7 +234,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             }
         }
         
-        free(res);
+        free(res);*/
         //a1->argv = res;
     }
     else if (node1->type == NODE_COMMAND && node2->type == NODE_DOUBLE_QUOTE)
