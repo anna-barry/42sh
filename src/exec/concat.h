@@ -10,6 +10,8 @@
 #include "../functionnal/functionnal.h"
 #include "../parser/parser.h"
 
+char *itoa(int value, char *s);
+
 char *transform_char(char *argv, struct environnement *env, int *index);
 
 void transform_command(struct ast *ast, struct environnement *env);
