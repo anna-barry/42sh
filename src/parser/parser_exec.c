@@ -29,15 +29,15 @@ int exec_ast_if(struct ast *ast, struct environnement *env)
         return env->exit_status;
     if (res == 0)
     {
-        // printf("in then \n");
+        //printf("in then \n");
         exec_ast(a->then, env);
         if (env->exit_status != -1)
             return env->exit_status;
     }
-    else
+    /*else
     {
         a->then = NULL;
-    }
+    }*/
     // printf("end if \n");
     return res;
 }
