@@ -16,4 +16,6 @@ int my_dot(char *argv[], int count, struct environnement *env);
 
 int is_dot(char *c);
 
+int my_unset(char *argv[], struct environnement *env);
+
 #endif

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "****************   Test 1 Unset   ****************"
+diff <(./builddir/42sh -c "a=2; echo $a; unset a; echo $a") <(printf "2
+
+")
