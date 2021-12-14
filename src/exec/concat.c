@@ -71,7 +71,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     struct variable *inter = env->var;
     while (inter)
     {
-        // printf("inter is %s\n", inter->name);
+        //printf("inter is %s\n", inter->name);
         if (strcmp(indice, inter->name) == 0)
             break;
         inter = inter->next;
@@ -122,6 +122,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     res[avance] = '\0';
     *index += (strlen(inter->value) - strlen(inter->name));
     free(argv);
+    //printf("res is %s \n", res);
     return res;
 }
 
@@ -181,7 +182,7 @@ void concat_node(struct ast *node1, struct ast *node2,
         //int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
-            if (strcmp(a1->argv[a], "exit"))
+            if (strcmp(a1->argv[a], "exit") == 0)
             {
                 //printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
@@ -248,9 +249,9 @@ void concat_node(struct ast *node1, struct ast *node2,
         //int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
-            if (strcmp(a1->argv[a], "exit"))
+            if (strcmp(a1->argv[a], "exit") == 0)
             {
-                printf("in if\n");
+                //printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
@@ -343,9 +344,9 @@ void concat_node(struct ast *node1, struct ast *node2,
         index = a1->count;
         for (a = 0; a < a2->count; a++)
         {
-            if (a2->argv[a] && strcmp(a2->argv[a], "exit"))
+            if (a2->argv[a] && strcmp(a2->argv[a], "exit") == 0 )
             {
-                printf("in if\n");
+                //printf("in if\n");
                 if (a2->count > a + 1 && a2->argv[a + 1] != NULL)
                     env->exit_status = atoi(a2->argv[a + 1]);
                 else
