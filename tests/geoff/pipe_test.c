@@ -3,6 +3,52 @@
 
 #include "../../src/commands/command_pipe.h"
 
+int pipe_exec(char *argv_left[], char *argv_right[], int count_left,
+              int count_right)
+{
+    int fd[2];
+    // argv_left[count_left] = NULL;
+    // argv_right[count_right] = NULL;
+    if (pipe(fd) == -1)
+        return 1;
+    int pid = fork();
+    if (pid < 0)
+    {
+        return 1;
+    }
+    if (pid == 0)
+    {
+        dup2(fd[1], STDOUT_FILENO);
+        close(fd[0]);
+        close(fd[1]);
+        if (strcmp(argv_right[0], "echo") == 0)
+            echo(argv_left, count_left);
+        else
+            execvp(argv_left[0], argv_left);
+    }
+    int pid2 = fork();
+    if (pid2 < 0)
+        return 3;
+    if (pid2 == 0)
+    {
+        dup2(fd[0], STDIN_FILENO);
+        close(fd[0]);
+        close(fd[1]);
+        if (strcmp(argv_right[0], "echo") == 0)
+            echo(argv_right, count_right);
+        else
+            execvp(argv_right[0], argv_right);
+    }
+    close(fd[0]);
+    close(fd[1]);
+    waitpid(pid, NULL, 0);
+    int wstatus;
+    waitpid(pid2, &wstatus, 0);
+    if (WEXITSTATUS(wstatus) == 127 || WEXITSTATUS(wstatus) == 0)
+        return WEXITSTATUS(wstatus);
+    return 1;
+}
+
 int main(int argc, char const *argv[])
 {
     char *argv0_left[2] = { "ls" };

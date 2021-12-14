@@ -1,5 +1,5 @@
 #!/bin/bash
 
 echo "*********** Test 0 with echo and pipe ***********"
-diff <(./builddir/42sh -c "echo a | cat -e") <(printf "a\$
+diff <(./builddir/42sh -c "echo a | echo b") <(printf "b
 ")

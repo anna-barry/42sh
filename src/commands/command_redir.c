@@ -12,14 +12,15 @@
 #include "command.h"
 
 // redirection entry in the begin of a file
-int command_redir_r(char *command[], int count, char *file, struct environnement *env)
+int command_redir_r(char *command[], int count, char *file,
+                    struct environnement *env)
 {
     int old_fd = dup(STDOUT_FILENO);
     int fd = open(file, O_CREAT | O_WRONLY, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count, env) != 0)
-        return 127;
+        return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
@@ -28,14 +29,15 @@ int command_redir_r(char *command[], int count, char *file, struct environnement
 }
 
 // redirection exit in the begin of a file
-int command_redir_l(char *command[], int count, char *file, struct environnement *env)
+int command_redir_l(char *command[], int count, char *file,
+                    struct environnement *env)
 {
     int old_fd = dup(STDOUT_FILENO);
     int fd = open(file, O_CREAT | O_WRONLY, 0644);
     if (dup2(fd, STDIN_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count, env) != 0)
-        return 127;
+        return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
@@ -44,14 +46,15 @@ int command_redir_l(char *command[], int count, char *file, struct environnement
 }
 
 // append at the end of the file
-int command_redir_rr(char *command[], int count, char *file, struct environnement *env)
+int command_redir_rr(char *command[], int count, char *file,
+                     struct environnement *env)
 {
     int old_fd = dup(STDOUT_FILENO);
     int fd = open(file, O_CREAT | O_APPEND | O_WRONLY, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count, env) != 0)
-        return 127;
+        return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
@@ -59,14 +62,15 @@ int command_redir_rr(char *command[], int count, char *file, struct environnemen
     return 0;
 }
 
-int command_redir_lr(char *command[], int count, char *file, struct environnement *env)
+int command_redir_lr(char *command[], int count, char *file,
+                     struct environnement *env)
 {
     int old_fd = dup(STDOUT_FILENO);
     int fd = open(file, O_CREAT | O_RDWR, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count, env) != 0)
-        return 127;
+        return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
@@ -131,7 +135,8 @@ int command_redir_r_and(char *command[], char *file)
 }
 
 // prevent from overwriting on a file if already existing
-int command_redir_r_pipe(char *command[], int count, char *file, struct environnement *env)
+int command_redir_r_pipe(char *command[], int count, char *file,
+                         struct environnement *env)
 {
     if (open(file, O_RDONLY, 0644) >= 0)
         err(2, "the file %s already exist, you can not overwrite it", file);
@@ -142,7 +147,7 @@ int command_redir_r_pipe(char *command[], int count, char *file, struct environn
         if (dup2(fd, STDOUT_FILENO) == -1)
             fprintf(stderr, "Error with dup2");
         if (command_exec(command, count, env) != 0)
-            return 127;
+            return 2;
         fflush(stdout);
         if (dup2(old_fd, STDOUT_FILENO) == -1)
             fprintf(stderr, "Error with dup2");

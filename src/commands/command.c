@@ -16,21 +16,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-/*
-int command_exit(char *command[], int count, struct environnement *env)
-{
-    int start = 0;
-    int i = 0;
-    while (i < count && command[1][i] != '\0')
-    {
-        start = start * 10 + ((int)command[0][i] - 48);
-        i++;
-    }
-    env->exit_status = start;
-    return 0;
-}
-*/
-
 int command_break(struct environnement *env)
 {
     env->flag_loop_break -= 1;
@@ -43,46 +28,63 @@ int command_continue(struct environnement *env)
     return 0;
 }
 
-int my_execute(char *argv[])
+int simple_command_exec(char *argv[], int count)
 {
+    if (argv[count] != NULL)
+    {
+        argv[count] = NULL;
+    }
     int wstatus = 0;
-        int res_exec = 0;
-        int pid = fork();
-        char *command = argv[0];
-        if (pid == 0)
-        {
-            res_exec = execvp(command, argv);
-            if (res_exec == -1)
-                return 127;
-        }
-        if (pid > 0)
-        {
-            int res_exec = waitpid(pid, &wstatus, 0);
-            if (res_exec == -1)
-                err(2, "problem in child");
-            if (WIFEXITED(wstatus))
+    int res_exec = 0;
+    int pid = fork();
+    char *command = argv[0];
+    if (pid == 0)
+    {
+        res_exec = execvp(command, argv);
+        if (res_exec == -1)
+            return 127;
+    }
+    if (pid > 0)
+    {
+        int res_exec = waitpid(pid, &wstatus, 0);
+        if (res_exec == -1)
+            err(2, "problem in child");
+        if (WIFEXITED(wstatus))
+            if (WEXITSTATUS(wstatus) == 127)
             {
-                if (WEXITSTATUS(wstatus) == 127)
-                {
-                    fprintf(stderr, "Error");
-                    return 1;
-                }
+                fprintf(stderr, "Error");
+                return 1;
             }
-        }
-        if (pid < 0) {
-            printf("null great \n");
-                return -1;
-        }
-        return WEXITSTATUS(wstatus); // return the return value of the command
+    }
+    if (pid < 0)
+    {
+        printf("null great \n");
+        return -1;
+    }
+    return WEXITSTATUS(wstatus); // return the return value of the command
 }
 
 int command_exec(char *argv[], int count, struct environnement *env)
 {
     if (strcmp("echo", argv[0]) == 0)
         return echo(argv, count);
+
+    else if (strcmp("break", argv[0]) == 0)
+        return command_break(env);
+
+    else if (strcmp("continue", argv[0]) == 0)
+        return command_continue(env);
+
     else if (strcmp("exit", argv[0]) == 0)
     {
-        env->exit_status = atoi(argv[1]);
+        int start = 0;
+        int i = 0;
+        while (i < count && argv[1][i] != '\0')
+        {
+            start = start * 10 + ((int)argv[1][i] - 48);
+            i++;
+        }
+        env->exit_status = start;
         return env->exit_status;
     }
     else if (strcmp("cd", argv[0]) == 0)
@@ -94,28 +96,14 @@ int command_exec(char *argv[], int count, struct environnement *env)
     }
     else if (is_dot(argv[0]))
         return my_dot(argv, count, env);
+
     else
     {
-        int res = my_execute(argv);
+        int res = simple_command_exec(argv, count);
         return res;
     }
 }
-// int main(int argc, char *argv[])
-// {
-//     if (argc == 0)
-//     {
-//         printf("I'm not sure about that one\n");
-//     }
-//     return command_exec(argv);
-//     return 0;
-// }
 
-// int main()
-// {
-//     char *argv[4] = { "echo", "geoffroy", "geoffroy", NULL };
-//     return command_exec(argv);
-//     return 0;
-// }
 /*
 int main(int argc, char const *argv[])
 {

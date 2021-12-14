@@ -15,24 +15,21 @@
 
 int exec_ast(struct ast *ast, struct environnement *env);
 
-
-
-
 int exec_ast_if(struct ast *ast, struct environnement *env)
 {
-    //printf("____________________________\nif \n");
+    // printf("____________________________\nif \n");
     if (env == NULL)
         return 1;
     if (env->exit_status != -1)
         return env->exit_status;
     struct ast_if *a = ast->data.ast_if;
     int res = exec_ast(a->cond, env);
-    //printf("res is: %i\n", res);
+    // printf("res is: %i\n", res);
     if (env->exit_status != -1)
         return env->exit_status;
     if (res == 0)
     {
-        //printf("in then \n");
+        // printf("in then \n");
         exec_ast(a->then, env);
         if (env->exit_status != -1)
             return env->exit_status;
@@ -41,7 +38,7 @@ int exec_ast_if(struct ast *ast, struct environnement *env)
     {
         a->then = NULL;
     }
-    //printf("end if \n");
+    // printf("end if \n");
     return res;
 }
 
@@ -59,7 +56,7 @@ int exec_ast_if_root(struct ast *ast, struct environnement *env)
         if (env->exit_status != -1)
             return env->exit_status;
         a->status = exec_ast(a->children[i], env);
-        //printf("after exec ast %i: status\n", a->status);
+        // printf("after exec ast %i: status\n", a->status);
         /*if (a->children[i]->type == NODE_IF)
         {
             //printf("\n node if \n");
@@ -76,11 +73,11 @@ int exec_ast_if_root(struct ast *ast, struct environnement *env)
             return env->exit_status;
         if (a->status == 0)
         {
-           // printf("in if status %i\n", a->status);
+            // printf("in if status %i\n", a->status);
             break;
         }
     }
-    //printf("end if root\n");
+    // printf("end if root\n");
     return a->status;
 }
 
@@ -243,7 +240,7 @@ int exec_ast_root(struct ast *ast, struct environnement *env)
             || a->children[i]->type == NODE_SIMPLE_QUOTE
             || a->children[i]->type == NODE_COMMAND)
         {
-            //printf("HEEERREEE concat command\n");
+            // printf("HEEERREEE concat command\n");
             concat_command(a, &i, env);
         }
         // printf("hihihi%d\n", inter);
@@ -294,13 +291,6 @@ int exec_ast_pipe(struct ast *ast, struct environnement *env)
     if (env->exit_status != -1)
         return 0;
     return pipe_ast(ast, env);
-    // struct ast_pipe *a = ast->data.ast_pipe;
-    // printf("%p ", (void *)a);
-    // struct ast *left = a->left;
-    // struct ast *right = a->right;
-    // return pipe_exec(left->data.ast_command->argv,
-    // left->data.ast_command->count, right->data.ast_command->argv,
-    // right->data.ast_command->count);
 }
 
 int exec_ast_command(struct ast *ast, struct environnement *env)
@@ -315,11 +305,11 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     {
         printf("command: %s\n", a->argv[i]);
     }*/
-    
+
     char **tab = get_all_var(a->argv[0]);
     if (tab != NULL)
     {
-        //printf("adding %s %s \n", tab[0], tab[1]);
+        // printf("adding %s %s \n", tab[0], tab[1]);
         insert_variable(tab[0], tab[1], env);
         free(tab);
         return 0;
@@ -349,18 +339,14 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     case REDIR_INPUT_DESCRIPEUR: // '<&'
         return_value = command_redir_r_and(a->argv, a->redir);
         break;
-    /*case BREAK_COMMAND:
-        return_value = command_break(env);
-    case EXIT_COMMAND:
-        return_value = command_exit(a->argv, a->count, env);*/
     default:
         return_value = command_exec(a->argv, a->count, env);
     }
     if (env->exit_status != -1)
         return env->exit_status;
-    //printf("return value is %i\n", return_value);
-    //printf("___________________________________\n");
-    
+    // printf("return value is %i\n", return_value);
+    // printf("___________________________________\n");
+
     return return_value;
 }
 
@@ -395,7 +381,7 @@ int execution(struct ast *ast, struct environnement *env)
     if (env->exit_status != -1)
         return env->exit_status;
     int res = exec_ast(ast, env);
-   // printf("end of execution\n");
+    // printf("end of execution\n");
     if (env->exit_status != -1)
         return env->exit_status;
     return res;
