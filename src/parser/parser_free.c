@@ -213,15 +213,6 @@ void free_ast_for(struct ast *ast)
     //freef(" }");
 }
 
-void free_ast_for_char(struct ast *ast)
-{
-    struct ast_for_char *a = ast->data.ast_for_char;
-    free_ast(a->var);
-    free(a);
-    if (ast)
-        free(ast);
-}
-
 void free_ast_for_int(struct ast *ast)
 {
     struct read_for_int *a = ast->data.ast_for_int;
@@ -254,7 +245,6 @@ static ast_free_function ast_freeers[] =
     [NODE_DOUBLE_QUOTE] = free_ast_double_quote,
     [NODE_WHILE] = free_ast_while,
     [NODE_FOR] = free_ast_for,
-    [NODE_FOR_CHAR] = free_ast_for_char,
     [NODE_FOR_INT] = free_ast_for_int,
     [NODE_REDIR] = free_ast_redir,
 };
