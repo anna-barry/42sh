@@ -9,9 +9,9 @@
 #include "../commands/command.h"
 #include "../commands/command_pipe.h"
 #include "../commands/command_redir.h"
+#include "../exec/concat.h"
 #include "../functionnal/functionnal.h"
 #include "parser.h"
-#include "../exec/concat.h"
 
 int exec_ast(struct ast *ast, struct environnement *env);
 
@@ -226,8 +226,6 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
 }
 */
 
-
-
 int exec_ast_root(struct ast *ast, struct environnement *env)
 {
     if (env == NULL)
@@ -295,14 +293,14 @@ int exec_ast_pipe(struct ast *ast, struct environnement *env)
         return 1;
     if (env->exit_status != -1)
         return 0;
-    struct ast_pipe *a = ast->data.ast_pipe;
-    printf("%p ", (void *)a);
+    return pipe_ast(ast, env);
+    // struct ast_pipe *a = ast->data.ast_pipe;
+    // printf("%p ", (void *)a);
     // struct ast *left = a->left;
     // struct ast *right = a->right;
     // return pipe_exec(left->data.ast_command->argv,
     // left->data.ast_command->count, right->data.ast_command->argv,
     // right->data.ast_command->count);
-    return 1;
 }
 
 int exec_ast_command(struct ast *ast, struct environnement *env)
