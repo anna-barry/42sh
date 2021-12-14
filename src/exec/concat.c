@@ -192,7 +192,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
-                free(a1->argv[a]);
+                // free(a1->argv[a]);
                 index += 1;
             }
             else
@@ -228,7 +228,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
-                free(a1->argv[a]);
+                // free(a1->argv[a]);
                 index += 1;
             }
             else
@@ -265,7 +265,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             if (a1->argv[a] != NULL)
             {
                 res[index] = strndup(a1->argv[a], strlen(a1->argv[a]));
-                free(a1->argv[a]);
+                // free(a1->argv[a]);
                 index += 1;
             }
             else
