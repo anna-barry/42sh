@@ -341,11 +341,11 @@ void concat_node(struct ast *node1, struct ast *node2,
         index = a1->count;
         for (a = 0; a < a2->count; a++)
         {
-            if (strcmp(a2->argv[a], "exit"))
+            if (a2->argv[a] && strcmp(a2->argv[a], "exit"))
             {
                 printf("in if\n");
-                if (a2->count > a + 1 && a1->argv[a + 1] != NULL)
-                    env->exit_status = atoi(a1->argv[a + 1]);
+                if (a2->count > a + 1 && a2->argv[a + 1] != NULL)
+                    env->exit_status = atoi(a2->argv[a + 1]);
                 else
                     env->exit_status = 0;
                 //free(res);
@@ -355,7 +355,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             {
                 //res[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
                 a1->argv[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
-                free(a2->argv[a]);
+                //free(a2->argv[a]);
                 index += 1;
                 a1->count += 1;
             }
