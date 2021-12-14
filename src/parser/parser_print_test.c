@@ -11,13 +11,13 @@ int main()
 {
     //char *input = "for i in {1..10}; do printf \"a \n\" ; done";
     //char *input = "if echo ok && echo a; then echo foo bar ; else echo b ;fi";
-    //char *input = "for i inword 'ok' \"test\"; do printf \"a \n\" ; done";
+    //char *input = "for i in word 'ok' \"test\"; do printf \"a \n\" ; done";
     //char *input = "if echo a; if echo b ; then echo b ; fi; then echo merci; else echo c; fi";
     //char *input = "Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e;Echo a; echo b; echo c; echo d; echo e;Echo a; echo b; echo c; echo d; echo e;Echo a; echo b; echo c; echo d; echo e;Echo a; echo b; echo c; echo d; echo e;Echo a; echo b; echo c; echo d; echo e;";
     //char *input = "if false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; elif false; then echo a; else echo b; fi";
     //char *input = "if echo \"ls\"; then echo 'foo' bar; echo okay; elif echo bebe; echo a ; then echo christian; echo anna laime; fi";
     //char *input = "if echo b; echo a; then echo a; fi; else echo a";
-    char *input = "while echo a || echo b; do echo b;";
+    //char *input = "while echo a || echo b; do echo b;";
     //char *input = "until echo a || echo b; do echo b; done";
     //char *input = "until echo a || echo b; do echo b; done";
     //char *input = "for i in word; do echo a; done";
@@ -28,8 +28,9 @@ int main()
     //char *input = "cat music.mp3 > /dev/audio";
     //char *input = "Mail -s \"Subject\" to-address < Filenam";
     //char *input = "myprogram 2 >errorsfile";
-    //char *input = "ls pt ABC > dirlist 2 >&1";
+    char *input = "ls pt ABC > dirlist 2 >&1";
     //char *input = "if [ 1 -eq 2 ];then echo aa; elif echo baba; then echo b; fi";
+    //char *input = "i=2; while [ $i -eq 3 ]; do echo $i; done; echo b";
     //char *input = "for i in word; do echo a; done > cat";
     struct info_lexer *new = lexer_init();
     lexer_new(input, new);

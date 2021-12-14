@@ -73,16 +73,17 @@ void free_variables(struct variable *index)
     if (index->next != NULL)
         free_variables(index->next);
 
-    // if (index->value)
-    //     free(index->value);
-    // if (index->name)
-    //     free(index->name);
+    if (index->value)
+         free(index->value);
+    if (index->name)
+         free(index->name);
     if (index)
         free(index);
 }
 
 void free_environnement(struct environnement *new)
 {
+    
     for (int i = 0; i < new->nb_args; i++)
     {
         if (new->args[i])
@@ -128,6 +129,13 @@ void insert_variable(char *name, char *value, struct environnement *new)
     struct variable *new_v = malloc(sizeof(struct variable));
     if (!new_v)
         err(2, "Error with malloc\n");
+   /* new_v->name = strndup(name, strlen(name));
+    if (value == NULL)
+    {
+       new_v->value = NULL;
+    }
+    else
+        new_v->value = strndup(value, strlen(value));*/
     new_v->name = name;
     new_v->value = value;
     if (new->nb_variables == 0)
@@ -184,10 +192,11 @@ char **get_all_var(char *command)
         return NULL;
     }
     char **result = malloc(sizeof(char *) * 2);
-    char *first = strndup(command, res);
-    char *second = strndup(command + res + 1, strlen(command) - res);
-    result[0] = first; // name
-    result[1] = second; // value
+    //char *first = strndup(command, res);
+    //char *second = strndup(command + res + 1, strlen(command) - res);
+    result[0] = strndup(command, res); // name
+    result[1] = strndup(command + res + 1, strlen(command) - res); // value
+    //printf("first is %s and second is %s \n", result[0], result[1]);
     return result;
 }
 
@@ -197,14 +206,17 @@ struct environnement *init_env(void)
     env->nb_variables = 0;
     env->var = NULL;
     // ADD RANDOM VARIABLE
-    insert_variable("RANDOM", NULL, env);
+    char *rand = strndup("RANDOM", strlen("RANDOM"));
+    insert_variable(rand, NULL, env);
     // ADD UID VARIABLE
     env->uid = getuid();
     env->exit_status = -1;
     // ADD OLDPWD VARIABLE + PWD
     // TODO
     // ADD IFS VARIABLE
-    insert_variable("IFS", "\n", env);
+    char *ifs = strndup("IFS", strlen("IFS"));
+    char *value_ifs = strndup("\n", strlen("\n"));
+    insert_variable(ifs, value_ifs, env);
     // print_variables(env);
     return env;
 }
