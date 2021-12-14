@@ -17,6 +17,8 @@
 
 int pipe_ast(struct ast *ast, struct environnement *env)
 {
+    printf("in pipe \n");
+    fflush(stdout);
     struct ast_pipe *pipe_ast = ast->data.ast_pipe;
     int fd[2];
     if (pipe(fd) == -1)
@@ -48,6 +50,8 @@ int pipe_ast(struct ast *ast, struct environnement *env)
     waitpid(pid, NULL, 0);
     int wstatus;
     waitpid(pid2, &wstatus, 0);
+    printf("in pipe return \n");
+    fflush(stdout);
     if (WEXITSTATUS(wstatus) == 127 || WEXITSTATUS(wstatus) == 0)
         return WEXITSTATUS(wstatus);
     return 1;
