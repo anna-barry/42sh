@@ -3,3 +3,14 @@
 echo "*********** Test 0 with echo and pipe ***********"
 diff <(./builddir/42sh -c "echo a | echo b") <(printf "b
 ")
+
+echo "*********** Test 1 with ls and pipe ***********"
+diff <(./builddir/42sh -c "ls | cat-e") <(printf "README.md\$
+builddir\$
+doc\$
+flake.lock\$
+flake.nix\$
+meson.build\$
+meson_options.txt\$
+src\$
+tests\$")
