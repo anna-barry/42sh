@@ -95,7 +95,6 @@ struct ast_elif *create_elif()
 struct ast_command *create_command()
 {
     struct ast_command *new_c = malloc(sizeof(struct ast_command) * 30);
-    new_c->opt = NONE;
     new_c->count = 0;
     return new_c;
 }
@@ -163,7 +162,7 @@ void ask_entry(struct info_lexer *i_lex)
 }
 
 //gets the type of redir of chars if existing, else does nothing
-int get_opt(struct lexer *lex, struct ast_command *new)
+int get_opt(struct lexer *lex, struct ast_redir *new)
 {
     enum token_type type = lexer_peek(lex)->type;
     if (!lex || type == TOKEN_EOF)
@@ -187,7 +186,6 @@ int get_opt(struct lexer *lex, struct ast_command *new)
     //printf("\n\n\nget opt type = %d\n", type);
     new->redir =
         strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
-    token_free(lexer_pop(lex));
     return 0;
 }
 // build the command with conditions and handles error
@@ -238,7 +236,6 @@ int get_command(struct info_lexer *i_lex, struct ast_command *new)
         token_free(lexer_pop(lex));
         //print(lex);
     }
-    get_opt(lex, new);
     return 0;
 }
 
@@ -279,6 +276,21 @@ void get_pipe(struct ast_main_root *ast, struct info_lexer *i_lex)
         errx(2, "wrong pipe implementation");
     ast->children[ast->nb_children - 1]->type = NODE_PIPE;
     ast->children[ast->nb_children - 1]->data.ast_pipe = new_pipe;
+}
+
+//get redir
+void get_redir(struct ast_main_root *ast, struct info_lexer *i_lex)
+{
+    struct ast_redir *new = malloc(sizeof(struct ast_redir));
+    struct lexer *lex = i_lex->lexer;
+    ast->nb_children--;
+    new->command = malloc(sizeof(struct ast));
+    new->command->type = ast->children[ast->nb_children - 1]->type;
+    new->command->data = ast->children[ast->nb_children - 1]->data;
+    get_opt(lex, new);
+    token_free(lexer_pop(lex));
+    ast->children[ast->nb_children - 1]->type = NODE_REDIR;
+    ast->children[ast->nb_children - 1]->data.ast_redir = new;
 }
 
 //same as pipe with and
@@ -674,7 +686,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             ast->nb_children--;
         }
         // IF WORD IS WORD OR SEMICOLON MAKE COMMAND
-        else if (type == TOKEN_WORDS || type == TOKEN_FOR_WORD || type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK || (type >= 11 && type <= 17))
+        else if (type == TOKEN_WORDS || type == TOKEN_FOR_WORD || type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
             make_command(ast, i_lex, mode);
         else if (type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE)
             make_simple_quote(ast, lex);
@@ -688,6 +700,8 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             // negation must break when the command was treated
             break;
         }
+        else if (type >= 11 && type <= 17)
+            get_redir(ast, i_lex);
         else if (type == TOKEN_WHILE)
             make_while(ast, i_lex, 0);
         else if (type == TOKEN_UNTIL)
@@ -695,12 +709,10 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
         else if (type == TOKEN_FOR)
             make_for(ast,i_lex);
         else if (type == TOKEN_PIPE)
-        {
-          get_pipe(ast, i_lex);
-        }
+            get_pipe(ast, i_lex);
         else
           errx(2, "wrong implementation");
-        if (lexer_peek(lex))
+        if (lex && lexer_peek(lex))
           type = lexer_peek(lex)->type;
         //printf("TYPE = %d\n", type);
     }

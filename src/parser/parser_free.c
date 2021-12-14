@@ -105,8 +105,6 @@ void free_ast_command(struct ast *ast)
     for (int i = 0; i < a->count; i++)
         free(a->argv[i]);
     free(a->argv);
-    if (a->opt != NONE)
-      free(a->redir);
     if (a)
         free(a);
     if (ast)
@@ -232,6 +230,14 @@ void free_ast_for_int(struct ast *ast)
         free(ast);
 }
 
+void free_ast_redir(struct ast *ast)
+{
+    struct ast_redir *a = ast->data.ast_redir;
+    free(a);
+    if (ast)
+        free(ast);
+}
+
 static ast_free_function ast_freeers[] =
 {
     [NODE_IF] = free_ast_if,
@@ -250,6 +256,7 @@ static ast_free_function ast_freeers[] =
     [NODE_FOR] = free_ast_for,
     [NODE_FOR_CHAR] = free_ast_for_char,
     [NODE_FOR_INT] = free_ast_for_int,
+    [NODE_REDIR] = free_ast_redir,
 };
 
 void free_ast(struct ast *ast) {

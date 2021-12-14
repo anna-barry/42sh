@@ -24,6 +24,7 @@ enum ast_type
     NODE_FOR,
     NODE_FOR_INT,
     NODE_FOR_CHAR,
+    NODE_REDIR,
 };
 
 enum opt
@@ -56,6 +57,7 @@ union ast_data
     struct ast_for *ast_for;
     struct ast_for_char* ast_for_char;
     struct read_for_int* ast_for_int;
+    struct ast_redir* ast_redir;
 };
 
 struct ast
@@ -75,8 +77,6 @@ struct ast_command
 {
     int count;
     char **argv;
-    enum opt opt;
-    char *redir;
 };
 
 struct ast_neg
@@ -152,6 +152,13 @@ struct ast_main_root
 {
     int nb_children;
     struct ast **children;
+};
+
+struct ast_redir
+{
+    struct ast *command;
+    enum opt opt;
+    char *redir;
 };
 
 struct ast_main_root *create_main_root();
