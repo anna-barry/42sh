@@ -128,13 +128,15 @@ void insert_variable(char *name, char *value, struct environnement *new)
     struct variable *new_v = malloc(sizeof(struct variable));
     if (!new_v)
         err(2, "Error with malloc\n");
-    new_v->name = strndup(name, strlen(name));
+   /* new_v->name = strndup(name, strlen(name));
     if (value == NULL)
     {
        new_v->value = NULL;
     }
     else
-        new_v->value = strndup(value, strlen(value));
+        new_v->value = strndup(value, strlen(value));*/
+    new_v->name = name;
+    new_v->value = value;
     if (new->nb_variables == 0)
     {
         new_v->next = NULL;
