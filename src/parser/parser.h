@@ -77,6 +77,8 @@ struct ast_command
 {
     int count;
     char **argv;
+    enum opt opt;
+    char *redir;
 };
 
 struct ast_neg
