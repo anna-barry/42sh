@@ -9,6 +9,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "../parser/parser.h"
+#include "../parser/parser_exec.h"
 #include "command.h"
 
 // redirection entry in the begin of a file
@@ -28,7 +30,6 @@ int command_redir_r(char *command[], int count, char *file,
     return 0;
 }
 
-/*
 int ast_redir_r(struct ast *ast, char *file, struct environnement *env)
 {
     struct ast_redir *redir_ast = ast->data.ast_redir;
@@ -36,7 +37,7 @@ int ast_redir_r(struct ast *ast, char *file, struct environnement *env)
     int fd = open(file, O_CREAT | O_WRONLY, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
-    if (exec_ast(ast, env) != 0)
+    if (exec_ast(redir_ast->command, env) != 0)
         return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
@@ -44,7 +45,6 @@ int ast_redir_r(struct ast *ast, char *file, struct environnement *env)
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
     return 0;
 }
-*/
 
 // redirection exit in the begin of a file
 int command_redir_l(char *command[], int count, char *file,
@@ -55,6 +55,22 @@ int command_redir_l(char *command[], int count, char *file,
     if (dup2(fd, STDIN_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count, env) != 0)
+        return 2;
+    fflush(stdout);
+    if (dup2(old_fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    return 0;
+}
+
+int ast_redir_l(struct ast *ast, char *file, struct environnement *env)
+{
+    struct ast_redir *redir_ast = ast->data.ast_redir;
+    int old_fd = dup(STDOUT_FILENO);
+    int fd = open(file, O_CREAT | O_WRONLY, 0644);
+    if (dup2(fd, STDIN_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    if (exec_ast(redir_ast->command, env) != 0)
         return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
@@ -80,6 +96,22 @@ int command_redir_rr(char *command[], int count, char *file,
     return 0;
 }
 
+int ast_redir_rr(struct ast *ast, char *file, struct environnement *env)
+{
+    struct ast_redir *redir_ast = ast->data.ast_redir;
+    int old_fd = dup(STDOUT_FILENO);
+    int fd = open(file, O_CREAT | O_APPEND | O_WRONLY, 0644);
+    if (dup2(fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    if (exec_ast(redir_ast->command, env) != 0)
+        return 2;
+    fflush(stdout);
+    if (dup2(old_fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    return 0;
+}
+
 int command_redir_lr(char *command[], int count, char *file,
                      struct environnement *env)
 {
@@ -88,6 +120,22 @@ int command_redir_lr(char *command[], int count, char *file,
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count, env) != 0)
+        return 2;
+    fflush(stdout);
+    if (dup2(old_fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    return 0;
+}
+
+int ast_redir_lr(struct ast *ast, char *file, struct environnement *env)
+{
+    struct ast_redir *redir_ast = ast->data.ast_redir;
+    int old_fd = dup(STDOUT_FILENO);
+    int fd = open(file, O_CREAT | O_RDWR, 0644);
+    if (dup2(fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    if (exec_ast(redir_ast->command, env) != 0)
         return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
@@ -163,6 +211,24 @@ int command_redir_r_pipe(char *command[], int count, char *file,
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(command, count, env) != 0)
+        return 2;
+    fflush(stdout);
+    if (dup2(old_fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    return 0;
+}
+
+int ast_redir_r_pipe(struct ast *ast, char *file, struct environnement *env)
+{
+    if (open(file, O_RDONLY, 0644) >= 0)
+        err(2, "the file %s already exist, you can not overwrite it", file);
+    struct ast_redir *redir_ast = ast->data.ast_redir;
+    int old_fd = dup(STDOUT_FILENO);
+    int fd = open(file, O_CREAT | O_WRONLY, 0644);
+    if (dup2(fd, STDOUT_FILENO) == -1)
+        fprintf(stderr, "Error with dup2");
+    if (exec_ast(redir_ast->command, env) != 0)
         return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
