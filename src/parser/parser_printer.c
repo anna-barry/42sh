@@ -9,24 +9,23 @@ void print_ast(struct ast *ast);
 
 void print_ast_if_root(struct ast *ast)
 {
-    //printf("if root\n");
+    printf("if root\n");
     struct ast_if_root *a = ast->data.ast_if_root;
     for (int i = 0; i < a->nb_children; i++)
     {
         print_ast(a->children[i]);
     }
-    //printf("end if root\n");
+    printf("end if root\n");
 }
-
 void print_ast_root(struct ast *ast)
 {
-    //printf("root\n");
+    printf("root\n");
     struct ast_main_root *a = ast->data.ast_main_root;
     for (int i = 0; i < a->nb_children; i++)
     {
         print_ast(a->children[i]);
     }
-    //printf("end root\n");
+    printf("end root\n");
 }
 
 void print_ast_if(struct ast *ast)
@@ -67,32 +66,6 @@ void print_ast_command(struct ast *ast)
     for (int i = 0; i < a->count; i++)
     {
         printf(" \"%s\"",a->argv[i]);
-        switch (a->opt)
-        {
-            case (REDIR_SORTIE):
-            printf(">%s", a->redir);
-            break;
-            case (REDIR_ENTREE):
-            printf("<%s", a->redir);
-            break;
-            case (REDIR_DESCRIPEUR):
-            printf(">&%s", a->redir);
-            break;
-            case (REDIR_FIN_FICHIER):
-            printf(">>%s", a->redir);
-            break;
-            case (REDIR_INPUT_DESCRIPEUR):
-            printf("<&%s", a->redir);
-            break;
-            case (REDIR_RW):
-            printf("<>%s", a->redir);
-            break;
-            case (REDIR_PIPE):
-            printf(">|%s", a->redir);
-            break;
-            default:
-            break;
-        }
     }
 }
 
@@ -177,6 +150,14 @@ void print_ast_for_int(struct ast *ast)
     printf(" %lu..%lu..%lu ", a->start, a->end, a->step);
 }
 
+void print_ast_redir(struct ast *ast)
+{
+    struct ast_redir *a = ast->data.ast_redir;
+    printf("[redir of type %d] in %s", a->opt, a->redir);
+    print_ast(a->command);
+    printf("\n end redir\n");
+}
+
 typedef void (*ast_print_function)(struct ast *ast);
 
 static ast_print_function ast_printers[] =
@@ -197,6 +178,7 @@ static ast_print_function ast_printers[] =
     [NODE_FOR] = print_ast_for,
     [NODE_FOR_CHAR] = print_ast_for_char,
     [NODE_FOR_INT] = print_ast_for_int,
+    [NODE_REDIR] = print_ast_redir,
 };
 
 void print_ast(struct ast *ast) {
