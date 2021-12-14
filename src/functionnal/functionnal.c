@@ -184,10 +184,11 @@ char **get_all_var(char *command)
         return NULL;
     }
     char **result = malloc(sizeof(char *) * 2);
-    char *first = strndup(command, res);
-    char *second = strndup(command + res + 1, strlen(command) - res);
-    result[0] = first; // name
-    result[1] = second; // value
+    //char *first = strndup(command, res);
+    //char *second = strndup(command + res + 1, strlen(command) - res);
+    result[0] = strndup(command, res); // name
+    result[1] = strndup(command + res + 1, strlen(command) - res); // value
+    printf("first is %s and second is %s \n", result[0], result[1]);
     return result;
 }
 
