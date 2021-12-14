@@ -70,7 +70,7 @@ week_1:
   script:
     - tests/week1/tests_if_echo builddir/42sh
 
-week_2:
+week_2_pipe:
   stage: test
   dependencies:
     - build
@@ -84,7 +84,7 @@ week_3:
   script:
     - tests/week3/test_dot builddir/42sh
 
-week_2:
+week_2_while:
   stage: test
   dependencies:
     - build

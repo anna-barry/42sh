@@ -1,2 +1,4 @@
+#!/bin/bash
+
 echo "*********** Test 2 nesw if  ***********"
 diff <(./builddir/42sh -c "if ! ls; then echo aaa; elif ls; then echo bb; else echo "null"; fi") <(if ! ls; then echo aaa; elif ls; then echo bb; else echo "null"; fi)
