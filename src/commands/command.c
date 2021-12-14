@@ -93,7 +93,42 @@ int command_exec(char *argv[], int count, struct environnement *env)
     else if (is_dot(argv[0]))
         return my_dot(argv, count, env);
     else
-        simple_command_exec(argv, count)
+    {
+        printf("argv[0]=%s argv[1]=%s argv[2]=%s\n", argv[0], argv[1], argv[2]);
+        if (argv[count] != NULL)
+        {
+            argv[count] = NULL;
+        }
+        int wstatus = 0;
+        int res_exec = 0;
+        int pid = fork();
+        char *command = argv[0];
+        if (pid == 0)
+        {
+            printf("in child\n");
+            fflush(stdout);
+            res_exec = execvp(command, argv);
+            if (res_exec == -1)
+                return 127;
+        }
+        else
+        {
+            printf("in parent\n");
+            fflush(stdout);
+            int res_exec = waitpid(pid, &wstatus, 0);
+            if (res_exec == -1)
+                err(2, "problem in child");
+            if (WIFEXITED(wstatus))
+            {
+                if (WEXITSTATUS(wstatus) == 127)
+                {
+                    fprintf(stderr, "Error");
+                    return 1;
+                }
+            }
+        }
+        return WEXITSTATUS(wstatus); // return the return value of the command
+    }
 }
 // int main(int argc, char *argv[])
 // {
