@@ -339,12 +339,13 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     if (env->exit_status != -1)
         return env->exit_status;
     struct ast_command *a = ast->data.ast_command;
-    /*printf("___________________________________\n");
+    //printf("___________________________________\n");
+    /*
     for (int i = 0; i < a->count; i++)
     {
         printf("command: %s\n", a->argv[i]);
     }*/
-
+    //print_variables(env);
     char **tab = get_all_var(a->argv[0]);
     if (tab != NULL)
     {
@@ -352,11 +353,12 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
         //char *z = strndup(tab[0], strlen(tab[0]));
         //char *f = strndup(tab[1], strlen(tab[1]));
         insert_variable(tab[1], tab[0], env);
+        //print_variables(env);
         //free(tab);
-        if (tab[1] != NULL)
+        /*if (tab[1] != NULL)
             free(tab[1]);
         if (tab[0] != NULL)
-            free(tab[0]);
+            free(tab[0]);*/
         free(tab);
         return 0;
     }
