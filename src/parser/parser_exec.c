@@ -350,9 +350,15 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     {
         // printf("adding %s %s \n", tab[0], tab[1]);
         insert_variable(tab[0], tab[1], env);
+        //free(tab);
+        free(tab[1]);
+        free(tab[0]);
         free(tab);
         return 0;
     }
+    free(tab[1]);
+    free(tab[0]);
+    free(tab);
     enum opt flag = a->opt;
     int return_value = -1;
     switch (flag)
