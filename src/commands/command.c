@@ -131,6 +131,11 @@ int command_exec(char *argv[], int count, struct environnement *env)
     {
         return simple_command_exec(argv_cpy, count);
     }
+    for (int a = 0; a < count; a++)
+    {
+        free(argv_cpy[a]);
+    }
+    free(argv_cpy);
 }
 
 /*
