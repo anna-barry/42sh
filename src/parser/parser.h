@@ -178,7 +178,7 @@ int build_if( struct info_lexer *i_lex, struct ast_if_root *root);
 int build_else( struct info_lexer *i_lex, struct ast_if_root *root);
 int build_elif( struct info_lexer *i_lex, struct ast_if_root *root);
 struct ast_if_root *build_ast_if( struct info_lexer *i_lex);
-int check_break(enum ast_type mode, enum token_type type);
+int check_break(enum ast_type mode, enum token_type type, int open);
 struct ast *build_ast( struct info_lexer *i_lex, enum ast_type mode);
 
 #endif

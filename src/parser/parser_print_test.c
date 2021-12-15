@@ -10,7 +10,7 @@
 int main()
 {
     //char *input = "for i in {1..10}; do printf \"a \n\" ; done";
-    //char *input = "if echo ok && echo a; then echo foo bar ; else echo b ;fi";
+    char *input = "if echo ok || echo a; echo c; then echo foo bar ; else echo b ;fi";
     //char *input = "for i in word 'ok' \"test\"; do printf \"a \n\" ; done";
     //char *input = "if echo a; if echo b ; then echo b ; fi; then echo merci; else echo c; fi";
     //char *input = "Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e; Echo a; echo b; echo c; echo d; echo e;Echo a; echo b; echo c; echo d; echo e;Echo a; echo b; echo c; echo d; echo e;Echo a; echo b; echo c; echo d; echo e;Echo a; echo b; echo c; echo d; echo e;Echo a; echo b; echo c; echo d; echo e;";
@@ -31,7 +31,10 @@ int main()
     //char *input = "ls pt ABC > dirlist 2 >&1";
     //char *input = "if [ 1 -eq 2 ];then echo aa; elif echo baba; then echo b; fi";
     //char *input = "i=2; while [ $i -eq 3 ]; do echo $i; done; echo b";
-    char *input = "for i in word; do echo a; done";
+    //char *input = "for i in word; do echo a; done";
+    //char *input = "echo a > test.txt 2 >& 1";
+    //char *input = "echo a";
+    //char *input = "if echo a ;then fi";
     struct info_lexer *new = lexer_init();
     lexer_new(input, new);
     struct ast *ast = build_ast(new, NODE_ROOT);

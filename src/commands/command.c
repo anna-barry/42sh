@@ -53,7 +53,7 @@ int simple_command_exec(char *argv[], int count)
             if (WEXITSTATUS(wstatus) == 127)
             {
                 fprintf(stderr, "Error");
-                return 1;
+                return 127;
             }
     }
     if (pid < 0)
@@ -101,8 +101,6 @@ int command_exec(char *argv[], int count, struct environnement *env)
     else
     {
         int res = simple_command_exec(argv, count);
-        if (res == 127)
-            return 1;
         return res;
     }
 }
