@@ -72,6 +72,10 @@ void free_variables(struct variable *index)
 {
     if (index->next != NULL)
         free_variables(index->next);
+    if (index->value)
+        free(index->value);
+    if (index->name)
+        free(index->name);
     if (index)
         free(index);
 }
