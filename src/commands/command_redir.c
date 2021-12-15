@@ -21,7 +21,9 @@ int command_redir_r(char *command[], int count, char *file,
     int fd = open(file, O_CREAT | O_WRONLY, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
-    if (command_exec(command, count, env) != 0)
+    if (command_exec(command,count, env) == 127)
+        return 127;
+    else if (command_exec(command, count, env) != 0)
         return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
@@ -54,7 +56,9 @@ int command_redir_l(char *command[], int count, char *file,
     int fd = open(file, O_CREAT | O_WRONLY, 0644);
     if (dup2(fd, STDIN_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
-    if (command_exec(command, count, env) != 0)
+    if (command_exec(command,count, env) == 127)
+        return 127;
+    else if (command_exec(command, count, env) != 0)
         return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
@@ -87,7 +91,9 @@ int command_redir_rr(char *command[], int count, char *file,
     int fd = open(file, O_CREAT | O_APPEND | O_WRONLY, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
-    if (command_exec(command, count, env) != 0)
+    if (command_exec(command,count, env) == 127)
+        return 127;
+    else if (command_exec(command, count, env) != 0)
         return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
@@ -119,7 +125,9 @@ int command_redir_lr(char *command[], int count, char *file,
     int fd = open(file, O_CREAT | O_RDWR, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
-    if (command_exec(command, count, env) != 0)
+    if (command_exec(command,count, env) == 127)
+        return 127;
+    else if (command_exec(command, count, env) != 0)
         return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
@@ -210,7 +218,9 @@ int command_redir_r_pipe(char *command[], int count, char *file,
     int fd = open(file, O_CREAT | O_WRONLY, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
-    if (command_exec(command, count, env) != 0)
+    if (command_exec(command,count, env) == 127)
+        return 127;
+    else if (command_exec(command, count, env) != 0)
         return 2;
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
