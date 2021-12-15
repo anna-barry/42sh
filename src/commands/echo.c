@@ -4,27 +4,58 @@
 #include <stdio.h>
 #include <string.h>
 
+int test_null(char *argv[], int count)
+{
+    for (int i = 1; i < count; i++)
+    {
+        if (argv[i] != NULL)
+            return 1;
+    }
+    return 0;
+}
+
 int echo(char *argv[], int count)
 {
-    //printf("count is = %d\n", count);
-    //for (int i = 0; i < count; i++)
-    //printf("elt %d is = %s\n", i, argv[i]);
-    int flag = 0;
+    // printf("count is = %d\n", count);
+    // for (int i = 0; i < count; i++)
+    //     printf("elt %d is = %s\n", i, argv[i]);
+    if (test_null(argv, count) == 0)
+    {
+        printf("\n");
+        return 0;
+    }
+    int flag_e = 0;
+    int flag_n = 0;
     if (count == 2 && argv[1] == NULL)
     {
         return 0;
     }
-    else if (argv[1] != NULL && count > 2 && strcmp("-n", argv[1]) == 0)
+    int begin = 1;
+    int no_option = 1;
+    for (int i = 1; (i < count) && no_option != 0; i++)
     {
-        flag = 2;
+        no_option = 0;
+        if (argv[i] == NULL)
+        {
+            no_option = 1;
+            begin++;
+        }
+        if (/*argv[1] != NULL && count > 1 && */ strcmp("-n", argv[i]) == 0)
+        {
+            flag_n = 1;
+            no_option = 1;
+            begin++;
+        }
+        if (/*argv[1] != NULL && count > 1 && */ strcmp("-e", argv[i]) == 0)
+        {
+            flag_e = 1;
+            no_option = 1;
+            begin++;
+        }
     }
-    else if (argv[1] != NULL && count > 2 && strcmp("-e", argv[1]) == 0)
-    {
-        flag = 1;
-    }
-    int i = 1;
-    if (flag > 0)
-        i = 2;
+    int i = 1; // i = 1
+    if (flag_e > 0 || flag_n > 0)
+        i = begin;
     for (; i < count; i++)
     {
         //printf("\ncount %i is %s \n", i, argv[i]);
@@ -35,7 +66,7 @@ int echo(char *argv[], int count)
         }
         for (int j = 0; argv[i][j]; j++)
         {
-            if (flag == 1)
+            if (flag_e == 1)
             {
                 if (argv[i][j + 1] != '\0'
                     && (argv[i][j] == '\\' && argv[i][j + 1] == 'n'))
@@ -68,7 +99,7 @@ int echo(char *argv[], int count)
             printf(" ");
         }
     }
-    if (flag < 2)
+    if (flag_n != 1)
         printf("\n");
     return 0;
 }
@@ -89,31 +120,32 @@ int echo(char *argv[], int count)
 //     return echo(argv);
 //     return 0;
 // }
+
 /*
 int main(int argc, char const *argv[])
 {
-    char *argv0[2] = { "echo", NULL };
-    char *argv1[3] = { "echo", "geoffroy", NULL };
-    char *argv2[4] = { "echo", "geoffroy", "geoffroy", NULL };
-    char *argv3[4] = { "echo", "-n", "geoffroy", NULL };
-    char *argv4[3] = { "echo", "geof\\nfroy", NULL };
-    char *argv5[4] = { "echo", "-e", "geof\\nfroy", NULL };
+    char *argv0[3] = { "echo", "-n" };
+    char *argv1[3] = { "echo", "-e" };
+    char *argv2[4] = { "echo", "geoffroy", "geoffroy" };
+    char *argv3[5] = { "echo", "-n", "-n", "geoff" };
+    char *argv4[3] = { "echo", "geof\\nfroy" };
+    char *argv5[6] = { "echo", "-n", "-n", "-e", "geof\\nfroy" };
     if (argc != 2)
         err(1, "Wrong args, try again with  : (./echo test-*)\n");
     else
     {
         if (strcmp("test0", argv[1]) == 0) // simple echo
-            return echo(argv0);
+            return echo(argv0, 2);
         else if (strcmp("test1", argv[1]) == 0)
-            return echo(argv1);
+            return echo(argv1, 2);
         else if (strcmp("test2", argv[1]) == 0)
-            return echo(argv2);
+            return echo(argv2, 3);
         else if (strcmp("test3", argv[1]) == 0)
-            return echo(argv3);
+            return echo(argv3, 4);
         else if (strcmp("test4", argv[1]) == 0)
-            return echo(argv4);
+            return echo(argv4, 2);
         else if (strcmp("test5", argv[1]) == 0)
-            return echo(argv5);
+            return echo(argv5, 5);
         else
             err(1, "Not implemented test");
     }

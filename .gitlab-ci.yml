@@ -98,6 +98,13 @@ tests_unset:
   script:
     - tests/week3/tests_unset builddir/42sh
 
+error_if:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - tests/run_test_error_if builddir/42sh
+
 week_2_while:
   stage: test
   dependencies:
