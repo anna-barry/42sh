@@ -52,7 +52,7 @@ int simple_command_exec(char *argv[], int count)
         if (WIFEXITED(wstatus))
             if (WEXITSTATUS(wstatus) == 127)
             {
-                fprintf(stderr, "Error");
+                fprintf(stderr, "Error: command doesn't exist\n");
                 return 127;
             }
     }
