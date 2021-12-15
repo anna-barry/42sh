@@ -1,7 +1,12 @@
 #!/bin/bash
 
 echo "*********** Test 1 elif ***********"
-diff <(./builddir/42sh -c "if [ 1 -eq 2 ];then echo aa; elif echo baba; then echo b; fi") <(if [ 1 -eq 2 ];then echo aa; elif echo baba; then echo b; fi)
+diff <(./builddir/42sh -c "if [ 1 -eq 2 ];then echo aa; elif echo baba; then echo b; fi") <(printf "baba
+b
+")
 
 echo "*********** Test 2 elif ***********"
-diff <(./builddir/42sh -c "if [ ! echo a ];then echo aa; elif echo baba; then echo b; fi") <(if [ ! echo a ];then echo aa; elif echo baba; then echo b; fi)
+diff <(./builddir/42sh -c "if [ ! echo a ];then echo aa; elif echo baba; then echo b; fi") <(printf "a
+baba
+b
+")
