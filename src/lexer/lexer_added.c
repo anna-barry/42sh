@@ -216,7 +216,7 @@ struct cap_and_i * spe_token(const char *input, size_t *index, struct cap_and_i 
           nb = 0;
           while (*for_s->i + nb < strlen(input) && !is_end(input[*for_s->i + nb])
           && input[*for_s->i + nb] != '<' && input[*for_s->i + nb] != '>'
-          && input[*for_s->i + nb] != '|')
+          && input[*for_s->i + nb] != '|' && input[*for_s->i + nb] != '&')
           {
               nb++;
           }
@@ -245,7 +245,7 @@ struct cap_and_i * spe_token(const char *input, size_t *index, struct cap_and_i 
         nb = 0;
         while (*for_s->i + nb < strlen(input) && !is_end(input[*for_s->i + nb])
         && input[*for_s->i + nb] != '<' && input[*for_s->i + nb] != '>'
-          && input[*for_s->i + nb] != '|')
+          && input[*for_s->i + nb] != '|' && input[*for_s->i + nb] != '&')
         {
           nb++;
         }
