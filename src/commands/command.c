@@ -96,7 +96,8 @@ int command_exec(char *argv[], int count, struct environnement *env)
     }
     else if (is_dot(argv[0]))
         return my_dot(argv, count, env);
-
+    else if (strcmp(argv[0], "unset") == 0)
+        return my_unset(argv, env);
     else
     {
         int res = simple_command_exec(argv, count);
