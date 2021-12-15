@@ -13,7 +13,7 @@ int is_space(char c)
 
 int is_end(char c)
 {
-  return c == ';' || c == '\n' || c == ' ' || c == '\t' || c == '[' || c == ']';
+  return c == ';' || c == '\n' || c == ' ' || c == '\t';
 }
 
 void lexer_new(const char *input, struct info_lexer *info)
@@ -25,7 +25,7 @@ void lexer_new(const char *input, struct info_lexer *info)
     for (; *i <= strlen(input); *i = *i + 1)
     {
       nb = 0;
-      if (is_space(input[*i]) || input[*i] == '[' || input[*i] == ']')
+      if (is_space(input[*i]))
         continue;
       if (*info->cap < (*info->index + 2))
       {
