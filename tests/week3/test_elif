@@ -6,7 +6,7 @@ b
 ")
 
 echo "*********** Test 2 elif ***********"
-diff <(./builddir/42sh -c "if [ ! echo a ];then echo aa; elif echo baba; then echo b; fi") <(printf "a
+diff <(./builddir/42sh -c "if ! echo a ;then echo aa; elif echo baba; then echo b; fi") <(printf "a
 baba
 b
 ")
