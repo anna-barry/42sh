@@ -75,7 +75,7 @@ struct cap_and_i * spe_token(const char *input, size_t *index, struct cap_and_i 
     /*
      * testing if
      */
-      if (for_s->mode == 0 && current_char == 'i' &&  *for_s->i + 1 < len && input[*for_s->i + 1] == 'f'
+     else if (for_s->mode == 0 && current_char == 'i' &&  *for_s->i + 1 < len && input[*for_s->i + 1] == 'f'
       && (*for_s->i + 2 == len || (*for_s->i + 2 < len 
       && (input[*for_s->i + 2] == ' ' || input[*for_s->i + 2] == ';'))))
       {
