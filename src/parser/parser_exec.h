@@ -7,9 +7,11 @@
 #include "../commands/command.h"
 #include "../commands/command_pipe.h"
 #include "../commands/command_redir.h"
+#include "../exec/concat.h"
 #include "../functionnal/functionnal.h"
 #include "parser.h"
-#include "../exec/concat.h"
+
+int exec_ast_redir(struct ast *ast, struct environnement *env);
 
 int exec_ast_and(struct ast *ast, struct environnement *env);
 

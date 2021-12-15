@@ -411,7 +411,7 @@ static ast_exec_function ast_exec[] = {
     [NODE_IF_ROOT] = exec_ast_if_root, [NODE_ROOT] = exec_ast_root,
     [NODE_WHILE] = exec_ast_while,     [NODE_OR] = exec_ast_or,
     [NODE_AND] = exec_ast_and,         [NODE_NEG] = exec_ast_neg,
-    [NODE_PIPE] = exec_ast_pipe,
+    [NODE_PIPE] = exec_ast_pipe,       [NODE_REDIR] = exec_ast_redir,
 };
 
 int exec_ast(struct ast *ast, struct environnement *env)
