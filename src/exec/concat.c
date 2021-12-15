@@ -117,6 +117,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
         {
             char *res = NULL;
             free(argv);
+            free(indice);
             return res;
         }
         tr_char = inter->value;
