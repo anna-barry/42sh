@@ -16,212 +16,12 @@ int is_end(char c)
   return c == ';' || c == '\n' || c == ' ' || c == '\t' || c == '[' || c == ']';
 }
 
-struct cap_and_i * spe_token(const char *input, size_t *index, struct cap_and_i *for_s, struct lexer *new)
-{
-  size_t nb = 0;
-  size_t *i = for_s->i;
-  size_t len = strlen(input);
-  char current_char = input[*i];
-  if (current_char >= 'A' && current_char <= 'Z')
-    current_char = current_char + ('a' - 'A');
-  if (current_char >= 'a' && current_char <= 'z')
-  {
-    /*
-     * testing if
-     */
-      if (current_char == 'i' &&  *for_s->i + 1 < len && input[*for_s->i + 1] == 'f'
-      && (*for_s->i + 2 == len || (*for_s->i + 2 < len 
-      && (input[*for_s->i + 2] == ' ' || input[*for_s->i + 2] == ';'))))
-      {
-        new[*index - 1].current_tok = token_new(TOKEN_IF);
-        new[*index - 1].current_tok->value = NULL;
-        nb = 1;
-      }
-      /*
-       * testing else
-       */
-      else if (current_char == 'e' &&  *for_s->i + 3 < len && input[*for_s->i + 1] == 'l'
-                && input[*for_s->i + 2] == 's' && input[*for_s->i + 3] == 'e'
-                && (*for_s->i + 4 == len || (*for_s->i + 4 < len
-                && (input[*for_s->i + 4] == ' ' || input[*for_s->i + 4] == ';'))))
-      {
-        new[*index - 1].current_tok = token_new(TOKEN_ELSE);
-        new[*index - 1].current_tok->value = NULL;
-        nb = 3;
-      }
-      /*
-       * testing elif
-       */
-      else if (current_char == 'e' &&  *for_s->i + 3 < len && input[*for_s->i + 1] == 'l'
-                && input[*for_s->i + 2] == 'i' && input[*for_s->i + 3] == 'f'
-                && (*for_s->i + 4 == len || (*for_s->i + 4 < len 
-                && (input[*for_s->i + 4] == ' ' || input[*for_s->i + 4] == ';' ))))
-      {
-        new[*index - 1].current_tok = token_new(TOKEN_ELIF);
-        new[*index - 1].current_tok->value = NULL;
-        nb = 3;
-      }
-      /*
-       * testing then
-       */
-       else if (current_char == 't' &&  *for_s->i + 3 < len && input[*for_s->i + 1] == 'h'
-                && input[*for_s->i + 2] == 'e' && input[*for_s->i + 3] == 'n'
-                && (*for_s->i + 4 == len || (*for_s->i + 4 < len 
-                && (input[*for_s->i + 4] == ' ' || input[*for_s->i + 4] == ';'))))
-       {
-         new[*index - 1].current_tok = token_new(TOKEN_THEN);
-         new[*index - 1].current_tok->value = NULL;
-         nb = 3;
-       }
-       /*
-        * testing fi
-        */
-        else if (current_char == 'f' &&  *for_s->i + 1 < len && input[*for_s->i + 1] == 'i'
-         && (*for_s->i + 2 == len || (*for_s->i + 2 < len 
-         && (input[*for_s->i + 2] == ' ' || input[*for_s->i + 2] == ';'))))
-        {
-          new[*index - 1].current_tok = token_new(TOKEN_FI);
-          new[*index - 1].current_tok->value = NULL;
-          nb = 1;
-        }
-       /*
-        * testing for
-        */
-        else if (current_char == 'f' &&  *for_s->i + 2 < len && input[*for_s->i + 1] == 'o'
-        && input[*for_s->i + 2] == 'r'  && (*for_s->i + 3 == len || (*for_s->i + 3 < len 
-        && (input[*for_s->i + 3] == ' ' || input[*for_s->i + 3] == ';'))))
-        {
-          new[*index - 1].current_tok = token_new(TOKEN_FOR);
-          new[*index - 1].current_tok->value = NULL;
-          nb = 2;
-        }
-       /*
-        * testing in
-        */
-        else if (current_char == 'i' &&  *for_s->i + 1 < len && input[*for_s->i + 1] == 'n'
-         && (*for_s->i + 2 == len || (*for_s->i + 2 < len 
-         && (input[*for_s->i + 2] == ' ' || input[*for_s->i + 2] == ';'))))
-        {
-          new[*index - 1].current_tok = token_new(TOKEN_IN);
-          new[*index - 1].current_tok->value = NULL;
-          *index = *index + 1;
-          *for_s->i = *for_s->i + 2;
-          get_for(input, for_s, index, new);
-          *index = *index - 1;
-          *for_s->i = *for_s->i - 1;
-          //printf("index here is %zu and i is %zu \n", *index, *for_s->i);
-        }
-       /*
-        * testing Until
-        */
-       else if (current_char == 'u' &&  *for_s->i + 4 < len 
-       && input[*for_s->i + 1] == 'n' && input[*for_s->i + 2] == 't'
-       && input[*for_s->i + 3] == 'i' && input[*for_s->i + 4] == 'l'
-       && (*for_s->i + 5 == len || (*for_s->i + 5 < len 
-       && (input[*for_s->i + 5] == ' ' || input[*for_s->i + 5] == ';'))))
-        {
-          new[*index - 1].current_tok = token_new(TOKEN_UNTIL);
-          new[*index - 1].current_tok->value = NULL;
-          nb = 4;
-        }
-       /*
-        * testing Done
-        */
-       else if (current_char == 'd' &&  *for_s->i + 3 < len 
-       && input[*for_s->i + 1] == 'o' && input[*for_s->i + 2] == 'n'
-       && input[*for_s->i + 3] == 'e'
-       && (*for_s->i + 4 == len || (*for_s->i + 4 < len
-       && (input[*for_s->i + 4] == ' ' || input[*for_s->i + 4] == ';'))))
-        {
-          new[*index - 1].current_tok = token_new(TOKEN_DONE);
-          new[*index - 1].current_tok->value = NULL;
-          nb = 3;
-        }
-       /*
-        * testing Do
-        */
-       else if (current_char == 'd' &&  *for_s->i + 1 < len && input[*for_s->i + 1] == 'o'
-        && (*for_s->i + 2 == len || (*for_s->i + 2 < len 
-        && (input[*for_s->i + 2] == ' ' || input[*for_s->i + 2] == ';'))))
-        {
-          new[*index - 1].current_tok = token_new(TOKEN_DO);
-          new[*index - 1].current_tok->value = NULL;
-          nb = 1;
-        }
-       /*
-        * testing While
-        */
-       else if (current_char == 'w' &&  *for_s->i + 4 < len 
-       && input[*for_s->i + 1] == 'h' && input[*for_s->i + 2] == 'i'
-       && input[*for_s->i + 3] == 'l' && input[*for_s->i + 4] == 'e'
-       && (*for_s->i + 5 == len || (*for_s->i + 5 < len 
-       && (input[*for_s->i + 5] == ' ' || input[*for_s->i + 5] == ';'))))
-        {
-          new[*index - 1].current_tok = token_new(TOKEN_WHILE);
-          new[*index - 1].current_tok->value = NULL;
-          nb = 4;
-        }
-        else
-        {
-          /*
-           * testing word
-           */
-          new[*index - 1].current_tok = token_new(TOKEN_WORDS);
-          nb = 0;
-          while (*for_s->i + nb < strlen(input) && !is_end(input[*for_s->i + nb])
-          && input[*for_s->i + nb] != '<' && input[*for_s->i + nb] != '>'
-          && input[*for_s->i + nb] != '|')
-          {
-              nb++;
-          }
-          new[*index - 1].current_tok->value = strndup(input + *for_s->i, nb);
-          new[*index - 1].current_tok->value[nb] = '\0';
-          if (nb > 0) {
-            nb--;
-          }
-        }
-  }
-  else
-  {
-    if (!is_end(input[*for_s->i]))
-    {
-      if(input[*for_s->i] == '&' && *for_s->i + 1 < strlen(input) && input[*for_s->i + 1] == '&'
-       && (*for_s->i + 2 == len || (*for_s->i + 2 < len && (input[*for_s->i + 4] == ' ' || 
-       input[*for_s->i + 4] == ';'))))
-      {
-        new[*index - 1].current_tok = token_new(TOKEN_AND);
-        new[*index - 1].current_tok->value = NULL;
-        nb++;
-      }
-      else
-      {
-        new[*index - 1].current_tok = token_new(TOKEN_WORDS);
-        nb = 0;
-        while (*for_s->i + nb < strlen(input) && !is_end(input[*for_s->i + nb])
-        && input[*for_s->i + nb] != '<' && input[*for_s->i + nb] != '>'
-          && input[*for_s->i + nb] != '|')
-        {
-          nb++;
-        }
-        new[*index - 1].current_tok->value = strndup(input + *for_s->i, nb);
-        new[*index - 1].current_tok->value[nb] = '\0';
-        if (nb > 0) {
-          nb--;
-        }
-      }
-    }
-    //new[*index - 1].current_tok = token_new(TOKEN_ERROR);
-    //fprintf(stderr, "error in token\n");
-  }
-  *for_s->i = *for_s->i + nb;
-  return for_s;
-}
-
 void lexer_new(const char *input, struct info_lexer *info)
 {
     size_t *i = malloc(sizeof(size_t));
     *i = 0;
     size_t nb = 0;
+    int mode = 0;
     for (; *i <= strlen(input); *i = *i + 1)
     {
       nb = 0;
@@ -237,6 +37,8 @@ void lexer_new(const char *input, struct info_lexer *info)
           case ('\n'):
               info->lexer[*info->index - 1].current_tok = token_new(TOKEN_LINE_BREAK);
               info->lexer[*info->index - 1].current_tok->value = NULL;
+              if (mode == 1)
+                mode = 0;
               break;
              /*
                * Testing for end of file
@@ -244,17 +46,23 @@ void lexer_new(const char *input, struct info_lexer *info)
           case ('\0'):
               info->lexer[*info->index - 1].current_tok = token_new(TOKEN_EOF);
               info->lexer[*info->index - 1].current_tok->value = NULL;
+              if (mode == 1)
+                mode = 0;
               //printf("end of file \n");
               break;
           case (';'):
               info->lexer[*info->index - 1].current_tok = token_new(TOKEN_SEMICOLON);
               info->lexer[*info->index - 1].current_tok->value = NULL;
+              if (mode == 1)
+                mode = 0;
               //printf("lol;;;;;lol\n");
               break;
               /*
                * Testing for pipeline
                */
           case ('|'):
+              if (mode == 1)
+                mode = 0;
               if (*i + 1 < strlen(input) && input[*i + 1] == '|')
               {
                 info->lexer[*info->index - 1].current_tok = token_new(TOKEN_OR);
@@ -275,6 +83,8 @@ void lexer_new(const char *input, struct info_lexer *info)
                * Testing for Redirections
                */
           case ('<'):
+              if (mode == 1)
+                mode = 0;
               if (*i + 1 < strlen(input) && input[*i + 1] == '&')
               {
                 info->lexer[*info->index - 1].current_tok = token_new(TOKEN_REDIR_INPUT_DESCRIPEUR);
@@ -340,6 +150,8 @@ void lexer_new(const char *input, struct info_lexer *info)
               break;
               break;
           case ('>'):
+              if (mode == 1)
+                mode = 0;
               if (*i + 1 < strlen(input) && input[*i + 1] == '&')
               {
                 info->lexer[*info->index - 1].current_tok = token_new(TOKEN_REDIR_DESCRIPEUR);
@@ -445,17 +257,17 @@ void lexer_new(const char *input, struct info_lexer *info)
           default:
           if (*i < strlen(input))
           {
-              //printf("here\n");
+              
               struct cap_and_i *for_s = malloc(sizeof(struct cap_and_i));
               for_s->i = malloc(sizeof(size_t));
               for_s->cap = malloc(sizeof(size_t));
               *for_s->i = *i;
               *for_s->cap = *info->cap;
-              //printf("before input[i]=%c\n", input[*for_s->i]);
+              for_s->mode = mode;
               for_s = spe_token(input, info->index, for_s, info->lexer);
-              //printf("after input[i]=%c\n", input[*for_s->i]);
               *i = *for_s->i;
               *info->cap = *for_s->cap;
+              mode = for_s->mode;
               free(for_s->i);
               free(for_s->cap);
               free(for_s);
@@ -486,7 +298,7 @@ struct token *lexer_peek(struct lexer *lexer)
 
 struct token *lexer_pop(struct lexer *lexer)
 {
-    //printf("start to pop\n");
+    
     if (lexer == NULL)
         return NULL;
     
@@ -544,12 +356,12 @@ struct token *lexer_pop(struct lexer *lexer)
       }
       j++;
     }
-    // test //
+    
     if (lexer[j].current_tok->value != NULL) {
         free(lexer[j].current_tok->value);
         lexer[j].current_tok->value = NULL;
       }
-    //
+    
     if (t == TOKEN_SIMPLE_QUOTE || t == TOKEN_WORDS || t == TOKEN_REDIR_SORTIE || t == TOKEN_REDIR_ENTREE 
     || t == TOKEN_REDIR_DESCRIPEUR || t == TOKEN_REDIR_FIN_FICHIER || t == TOKEN_DOUBLE_QUOTE
     || t == TOKEN_FOR_WORD || t == TOKEN_REDIR_PIPE
@@ -559,10 +371,6 @@ struct token *lexer_pop(struct lexer *lexer)
     || t == TOKEN_FOR_DOUBLE_QUOTE
     || t == TOKEN_FOR_INT)
     {
-      /*if (lexer[j].current_tok->value != NULL) {
-        free(lexer[j].current_tok->value);
-        lexer[j].current_tok->value = NULL;
-      }*/
       lexer[j].current_tok->value = test;
     }
     lexer[j].current_tok->type = t;
