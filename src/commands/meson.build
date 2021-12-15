@@ -5,4 +5,5 @@ all_sources += files(
     'command_pipe.c',
     'command_redir.c',
     'dot.c',
+    'unset.c'
 )
