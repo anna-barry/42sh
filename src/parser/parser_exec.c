@@ -233,7 +233,7 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
         }
         free(a_par);
     }
-    free_environnement(inter);
+    free_environnement(e_inter);
     return 0;
 }
 
