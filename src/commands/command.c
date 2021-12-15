@@ -96,14 +96,15 @@ int command_exec(char *argv[], int count, struct environnement *env)
                 break;
         }
     }
+    int res = 0;
     if (strcmp("echo", argv_cpy[0]) == 0)
-        return echo(argv_cpy, count);
+        res = echo(argv_cpy, count);
 
     else if (strcmp("break", argv_cpy[0]) == 0)
-        return command_break(env);
+        res = command_break(env);
 
     else if (strcmp("continue", argv_cpy[0]) == 0)
-        return command_continue(env);
+        res = command_continue(env);
 
     else if (strcmp("exit", argv_cpy[0]) == 0)
     {
@@ -115,27 +116,30 @@ int command_exec(char *argv[], int count, struct environnement *env)
             i++;
         }
         env->exit_status = start;
-        return env->exit_status;
+        res = env->exit_status;
     }
     else if (strcmp("cd", argv_cpy[0]) == 0)
     {
         if (count == 2)
-            return cd(argv_cpy[1]);
+            res = cd(argv_cpy[1]);
         else
-            return 1;
+            res = 1;
     }
     else if (is_dot(argv_cpy[0]))
-        return my_dot(argv_cpy, count, env);
+        res = my_dot(argv_cpy, count, env);
 
     else
     {
-        return simple_command_exec(argv_cpy, count);
+        res = simple_command_exec(argv_cpy, count);
     }
+
     for (int a = 0; a < count; a++)
     {
         free(argv_cpy[a]);
     }
     free(argv_cpy);
+
+    return res;
 }
 
 /*
