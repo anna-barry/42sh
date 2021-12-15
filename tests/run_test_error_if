@@ -1,6 +1,9 @@
-#!/bin/sh
+#!/bin/bash
+
+gcc ../src/lexer/lexer.c ../src/lexer/token.c ../src/lexer/for_lexer.c ../src/parser/struct_init.c ../src/parser/parser.c ../src/parser/parser_printer.c  ../src/parser/parser_free.c ../src/lexer/lexer_added.c ../src/parser/get_to_parse.c ../src/parser/make_child.c -fsanitize=address -g
 
 echo "*********** TEST IFFFFFFFFFF ***********"
+
 echo "bad if elif without then"
 diff <(./builddir/42sh -c "if echo a; echo b; fi") <(printf "42sh: wrong implementation
 ")
