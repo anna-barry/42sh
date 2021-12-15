@@ -6,9 +6,9 @@
 
 int echo(char *argv[], int count)
 {
-    // printf("count is = %d\n", count);
-    // for (int i = 0; i < count; i++)
-    //     printf("elt %d is = %s\n", i, argv[i]);
+    //printf("count is = %d\n", count);
+    //for (int i = 0; i < count; i++)
+    //printf("elt %d is = %s\n", i, argv[i]);
     int flag = 0;
     if (count == 2 && argv[1] == NULL)
     {
@@ -27,11 +27,11 @@ int echo(char *argv[], int count)
         i = 2;
     for (; i < count; i++)
     {
-        // printf("\ncount %i is %s \n", i, argv[i]);
+        //printf("\ncount %i is %s \n", i, argv[i]);
         if (argv[i] == NULL)
         {
-            continue;
-            // break;
+            //continue;
+            break;
         }
         for (int j = 0; argv[i][j]; j++)
         {
