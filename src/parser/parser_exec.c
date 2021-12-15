@@ -154,6 +154,7 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
     }
     if (bool_et_bool_et_ratatam == 0)
         env->flag_loop_break -= 1;
+    free_environnement(inter);
     return 0;
 }
 
@@ -172,6 +173,7 @@ int exec_ast_until(struct ast *ast, struct environnement *env)
         if (env->exit_status != -1)
             return env->exit_status;
     }
+    free_environnement(inter);
     return 0;
 }
 
@@ -231,6 +233,7 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
         }
         free(a_par);
     }
+    free_environnement(inter);
     return 0;
 }
 
