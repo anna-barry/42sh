@@ -1,0 +1,66 @@
+#!/bin/sh
+
+echo "*********** TEST IFFFFFFFFFF ***********"
+echo "bad if elif without then"
+diff <(./builddir/42sh -c "if echo a; echo b; fi") <(printf "42sh: wrong implementation
+")
+var1=$?
+if [ $var1 -ne 2 ];
+then
+echo $var1
+fi
+
+echo "bad if no body"
+diff <(./builddir/42sh -c "if echo a; then fi") <(printf "42sh: wrong implementation
+")
+var1=$?
+if [ $var1 -ne 2 ];
+then
+echo $var1
+fi
+
+echo "bad if no condition"
+diff <(./builddir/42sh -c "if then echo b; fi") <(printf "42sh: wrong implementation
+")
+var1=$?
+if [ $var1 -ne 2 ];
+then
+echo $var1
+fi
+
+echo "bad if no fi"
+diff <(./builddir/42sh -c "if echo a; then echo b;") <(printf "42sh: wrong implementation
+")
+var1=$?
+if [ $var1 -ne 2 ];
+then
+echo $var1
+fi
+
+echo "bad if no second separator"
+diff <(./builddir/42sh -c "if echo a; then echo b fi") <(printf "42sh: wrong implementation
+")
+var1=$?
+if [ $var1 -ne 2 ];
+then
+echo $var1
+fi
+
+echo "bad if no separator"
+diff <(./builddir/42sh -c "if echo a then echo b; fi") <(printf "42sh: wrong implementation
+")
+var1=$?
+if [ $var1 -ne 2 ];
+then
+echo $var1
+fi
+
+echo "bad if no then"
+diff <(./builddir/42sh -c "if echo a; echo b; fi") <(printf "42sh: wrong implementation
+")
+var1=$?
+if [ $var1 -ne 2 ];
+then
+echo $var1
+fi
+
