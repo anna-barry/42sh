@@ -611,10 +611,10 @@ int check_break(enum ast_type mode, enum token_type type, int open )
 {
     // ajouter gestion d'erreur ici avec les ; et les double pipe etc
     //printf("MODE = %d\n, TYPE = %d\n", mode, type);
-    if (open)
-        return 1;
     if (mode == NODE_ROOT && type == TOKEN_EOF)// each function must handle asking tnew info
         return 0;
+    if (open)
+        return 1;
     if (mode == NODE_IF || mode == NODE_ELIF)
     {
         if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI)
@@ -659,7 +659,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
     {
         //printf("MODE = %d\n", mode);
         //printf("TYPE = %d\n", type);
-        //print(lex);
+       // print(lex);
         ast->nb_children++;
         if (ast->nb_children >= count)
         {
@@ -698,7 +698,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
         else if (open && (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK))
         {
             open = 0;
-            make_double_quote(ast,lex);
+            make_command(ast,i_lex);
         }
         else if (mode == NODE_FOR_CHAR) //if node for char the fllowing are not possible
             errx(2, "wrong implementation in for");
