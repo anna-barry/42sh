@@ -7,9 +7,9 @@
 #include "../commands/command.h"
 #include "../commands/command_pipe.h"
 #include "../commands/command_redir.h"
+#include "../exec/concat.h"
 #include "../functionnal/functionnal.h"
 #include "parser.h"
-#include "../exec/concat.h"
 
 int exec_ast_and(struct ast *ast, struct environnement *env);
 
@@ -20,6 +20,8 @@ int exec_ast_neg(struct ast *ast, struct environnement *env);
 int exec_ast_if_root(struct ast *ast, struct environnement *env);
 
 int is_dotf(struct ast *ast);
+
+int exec_ast_for(struct ast *ast, struct environnement *env);
 
 int exec_ast_root(struct ast *ast, struct environnement *env);
 

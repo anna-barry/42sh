@@ -175,53 +175,64 @@ int exec_ast_until(struct ast *ast, struct environnement *env)
     return 0;
 }
 
-/*
 int exec_ast_for(struct ast *ast, struct environnement *env)
 {
+    // printf("for node\n");
     if (env == NULL)
         return 1;
     struct ast_for *a = ast->data.ast_for;
     struct environnement *e_inter = env;
+    // printf("type is %d\n", a->cond->type);
     if (a->cond->type == NODE_FOR_INT)
     {
+        // printf("for int node\n");
         struct ast_for *inter = ast->data.ast_for;
         struct read_for_int *a_inter = a->cond->data.ast_for_int;
-        for (int i = a_inter->start; i < a_inter->end; a += a_inter->step)
+        for (int i = a_inter->start; i < (int)a_inter->end; i += a_inter->step)
         {
             char *val = malloc(sizeof(char) * 1000);
             memset(val, '\0', sizeof(char) * 1000);
-            itoa(i, val, 10);
+            val = itoa(i, val);
             update_variable(a->var, val, e_inter);
-            exec_ast(ast->then, inter);
-            ast->then = inter->then;
+            exec_ast(a->then, e_inter);
+            a->then = inter->then;
         }
     }
-    else if (a->cond->type == NODE_FOR_CHAR)
+    else if (a->cond->type == NODE_ROOT)
     {
-        struct ast_for_char *a_inter1 = a->cond.ast_for_char->var;
-        struct ast_main_root a_inter = a_inter1->data.ast_command;
+        struct ast_main_root *a_inter = a->cond->data.ast_main_root;
         int pere = 0;
-        for (int i = 1; i < a->nb_children; i++)
+        for (int i = 1; i < a_inter->nb_children; i++)
         {
             if (a_inter->children[i]->type == NODE_DOUBLE_QUOTE
                 || a_inter->children[i]->type == NODE_SIMPLE_QUOTE
                 || a_inter->children[i]->type == NODE_COMMAND)
             {
-                concat_node(a_inter->children[pere], a_inter->children[i], env);
+                concat_node(a_inter->children[pere], a_inter->children[i],
+                            e_inter);
             }
         }
-        struct ast *a_par = ast->then;
-        char **command_inter = a_par->argv;
-        for (int e = 0; e < a_par->count; e++)
+        struct ast *a_par = malloc(sizeof(*ast));
+        // a_par = memmove(a_par, ast, sizeof(*ast));
+        //  my_pretty_print(a_par);
+        struct ast_command *a_interme = a_inter->children[0]->data.ast_command;
+        for (int e = 0; e < a_interme->count; e++)
         {
-            update_variable(a->var, a_par->argv[e], inter);
-            exect_ast(a->then, inter);
-            ast->then = a_par;
+            if (a_interme->argv[e] != NULL)
+            {
+                // printf("elt = %s\n", a_interme->argv[e]);
+                update_variable(a->var, a_interme->argv[e], e_inter);
+                exec_ast(a->then, e_inter);
+                // ast = memmove(ast, a_par, sizeof(*a_par));
+                //  my_pretty_print(ast);
+                //  my_pretty_print(a_par);
+                //  a->then = a_par->then;
+            }
         }
+        free(a_par);
     }
     return 0;
 }
-*/
 
 int exec_ast_root(struct ast *ast, struct environnement *env)
 {
@@ -411,7 +422,7 @@ static ast_exec_function ast_exec[] = {
     [NODE_IF_ROOT] = exec_ast_if_root, [NODE_ROOT] = exec_ast_root,
     [NODE_WHILE] = exec_ast_while,     [NODE_OR] = exec_ast_or,
     [NODE_AND] = exec_ast_and,         [NODE_NEG] = exec_ast_neg,
-    [NODE_PIPE] = exec_ast_pipe,
+    [NODE_PIPE] = exec_ast_pipe,       [NODE_FOR] = exec_ast_for,
 };
 
 int exec_ast(struct ast *ast, struct environnement *env)

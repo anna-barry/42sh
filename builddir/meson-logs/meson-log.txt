@@ -1,0 +1,96 @@
+Build started at 2021-12-15T16:50:31.783365
+Main binary: /usr/local/opt/python@3.9/bin/python3.9
+Build Options: 
+Python system: Darwin
+The Meson build system
+Version: 0.56.2
+Source dir: /Users/marie/Documents/troisieme année/42sh
+Build dir: /Users/marie/Documents/troisieme année/42sh/builddir
+Build type: native build
+Project name: 42sh
+Project version: 0.1
+None of 'CC' are defined in the environment, not changing global flags.
+None of 'CFLAGS' are defined in the environment, not changing global flags.
+None of 'LDFLAGS' are defined in the environment, not changing global flags.
+None of 'CPPFLAGS' are defined in the environment, not changing global flags.
+None of 'CC_LD' are defined in the environment, not changing global flags.
+Sanity testing C compiler: cc
+Is cross compiler: False.
+None of 'CC_LD' are defined in the environment, not changing global flags.
+Sanity check compiler command line: cc /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/sanitycheckc.c -o /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/sanitycheckc.exe -pipe
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/sanitycheckc.exe
+C compiler for the host machine: cc (clang 11.0.3 "Apple clang version 11.0.3 (clang-1103.0.32.62)")
+C linker for the host machine: cc ld64 556.6
+None of 'AR' are defined in the environment, not changing global flags.
+None of 'CC' are defined in the environment, not changing global flags.
+None of 'CFLAGS' are defined in the environment, not changing global flags.
+None of 'LDFLAGS' are defined in the environment, not changing global flags.
+None of 'CPPFLAGS' are defined in the environment, not changing global flags.
+None of 'CC_LD' are defined in the environment, not changing global flags.
+Sanity testing C compiler: cc
+Is cross compiler: False.
+None of 'CC_LD' are defined in the environment, not changing global flags.
+Sanity check compiler command line: cc /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/sanitycheckc.c -o /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/sanitycheckc.exe -pipe
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/sanitycheckc.exe
+C compiler for the build machine: cc (clang 11.0.3 "Apple clang version 11.0.3 (clang-1103.0.32.62)")
+C linker for the build machine: cc ld64 556.6
+None of 'AR' are defined in the environment, not changing global flags.
+Build machine cpu family: x86_64
+Build machine cpu: x86_64
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Target machine cpu family: x86_64
+Target machine cpu: x86_64
+None of 'CC_LD' are defined in the environment, not changing global flags.
+Running compile:
+Working directory:  /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/tmpfiki2thb
+Command line:  cc /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/tmpfiki2thb/testfile.c -o /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/tmpfiki2thb/output.exe -pipe -O0 -lreadline -Wl,-undefined,dynamic_lookup 
+
+Code:
+ int main(void) { return 0; }
+
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Library readline found: YES
+Build targets in project: 2
+meson.build:69: WARNING: Trying to use address sanitizer on Clang with b_lundef.
+This will probably not work.
+Try setting b_lundef to false instead.
+
+42sh 0.1
+
+     optimization: 0
+            debug: True
+       b_sanitize: address
+    warning_level: 3
+           werror: True
+
+Found ninja-1.10.2 at /usr/local/bin/ninja
+Running compile:
+Working directory:  /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/tmpq5ociyym
+Command line:  cc /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/tmpq5ociyym/testfile.c -o /Users/marie/Documents/troisieme année/42sh/builddir/meson-private/tmpq5ociyym/output.obj -pipe -c -O0 -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument --print-search-dirs 
+
+Code:
+ 
+Compiler stdout:
+ programs: =/Library/Developer/CommandLineTools/usr/bin
+libraries: =/Library/Developer/CommandLineTools/usr/lib/clang/11.0.3
+
+Compiler stderr:
+ 
+None of 'STRIP' are defined in the environment, not changing global flags.
+None of 'STRIP' are defined in the environment, not changing global flags.

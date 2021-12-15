@@ -72,18 +72,12 @@ void free_variables(struct variable *index)
 {
     if (index->next != NULL)
         free_variables(index->next);
-
-    if (index->value)
-         free(index->value);
-    if (index->name)
-         free(index->name);
     if (index)
         free(index);
 }
 
 void free_environnement(struct environnement *new)
 {
-    
     for (int i = 0; i < new->nb_args; i++)
     {
         if (new->args[i])
@@ -128,27 +122,27 @@ void update_variable(char *name, char *value, struct environnement *new)
         }
         else
         {
-        for (; index->next != NULL; index = index->next)
-        {
-            if (strcmp(index->next->name, name) == 0)
+            for (; index->next != NULL; index = index->next)
             {
-                if (value == NULL)
+                if (strcmp(index->next->name, name) == 0)
                 {
-                    struct variable *tmp = index->next;
-                    index->next = index->next->next;
-                    if (tmp->name)
-                        free(tmp->name);
-                    if (tmp->value)
-                        free(tmp->value);
-                    if (tmp)
+                    if (value == NULL)
                     {
-                        free(tmp);
+                        struct variable *tmp = index->next;
+                        index->next = index->next->next;
+                        if (tmp->name)
+                            free(tmp->name);
+                        if (tmp->value)
+                            free(tmp->value);
+                        if (tmp)
+                        {
+                            free(tmp);
+                        }
                     }
+                    else
+                        index->value = value;
                 }
-                else
-                    index->value = value;
             }
-        }
         }
     }
 }
@@ -163,13 +157,13 @@ void insert_variable(char *name, char *value, struct environnement *new)
     struct variable *new_v = malloc(sizeof(struct variable));
     if (!new_v)
         err(2, "Error with malloc\n");
-   /* new_v->name = strndup(name, strlen(name));
-    if (value == NULL)
-    {
-       new_v->value = NULL;
-    }
-    else
-        new_v->value = strndup(value, strlen(value));*/
+    /* new_v->name = strndup(name, strlen(name));
+     if (value == NULL)
+     {
+        new_v->value = NULL;
+     }
+     else
+         new_v->value = strndup(value, strlen(value));*/
     new_v->name = name;
     new_v->value = value;
     if (new->nb_variables == 0)
@@ -214,23 +208,23 @@ int is_var(char *command)
 
 char **get_all_var(char *command)
 {
-    //printf("%s is command \n", command);
+    // printf("%s is command \n", command);
     if (command == NULL)
     {
-       return NULL;
+        return NULL;
     }
-    
+
     int res = is_var(command);
     if (res == -1)
     {
         return NULL;
     }
     char **result = malloc(sizeof(char *) * 2);
-    //char *first = strndup(command, res);
-    //char *second = strndup(command + res + 1, strlen(command) - res);
+    // char *first = strndup(command, res);
+    // char *second = strndup(command + res + 1, strlen(command) - res);
     result[0] = strndup(command, res); // name
     result[1] = strndup(command + res + 1, strlen(command) - res); // value
-    //printf("first is %s and second is %s \n", result[0], result[1]);
+    // printf("first is %s and second is %s \n", result[0], result[1]);
     return result;
 }
 

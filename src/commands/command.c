@@ -2,6 +2,7 @@
 
 #include <err.h>
 
+#include "../exec/concat.h"
 #include "../functionnal/functionnal.h"
 #include "cd.h"
 #include "echo.h"
@@ -30,9 +31,10 @@ int command_continue(struct environnement *env)
 
 int simple_command_exec(char *argv[], int count)
 {
-    if (argv[count] != NULL)
+    // printf("count = %d\n", count);
+    if (argv[count - 1] != NULL)
     {
-        argv[count] = NULL;
+        argv[count - 1] = NULL;
     }
     int wstatus = 0;
     int res_exec = 0;
@@ -66,40 +68,68 @@ int simple_command_exec(char *argv[], int count)
 
 int command_exec(char *argv[], int count, struct environnement *env)
 {
-    if (strcmp("echo", argv[0]) == 0)
-        return echo(argv, count);
+    if (argv[count - 1] != NULL)
+        count += 1;
+    char **argv_cpy = malloc(sizeof(char *) * count);
+    argv_cpy[count - 1] = NULL;
+    int a = 0;
+    for (; a < count - 1; a++)
+    {
+        if (argv[a] != NULL)
+        {
+            argv_cpy[a] = malloc(sizeof(char) * (strlen(argv[a]) + 1));
+            memcpy(argv_cpy[a], argv[a], (strlen(argv[a]) + 1));
+        }
+    }
+    for (int j = 0; j < count - 1; j++)
+    {
+        if (argv_cpy[j] == NULL)
+            break;
+        for (int index = 0; index < (int)strlen(argv_cpy[j]); index++)
+        {
+            if (argv_cpy[j][index] == '$')
+            {
+                char *new = transform_char(argv_cpy[j], env, &index);
+                argv_cpy[j] = new;
+            }
+            if (argv_cpy[j] == NULL)
+                break;
+        }
+    }
+    if (strcmp("echo", argv_cpy[0]) == 0)
+        return echo(argv_cpy, count);
 
-    else if (strcmp("break", argv[0]) == 0)
+    else if (strcmp("break", argv_cpy[0]) == 0)
         return command_break(env);
 
-    else if (strcmp("continue", argv[0]) == 0)
+    else if (strcmp("continue", argv_cpy[0]) == 0)
         return command_continue(env);
 
-    else if (strcmp("exit", argv[0]) == 0)
+    else if (strcmp("exit", argv_cpy[0]) == 0)
     {
         int start = 0;
         int i = 0;
-        while (i < count && argv[1][i] != '\0')
+        while (i < count && argv_cpy[1][i] != '\0')
         {
-            start = start * 10 + ((int)argv[1][i] - 48);
+            start = start * 10 + ((int)argv_cpy[1][i] - 48);
             i++;
         }
         env->exit_status = start;
         return env->exit_status;
     }
-    else if (strcmp("cd", argv[0]) == 0)
+    else if (strcmp("cd", argv_cpy[0]) == 0)
     {
         if (count == 2)
-            return cd(argv[1]);
+            return cd(argv_cpy[1]);
         else
             return 1;
     }
-    else if (is_dot(argv[0]))
-        return my_dot(argv, count, env);
+    else if (is_dot(argv_cpy[0]))
+        return my_dot(argv_cpy, count, env);
 
     else
     {
-        int res = simple_command_exec(argv, count);
+        int res = simple_command_exec(argv_cpy, count);
         if (res == 127)
             return 1;
         return res;

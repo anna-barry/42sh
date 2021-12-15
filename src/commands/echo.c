@@ -4,11 +4,23 @@
 #include <stdio.h>
 #include <string.h>
 
+int test_null(char *argv[], int count)
+{
+    for (int i = 1; i < count; i++)
+    {
+        if (argv[i] != NULL)
+            return 1;
+    }
+    return 0;
+}
+
 int echo(char *argv[], int count)
 {
-    // printf("count is = %d\n", count);
-    // for (int i = 0; i < count; i++)
-    //     printf("elt %d is = %s\n", i, argv[i]);
+    if (test_null(argv, count) == 0)
+    {
+        printf("\n");
+        return 0;
+    }
     int flag = 0;
     if (count == 2 && argv[1] == NULL)
     {
@@ -25,11 +37,12 @@ int echo(char *argv[], int count)
     int i = 1;
     if (flag > 0)
         i = 2;
-    for (; i < count; i++)
+    for (; i < count - 1; i++)
     {
         // printf("\ncount %i is %s \n", i, argv[i]);
         if (argv[i] == NULL)
         {
+            // printf("\n");
             continue;
             // break;
         }
