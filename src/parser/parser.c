@@ -231,7 +231,7 @@ int get_command(struct info_lexer *i_lex, struct ast_command *new)
 // create the new node and calls build_ast for the struct
 struct ast *get_then(struct info_lexer *i_lex, enum ast_type mode)
 {
-    struct lexer *lex = i_lex->lexer;
+    //struct lexer *lex = i_lex->lexer;
     /*if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
         ask_entry(i_lex);*/
     struct ast *new  = build_ast(i_lex, mode);
@@ -681,10 +681,16 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             open = 1;
             make_command(ast, i_lex);
         }
-        else if (open && (type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE))
+        else if (type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE)
+        {
+            open = 1;
             make_simple_quote(ast, lex);
-        else if (open && (type == TOKEN_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE))
+        }
+        else if (type == TOKEN_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE)
+        {
+            open = 1;
             make_double_quote(ast, lex);
+        }
         else if (open && lexer_peek(lex)->type == TOKEN_AND)
         {
             get_and(ast->children[--ast->nb_children - 1], i_lex, mode);
