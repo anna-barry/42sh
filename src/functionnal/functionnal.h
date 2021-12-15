@@ -32,6 +32,8 @@ struct environnement
  */
 struct environnement *init_env(void);
 
+struct environnement *copy_env(struct environnement *env);
+
 void free_environnement(struct environnement *new);
 
 /*

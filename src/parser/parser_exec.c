@@ -130,7 +130,7 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
         return 1;
     if (env->exit_status != -1)
         return env->exit_status;
-    struct environnement *inter = env;
+    struct environnement *inter = copy_env(env);
     struct ast_while *a = ast->data.ast_while;
     int bool_et_bool_et_ratatam = 0;
     env->flag_loop_break += 1;
@@ -165,7 +165,7 @@ int exec_ast_until(struct ast *ast, struct environnement *env)
     if (env->exit_status != -1)
         if (env->exit_status != -1)
             return env->exit_status;
-    struct environnement *inter = env;
+    struct environnement *inter = copy_env(env);
     struct ast_while *a = ast->data.ast_while;
     while (exec_ast(a->cond, inter) == 0)
     {
@@ -183,7 +183,7 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     struct ast_for *a = ast->data.ast_for;
-    struct environnement *e_inter = env;
+    struct environnement *e_inter = copy_env(env);
     // printf("type is %d\n", a->cond->type);
     if (a->cond->type == NODE_FOR_INT)
     {
@@ -215,15 +215,18 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
             }
         }
         struct ast *a_par = malloc(sizeof(*ast));
-        // a_par = memmove(a_par, ast, sizeof(*ast));
+        char *var_inter = NULL;
+        var_inter = strndup(a->var, strlen(a->var));
         //  my_pretty_print(a_par);
         struct ast_command *a_interme = a_inter->children[0]->data.ast_command;
         for (int e = 0; e < a_interme->count; e++)
         {
             if (a_interme->argv[e] != NULL)
             {
-                // printf("elt = %s\n", a_interme->argv[e]);
-                update_variable(a->var, a_interme->argv[e], e_inter);
+                char *elt_inter = NULL;
+                elt_inter =
+                    strndup(a_interme->argv[e], strlen(a_interme->argv[e]));
+                update_variable(var_inter, elt_inter, e_inter);
                 exec_ast(a->then, e_inter);
                 // ast = memmove(ast, a_par, sizeof(*a_par));
                 //  my_pretty_print(ast);

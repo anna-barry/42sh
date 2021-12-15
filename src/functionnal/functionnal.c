@@ -158,6 +158,7 @@ void insert_variable(char *name, char *value, struct environnement *new)
         update_variable(name, value, new);
         return;
     }
+    // printf("here \n");
     struct variable *new_v = malloc(sizeof(struct variable));
     if (!new_v)
         err(2, "Error with malloc\n");
@@ -170,6 +171,7 @@ void insert_variable(char *name, char *value, struct environnement *new)
          new_v->value = strndup(value, strlen(value));*/
     new_v->name = name;
     new_v->value = value;
+    // printf("here x2 \n");
     if (new->nb_variables == 0)
     {
         new_v->next = NULL;
@@ -177,6 +179,7 @@ void insert_variable(char *name, char *value, struct environnement *new)
         new->nb_variables++;
         return;
     }
+    // printf("here x3\n");
     struct variable *index = new->var;
     // index->name greater than name
     if (my_strcmp(index->name, name) == 1)
@@ -230,6 +233,39 @@ char **get_all_var(char *command)
     result[1] = strndup(command + res + 1, strlen(command) - res); // value
     // printf("first is %s and second is %s \n", result[0], result[1]);
     return result;
+}
+
+struct environnement *copy_env(struct environnement *env)
+{
+    struct environnement *env1 = malloc(sizeof(struct environnement));
+    env1->nb_variables = 0;
+    env1->var = NULL;
+    env1->uid = env->uid;
+    env1->exit_status = env->exit_status;
+    struct variable *a = env->var;
+    // print_variables(env);
+    while (a)
+    {
+        char *name = NULL;
+        char *value = NULL;
+        if (a->name)
+        {
+            name = strndup(a->name, strlen(a->name));
+            // name = malloc(sizeof(char) * (strlen(a->name) + 1));
+            // memcpy(name, a->name, (strlen(a->name) + 1));
+        }
+        if (a->value)
+        {
+            // printf("copy 2\n");
+            value = strndup(a->value, strlen(a->value));
+            // value = malloc(sizeof(char) * (strlen(a->value) + 1));
+            // memcpy(value, a->value, (strlen(a->value) + 1));
+        }
+        insert_variable(name, value, env1);
+        a = a->next;
+        // printf("je suis ici\n");
+    }
+    return env1;
 }
 
 struct environnement *init_env(void)
