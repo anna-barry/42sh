@@ -78,8 +78,8 @@ char *find_input(int argc, char *argv[])
     if (argc == 1)
     {
         input = malloc(sizeof(char) * 123456789);
-        printf("> ");
-        fflush(stdout);
+        //printf("> ");
+        //fflush(stdout);
         scanf("%[^\n]", input);
         return input;
     }
@@ -176,7 +176,8 @@ int main(int argc, char *argv[])
     token_free(lexer_pop(new->lexer));
     lexer_info_free(new);
     my_pretty_free(ast);
-    free_environnement(env);
+    //free_environnement(env);
     free((void *)input);
+    free_environnement(env);
     return res_e;
 }
