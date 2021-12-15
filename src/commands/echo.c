@@ -58,11 +58,11 @@ int echo(char *argv[], int count)
         i = begin;
     for (; i < count; i++)
     {
-        // printf("\ncount %i is %s \n", i, argv[i]);
+        //printf("\ncount %i is %s \n", i, argv[i]);
         if (argv[i] == NULL)
         {
-            continue;
-            // break;
+            //continue;
+            break;
         }
         for (int j = 0; argv[i][j]; j++)
         {
