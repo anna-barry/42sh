@@ -132,9 +132,13 @@ void print_ast_for(struct ast *ast)
 {
     struct ast_for *a = ast->data.ast_for;
     printf("for %s in [ ", a->var);
-    print_ast(a->cond);
+    if (a->cond)
+        print_ast(a->cond);
+    else
+        printf("NULL\n");
     printf(" ] do {");
     print_ast(a->then);
+
     printf(" }");
 }
 

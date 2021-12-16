@@ -234,21 +234,24 @@ struct ast_for *build_ast_for(struct info_lexer *i_lex)
   token_free(lexer_pop(lex));
   enum token_type type = lexer_peek(lex)->type;
   if (type == TOKEN_FOR_INT)
-  {
-      struct read_for_int* trans = get_structure(lexer_peek(lex)->value);
-      new_for->cond = malloc(sizeof(struct ast));
-      new_for->cond->type = NODE_FOR_INT;
-      new_for->cond->data.ast_for_int = trans;
-      token_free(lexer_pop(lex));
-      if (lexer_peek(lex)->type != TOKEN_SEMICOLON)
+{
+    struct read_for_int* trans = get_structure(lexer_peek(lex)->value);
+    new_for->cond = malloc(sizeof(struct ast));
+    new_for->cond->type = NODE_FOR_INT;
+    new_for->cond->data.ast_for_int = trans;
+    token_free(lexer_pop(lex));
+    if (lexer_peek(lex)->type != TOKEN_SEMICOLON)
         err(2, "missing a semicolone between for i in {...} [HERE] do ..;");
-      token_free(lexer_pop(lex));
+    token_free(lexer_pop(lex));
 
-  }
-  else if (type == TOKEN_FOR_WORD || type == TOKEN_FOR_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE)
+}
+else if (lexer_peek(lex)->type != TOKEN_SEMICOLON)
     new_for->cond = get_then(i_lex, NODE_FOR_CHAR);
-  else
-    err(2, "wrong implementation need for i in <\"'words'\">|seq{b..s..e}");
+else
+{
+    new_for->cond = NULL;
+    token_free(lexer_pop(lex));
+}
   if (lexer_peek(lex)->type != TOKEN_DO)
     err(2, "missing th do instruction :for i in {...}; [DO] .. [DONE];");
   token_free(lexer_pop(lex));
@@ -260,12 +263,13 @@ struct ast_for *build_ast_for(struct info_lexer *i_lex)
   if (lexer_peek(lex)->type != TOKEN_DONE)
       err(2, "wrong implementation in for: for i in x do commands <done>");
   token_free(lexer_pop(lex));
-  /*if (!lex)
-      ask_entry(i_lex);*/
-  if (lexer_peek(lex)->type == TOKEN_SEMICOLON)
-      token_free(lexer_pop(lex));
-  else if (lexer_peek(lex)->type != TOKEN_DO && lexer_peek(lex)->type != TOKEN_EOF)
+
+printf("token type is = %d\n == %d ?",lexer_peek(lex)->type, TOKEN_SEMICOLON );
+    if (lexer_peek(lex)->type != TOKEN_SEMICOLON && lexer_peek(lex)->type != TOKEN_DO && lexer_peek(lex)->type != TOKEN_EOF)
       errx(2, "need to close after do");
+    if (lexer_peek(lex)->type == TOKEN_SEMICOLON)
+      token_free(lexer_pop(lex));
+    print(lex);
   return new_for;
 }
 
@@ -293,9 +297,9 @@ int check_break(enum ast_type mode, enum token_type type, int open )
         if (type == TOKEN_ELSE || type == TOKEN_ELIF || type == TOKEN_FI)
             return 0;
     }
-    if (mode == NODE_FOR_CHAR || mode == NODE_WHILE || mode == NODE_FOR_INT)
+    if ( mode == NODE_FOR_CHAR || mode == NODE_WHILE || mode == NODE_FOR_INT)
     {
-      if (type == TOKEN_DO) //|| type == TOKEN_SEMICOLON)
+      if (type == TOKEN_DO ) //|| type == TOKEN_SEMICOLON)
         return 0;
     }
     if (mode == NODE_DO && type == TOKEN_DONE)
@@ -325,9 +329,9 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
     int open = 0;
     while (lex && check_break(mode, type, open))
     {
-        //printf("MODE = %d\n", mode);
-        //printf("TYPE = %d\n", type);
-        //print(lex);
+        printf("MODE = %d\n", mode);
+        printf("TYPE = %d\n", type);
+        print(lex);
         //ast->nb_children++;
         if (++ast->nb_children >= count)
         {
@@ -342,16 +346,6 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             open = 1;
             make_command(ast, i_lex);
         }
-        /*else if (type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE)
-        {
-            open = 1;
-            make_simple_quote(ast, lex);
-        }
-        else if (type == TOKEN_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE)
-        {
-            open = 1;
-            make_double_quote(ast, lex);
-        }*/
         else if (open && lexer_peek(lex)->type == TOKEN_AND)
         {
             get_and(ast->children[--ast->nb_children - 1], i_lex, mode);
@@ -362,7 +356,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             get_or(ast->children[--ast->nb_children - 1], i_lex, mode);
             open = 0;
         }
-        else if (open && (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK))
+        else if ((open || mode == NODE_FOR_CHAR) && (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK))
         {
             open = 0;
             ast->nb_children--;
