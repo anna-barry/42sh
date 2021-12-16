@@ -110,7 +110,6 @@ int ast_redir_l(struct ast *ast, char *file, struct environnement *env)
 }
 
 // append at the end of the file
-<<<<<<< HEAD
 // int command_redir_rr(struct ast *ast, int count, char *file,
 //                      struct environnement *env)
 // {
@@ -138,35 +137,33 @@ int ast_redir_l(struct ast *ast, char *file, struct environnement *env)
 //     close(fd);
 //     return 0;
 // }
-=======
-int command_redir_rr(struct ast *ast, int count, char *file,
-                     struct environnement *env)
-{
-    // struct ast_redir *redir_ast = ast->data.ast_redir;
-    // char **command = redir_ast->redir;
-    int old_fd = dup(STDOUT_FILENO);
-    int fd = open(file, O_CREAT | O_APPEND | O_WRONLY, 0644);
-    if (dup2(fd, STDOUT_FILENO) == -1)
-        fprintf(stderr, "Error with dup2");
-    if (command_exec(ast, count, env) == 127)
-    {
-        close(fd);
-        return 127;
-    }
-    else if (command_exec(ast, count, env) != 0)
-    {
-        close(fd);
-        return 2;
-    }
-    fflush(stdout);
-    if (dup2(old_fd, STDOUT_FILENO) == -1)
-        fprintf(stderr, "Error with dup2");
-    fcntl(old_fd, F_SETFD, FD_CLOEXEC);
-    close(STDOUT_FILENO);
-    close(fd);
-    return 0;
-}
->>>>>>> a571c432e0649398c012e39b96d5ec71b46bb929
+// int command_redir_rr(struct ast *ast, int count, char *file,
+//                      struct environnement *env)
+// {
+//     // struct ast_redir *redir_ast = ast->data.ast_redir;
+//     // char **command = redir_ast->redir;
+//     int old_fd = dup(STDOUT_FILENO);
+//     int fd = open(file, O_CREAT | O_APPEND | O_WRONLY, 0644);
+//     if (dup2(fd, STDOUT_FILENO) == -1)
+//         fprintf(stderr, "Error with dup2");
+//     if (command_exec(ast, count, env) == 127)
+//     {
+//         close(fd);
+//         return 127;
+//     }
+//     else if (command_exec(ast, count, env) != 0)
+//     {
+//         close(fd);
+//         return 2;
+//     }
+//     fflush(stdout);
+//     if (dup2(old_fd, STDOUT_FILENO) == -1)
+//         fprintf(stderr, "Error with dup2");
+//     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+//     close(STDOUT_FILENO);
+//     close(fd);
+//     return 0;
+// }
 
 int ast_redir_rr(struct ast *ast, char *file, struct environnement *env)
 {
