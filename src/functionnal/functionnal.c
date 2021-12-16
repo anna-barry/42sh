@@ -243,6 +243,9 @@ struct environnement *copy_env(struct environnement *env)
     env1->var = NULL;
     env1->uid = env->uid;
     env1->exit_status = env->exit_status;
+    env1->flag_loop_break = env->flag_loop_break;
+    env1->flag_loop_continue = env->flag_loop_continue;
+    env1->exit_status = env->exit_status;
     struct variable *a = env->var;
     // print_variables(env);
     while (a)
@@ -274,6 +277,9 @@ struct environnement *init_env(void)
     struct environnement *env = malloc(sizeof(struct environnement));
     env->nb_variables = 0;
     env->var = NULL;
+    env->flag_loop_break = 0;
+    env->flag_loop_continue = 0;
+    env->exit_status = -1;
     // ADD RANDOM VARIABLE
     char *rand = strndup("RANDOM", strlen("RANDOM"));
     insert_variable(rand, NULL, env);
