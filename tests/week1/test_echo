@@ -1,0 +1,59 @@
+#!/bin/bash
+
+echo "*********** Test 0 with echo a ***********"
+diff <(./builddir/42sh -c "echo a") <(printf "a
+")
+
+echo "*********** Test 1 with echo b\\n ***********"
+diff <(./builddir/42sh -c "echo b\\n") <(printf "b\n
+")
+
+echo "*********** Test 3 with echo \\nb ***********"
+diff <(./builddir/42sh -c "echo \\nb") <(printf "\nb
+")
+
+echo "*********** Test 4 with echo \nb ***********"
+diff <(./builddir/42sh -c "echo \nb") <(printf "\nb
+")
+
+echo "*********** Test 6 with echo -n Hello geoffroy ***********"
+diff <(./builddir/42sh -c "echo -n Hello geoffroy") <(printf "Hello geoffroy")
+
+echo "*********** Test 7 with echo -e Hello geoffroy ***********"
+diff <(./builddir/42sh -c "echo -e Hello geoffroy") <(printf "Hello geoffroy
+")
+
+echo "*********** Test 8 with echo -e Hello\\nGeoffroy ***********"
+diff <(./builddir/42sh -c "echo -e Hello\\nGeoffroy") <(printf "Hello
+Geoffroy
+")
+
+echo "*********** Test 9 with echo -e Hello\nGeoffroy ***********"
+diff <(./builddir/42sh -c "echo -e Hello\nGeoffroy") <(printf "Hello
+Geoffroy
+")
+
+echo "*********** Test 10 with echo -e -n Hello\nGeoffroy ***********"
+diff <(./builddir/42sh -c "echo -e -n Hello\nGeoffroy") <(printf "Hello
+Geoffroy")
+
+echo "*********** Test 11 with echo -e -e -e -n -n Hello\nGeoffroy ***********"
+diff <(./builddir/42sh -c "echo -e -e -e -n -n Hello\nGeoffroy") <(printf "Hello
+Geoffroy")
+
+echo "*********** Test 12 with echo -o Hello\nGeoffroy ***********"
+diff <(./builddir/42sh -c "echo -o Hello\nGeoffroy") <(printf "-o Hello\nGeoffroy
+")
+
+echo "*********** Test 13 with echo -o -e Hello\nGeoffroy ***********"
+diff <(./builddir/42sh -c "echo -o -e Hello\nGeoffroy") <(printf "-o -e Hello\nGeoffroy
+")
+
+echo "*********** Test 14 with echo             -e -e Hello\nGeoffroy ***********"
+diff <(./builddir/42sh -c "echo             -e -e Hello\nGeoffroy") <(printf "Hello
+Geoffroy
+")
+
+echo "*********** Test 14 with echo aa...aa ***********"
+diff <(./builddir/42sh -c "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") <(printf "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+")
