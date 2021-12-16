@@ -76,13 +76,28 @@ char *transform_char(char *argv, struct environnement *env, int *index)
             break;
         inter = inter->next;
     }
-    free(indice);
+    //free(indice);
+    int to_free = 0;
     if (inter == NULL)
     {
-        char *res = NULL;
-        free(argv);
-        return res;
+        char * env_res = (char *)getenv(indice);
+        if (env_res != NULL)
+        {
+            inter = malloc(sizeof(struct variable));
+            inter->name = strndup(indice, strlen(indice));
+            inter->value = env_res;
+            to_free = 1;
+        }
+        else
+        {
+            char *res = NULL;
+            free(argv);
+            free(indice);
+
+            return res;
+        }
     }
+    free(indice);
     cap = 200;
     char *res = malloc(sizeof(char) * cap);
     memset(res, '\0', sizeof(char) * cap);
@@ -121,14 +136,16 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     }
     res[avance] = '\0';
     *index += (strlen(inter->value) - strlen(inter->name));
+    if (to_free == 1)
+    {
+       free(inter);
+    }
     free(argv);
-    //printf("res is %s \n", res);
     return res;
 }
 
 void transform_command(struct ast *ast, struct environnement *env)
 {
-    // printf("transform command\n");
     if (env == NULL)
         return;
     if (ast->type == NODE_DOUBLE_QUOTE)
@@ -137,10 +154,18 @@ void transform_command(struct ast *ast, struct environnement *env)
         int index = 0;
         for (; a->argv[index] != '\0'; index++)
         {
-            if (a->argv[index] == '$')
+            if (index > 0 && a->argv[index - 1] == '\\' && a->argv[index] == '$')
+            {
+                int i = index - 1;
+                for (; a->argv[i + 1] != '\0'; i++)
+                {
+                    a->argv[i] = a->argv[i + 1];
+                }
+                a->argv[i] = '\0';
+            }
+            else if(a->argv[index] == '$')
             {
                 char *new = transform_char(a->argv, env, &index);
-                // printf("new char is %s\n", new);
                 a->argv = new;
             }
         }
@@ -154,7 +179,16 @@ void transform_command(struct ast *ast, struct environnement *env)
                 break;
             for (int index = 0; index < (int)strlen(a->argv[j]); index++)
             {
-                if (a->argv[j][index] == '$')
+                if (index > 0 && a->argv[j][index - 1] == '\\' && a->argv[j][index] == '$')
+                {
+                    int i = index - 1;
+                    for (; a->argv[j][i + 1] != '\0'; i++)
+                    {
+                        a->argv[j][i] = a->argv[j][i + 1];
+                    }
+                    a->argv[j][i] = '\0';
+                }
+                else if ( a->argv[j][index] == '$')
                 {
                     char *new = transform_char(a->argv[j], env, &index);
                     a->argv[j] = new;
@@ -165,7 +199,6 @@ void transform_command(struct ast *ast, struct environnement *env)
         }
         return;
     }
-    // printf("transform command2\n");
     return;
 }
 

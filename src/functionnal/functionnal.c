@@ -57,6 +57,13 @@ int my_strcmp(char *s, char *s2)
 
 int find_variable(char *name, struct environnement *new)
 {
+
+    char * env_res = (char *)getenv(name);
+    if (env_res != NULL)
+    {
+        return 1;
+    }
+    
     struct variable *index = new->var;
     for (; index != NULL; index = index->next)
     {
@@ -214,7 +221,6 @@ int is_var(char *command)
 
 char **get_all_var(char *command)
 {
-    //printf("%s is command \n", command);
     if (command == NULL)
     {
        return NULL;
@@ -226,8 +232,6 @@ char **get_all_var(char *command)
         return NULL;
     }
     char **result = malloc(sizeof(char *) * 2);
-    //char *first = strndup(command, res);
-    //char *second = strndup(command + res + 1, strlen(command) - res);
     result[0] = strndup(command, res); // name
     result[1] = strndup(command + res + 1, strlen(command) - res); // value
     //printf("first is %s and second is %s \n", result[0], result[1]);

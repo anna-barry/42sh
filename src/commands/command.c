@@ -52,7 +52,7 @@ int simple_command_exec(char *argv[], int count)
         if (WIFEXITED(wstatus))
             if (WEXITSTATUS(wstatus) == 127)
             {
-                fprintf(stderr, "Error");
+                fprintf(stderr, "Error: command doesn't exist\n");
                 return 127;
             }
     }
@@ -79,11 +79,18 @@ int command_exec(char *argv[], int count, struct environnement *env)
     {
         int start = 0;
         int i = 0;
-        while (i < count && argv[1][i] != '\0')
+        if (count == 1)
+            start = 0;
+        else if (count == 2)
         {
-            start = start * 10 + ((int)argv[1][i] - 48);
-            i++;
+            while (argv[1][i] != '\0')
+            {
+                start = start * 10 + ((int)argv[1][i] - 48);
+                i++;
+            }
         }
+        else
+            return 2;
         env->exit_status = start;
         return env->exit_status;
     }
@@ -98,6 +105,8 @@ int command_exec(char *argv[], int count, struct environnement *env)
         return my_dot(argv, count, env);
     else if (strcmp(argv[0], "unset") == 0)
         return my_unset(argv, env);
+    else if (strcmp(argv[0], "export") == 0)
+        return my_export(argv, env);
     else
     {
         int res = simple_command_exec(argv, count);

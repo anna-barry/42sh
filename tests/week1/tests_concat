@@ -1,12 +1,14 @@
 #!/bin/bash
 
-echo "*********** Test 3 with if/echo/ \$ **********"
+echo "*********** Test 1 with if/echo/ \$ **********"
 diff <(./builddir/42sh tests/week1/test_var.sh) <(printf "2 b
 foo coucou tchoin
 ")
 
-echo "*********** Test 4 with if/echo/ \$ **********"
-diff <(./builddir/42sh -c "if echo \"ls\"; then echo 'foo' bar; echo okay; elif echo bebe; echo a ; then echo christian; echo anna laime; fi") <(printf "ls
-foo bar
-okay
+echo "*********** Test 2 with if/echo/ \$ **********"
+diff <(./builddir/42sh tests/week1/test_var2.sh) <(printf "$
+")
+
+echo "*********** Test 3 with if/echo/ \$ **********"
+diff <(./builddir/42sh tests/week1/test_var3.sh) <(printf "hihi
 ")
