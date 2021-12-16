@@ -40,13 +40,13 @@ int echo(char *argv[], int count)
             no_option = 1;
             begin++;
         }
-        if (/*argv[1] != NULL && count > 1 && */ strcmp("-n", argv[i]) == 0)
+        if (argv[i] != NULL && strcmp("-n", argv[i]) == 0)
         {
             flag_n = 1;
             no_option = 1;
             begin++;
         }
-        if (/*argv[1] != NULL && count > 1 && */ strcmp("-e", argv[i]) == 0)
+        if (argv[i] != NULL && strcmp("-e", argv[i]) == 0)
         {
             flag_e = 1;
             no_option = 1;
@@ -58,14 +58,17 @@ int echo(char *argv[], int count)
         i = begin;
     for (; i < count; i++)
     {
-        //printf("\ncount %i is %s \n", i, argv[i]);
+        // printf("\ncount %i is %s \n", i, argv[i]);
         if (argv[i] == NULL)
         {
-            //continue;
-            break;
+            continue;
+            // break;
         }
-        for (int j = 0; argv[i][j]; j++)
+        // printf("%s\n", argv[i]);
+        // printf("%c\n", argv[i][0]);
+        for (int j = 0; j < (int)strlen(argv[i]); j++)
         {
+            // printf("%c\n", argv[i][j]);
             if (flag_e == 1)
             {
                 if (argv[i][j + 1] != '\0'
