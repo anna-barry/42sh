@@ -105,6 +105,13 @@ week_3:
   script:
     - tests/week3/test_dot builddir/42sh
 
+for/while:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - tests/week3/tests_for builddir/42sh
+
 unset/export:
   stage: test
   dependencies:
