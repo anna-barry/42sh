@@ -21,6 +21,12 @@ int exec_ast_or(struct ast *ast, struct environnement *env);
 
 int exec_ast_neg(struct ast *ast, struct environnement *env);
 
+int exec_ast_while(struct ast *ast, struct environnement *env);
+
+int exec_ast_until(struct ast *ast, struct environnement *env);
+
+int exec_ast_for(struct ast *ast, struct environnement *env);
+
 int exec_ast_if_root(struct ast *ast, struct environnement *env);
 
 int is_dotf(struct ast *ast);
