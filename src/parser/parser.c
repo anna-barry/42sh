@@ -368,6 +368,11 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             ast->nb_children--;
             token_free(lexer_pop(lex));
         }
+        else if (type == TOKEN_LINE_BREAK)
+        {
+            ast->nb_children--;
+            token_free(lexer_pop(lex));
+        }
         else if (mode == NODE_FOR_CHAR) //if node for char the fllowing are not possible
             err(2, "wrong implementation in for");
         else if (type == TOKEN_NEG)
