@@ -91,6 +91,13 @@ week_2_pipe:
   script:
     - tests/week2/tests_pipe builddir/42sh
 
+week_2_redir:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - tests/week2/tests_redir builddir/42sh
+
 week_3:
   stage: test
   dependencies:

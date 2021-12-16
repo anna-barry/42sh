@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "*********** Test 0 with echo and pipe ***********"
+diff <(./builddir/42sh -c "echo a > file.txt") <(printf"")
+
+echo "*********** Test 1 with echo and pipe ***********"
+diff <(./builddir/42sh -c "echo b >> file.txt") <(printf"")
+
+echo "*********** Test 2 with echo and pipe ***********"
+diff <(./builddir/42sh -c "ls > file.txt") <(printf"")

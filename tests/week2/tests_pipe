@@ -14,3 +14,22 @@ meson.build\$
 meson_options.txt\$
 src\$
 tests\$")
+
+echo "*********** Test 2 with echo and pipe ***********"
+diff <(./builddir/42sh -c "echo a | tr a e") <(printf "e
+")
+
+echo "*********** Test 3 with echo and pipe ***********"
+diff <(./builddir/42sh -c "if echo b; then echo a; else echo c; fi | cat -e") <(printf "b
+a
+")
+
+echo "*********** Test 4 with echo and pipe ***********"
+diff <(./builddir/42sh -c "if echo b; then echo a; else echo c; fi | cat -e") <(printf "b\$
+a\$
+")
+
+echo "*********** Test 5 with echo and pipe ***********"
+diff <(./builddir/42sh -c "if echo b; then echo a; else echo c; fi | cat -e | sort") <(printf "a\$
+b\$
+")
