@@ -105,7 +105,7 @@ void get_redir(struct ast_main_root *ast, struct info_lexer *i_lex)
     struct ast_redir *new = malloc(sizeof(struct ast_redir));
     struct lexer *lex = i_lex->lexer;
     ast->nb_children--;
-    new->command = malloc(sizeof(struct ast));
+    //new->command = malloc(sizeof(struct ast));
     new->command->type = ast->children[ast->nb_children - 1]->type;
     new->command->data = ast->children[ast->nb_children - 1]->data;
     get_opt(lex, new);
