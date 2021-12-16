@@ -20,8 +20,8 @@ int command_redir_lr(struct ast *ast, int count, char *file,
                      struct environnement *env);
 int ast_redir_lr(struct ast *ast, char *file, struct environnement *env);
 
-int command_redir_l_and(struct ast *ast, char *file);
-int command_redir_r_and(struct ast *ast, char *file);
+int command_redir_l_and(char *command[], char *file);
+int command_redir_r_and(char *command[], char *file);
 
 int command_redir_r_pipe(struct ast *ast, int count, char *file,
                          struct environnement *env);

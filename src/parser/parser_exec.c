@@ -338,10 +338,12 @@ int exec_ast_redir(struct ast *ast, struct environnement *env)
         return_value = ast_redir_l(ast, a->redir, env);
         break;
     case REDIR_DESCRIPEUR: // '>&'
-        return_value = command_redir_r_and(a->command, a->redir);
+        return_value =
+            command_redir_r_and(a->command->data.ast_command->argv, a->redir);
         break;
     case REDIR_INPUT_DESCRIPEUR: // '<&'
-        return_value = command_redir_r_and(a->command, a->redir);
+        return_value =
+            command_redir_r_and(a->command->data.ast_command->argv, a->redir);
         break;
     }
     if (env->exit_status != -1)
