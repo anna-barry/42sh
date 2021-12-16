@@ -194,7 +194,13 @@ void get_for(const char *input, struct cap_and_i *s, size_t *index, struct lexer
           new = realloc(new, *s->cap * sizeof(struct lexer));
         }
         while (input[*s->i] == ' ')
+        {
             *s->i = *s->i + 1;
+        }
+        if (input[*s->i] == ';')
+        {
+            break;
+        }
         size_t nb = 0;
         size_t end = get_end(input, s->i);
         if (has_dollar(input, s->i))
