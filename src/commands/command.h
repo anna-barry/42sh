@@ -18,4 +18,6 @@ int is_dot(char *c);
 
 int my_unset(char *argv[], struct environnement *env);
 
+int my_export(char *argv[], struct environnement *env);
+
 #endif

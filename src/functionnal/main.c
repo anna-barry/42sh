@@ -78,8 +78,10 @@ char *find_input(int argc, char *argv[])
     if (argc == 1)
     {
         input = malloc(sizeof(char) * 123456789);
-        //printf("> ");
-        //fflush(stdout);
+        for (size_t i = 0; i < 123456789; i++)
+        {
+            input[i] = '\0';
+        }
         scanf("%[^\n]", input);
         return input;
     }
@@ -161,7 +163,7 @@ int main(int argc, char *argv[])
     }
     struct environnement *env = init_env();
     const char *input = (const char *)find_input(argc, argv);
-    if (input == NULL)
+    if (input == NULL || strlen(input) == 0)
       return 1;
     struct info_lexer *new = lexer_init();
     lexer_new(input, new);

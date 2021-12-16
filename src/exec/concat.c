@@ -76,13 +76,28 @@ char *transform_char(char *argv, struct environnement *env, int *index)
             break;
         inter = inter->next;
     }
-    free(indice);
+    //free(indice);
+    int to_free = 0;
     if (inter == NULL)
     {
-        char *res = NULL;
-        free(argv);
-        return res;
+        char * env_res = (char *)getenv(indice);
+        if (env_res != NULL)
+        {
+            inter = malloc(sizeof(struct variable));
+            inter->name = strndup(indice, strlen(indice));
+            inter->value = env_res;
+            to_free = 1;
+        }
+        else
+        {
+            char *res = NULL;
+            free(argv);
+            free(indice);
+
+            return res;
+        }
     }
+    free(indice);
     cap = 200;
     char *res = malloc(sizeof(char) * cap);
     memset(res, '\0', sizeof(char) * cap);
@@ -121,6 +136,10 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     }
     res[avance] = '\0';
     *index += (strlen(inter->value) - strlen(inter->name));
+    if (to_free == 1)
+    {
+       free(inter);
+    }
     free(argv);
     return res;
 }
