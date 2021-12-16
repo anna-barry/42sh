@@ -1,0 +1,70 @@
+#!/bin/bash
+
+
+echo "****************   Test 1 For   ****************"
+diff <(./builddir/42sh -c "for oui in o oo ooo; do echo \$oui; continue; echo non; done") <(printf "for oui in o oo ooo; do echo $oui; continue; echo non; done
+o
+oo
+ooo
+")
+
+echo "****************   Test 2 For   ****************"
+diff <(./builddir/42sh -c "for oui in ; do echo salut ; done") <(printf "
+")
+
+echo "****************   Test 3 For   ****************"
+diff <(./builddir/42sh -c "for i in ls; do \$i; done") <(for i in ls; do $i; done)
+
+echo "****************   Test 4 For   ****************"
+diff <(./builddir/42sh -c "for a in o oo ooo; do echo \$a; echo non; done") <(printf "o
+non
+oo
+non
+ooo
+non
+")
+
+echo "****************   Test 5 For   ****************"
+diff <(./builddir/42sh -c "for oui in ls; do echo salut ; done; echo a ; echo cv; ls ") <(for oui in ls; do echo salut ; done; echo a ; echo cv; ls )
+
+echo "****************   Test 6 For   ****************"
+diff <(./builddir/42sh -c "for oui in o oo ooo; do echo \$oui; echo non; done") <(printf "o
+non
+oo
+non
+ooo
+non
+")
+
+echo "****************   Test 7 For   ****************"
+diff <(./builddir/42sh -c "for i in oui non; do echo a ; for a in la la la; do echo \$a; done; done") <(printf "a
+la
+la
+la
+a
+la
+la
+la
+")
+
+echo "****************   Test 7 For   ****************"
+diff <(./builddir/42sh -c "for oui in o oo ooo; do echo bonjour \$oui ; echo aurevoir \$oui ; echo trop bien \$oui; done") <(printf "bonjour o
+aurevoir o
+trop bien o
+bonjour oo
+aurevoir oo
+trop bien oo
+bonjour ooo
+aurevoir ooo
+trop bien ooo
+")
+
+echo "****************   Test 1 Until   ****************"
+diff <(./builddir/42sh -c "until true ; do ; echo oui ; break ; echo non ; done") <(printf "
+")
+
+echo "****************   Test 1 While   ****************"
+diff <(./builddir/42sh -c "while true ; do echo oui ; break ; echo non ; done") <(printf "
+oui
+")
+
