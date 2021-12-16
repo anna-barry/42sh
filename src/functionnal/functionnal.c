@@ -151,7 +151,7 @@ void update_variable(char *name, char *value, struct environnement *new)
                         }
                     }
                     else
-                        index->value = value;
+                        index->next->value = value;
                 }
             }
         }

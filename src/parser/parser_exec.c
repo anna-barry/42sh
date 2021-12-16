@@ -228,10 +228,13 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
             // printf("voici elt = %s\n", a_interme->argv[e]);
             if (a_interme->argv[e] != NULL)
             {
+                // printf("element for %s\n", a_interme->argv[e]);
                 char *elt_inter = NULL;
                 elt_inter =
                     strndup(a_interme->argv[e], strlen(a_interme->argv[e]));
                 update_variable(var_inter, elt_inter, e_inter);
+                // printf("element cpy for %s\n", elt_inter);
+                // print_variables(e_inter);
                 exec_ast(a->then, e_inter);
                 if (e < a_interme->count - 1)
                     free(elt_inter);
@@ -360,12 +363,8 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
         return env->exit_status;
     struct ast_command *a = ast->data.ast_command;
     // printf("___________________________________\n");
-    /*
-    for (int i = 0; i < a->count; i++)
-    {
-        printf("command: %s\n", a->argv[i]);
-    }*/
-    // print_variables(env);
+
+    // int_variables(env);
     char **tab = get_all_var(a->argv[0]);
     if (tab != NULL)
     {
@@ -412,6 +411,7 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     //     return_value = command_redir_r_and(a->argv, a->redir);
     //     break;
     // default:
+    // printf("count = %d\n", a->count);
     return_value = command_exec(ast, a->count, env);
     // }
     if (env->exit_status != -1)
