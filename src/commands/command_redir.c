@@ -35,6 +35,7 @@ int command_redir_r(struct ast *ast, int count, char *file,
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     close(fd);
     return 0;
 }
@@ -55,6 +56,7 @@ int ast_redir_r(struct ast *ast, char *file, struct environnement *env)
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     close(fd);
     return 0;
 }
@@ -81,6 +83,7 @@ int command_redir_l(struct ast *ast, int count, char *file,
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     close(fd);
     return 0;
 }
@@ -101,6 +104,7 @@ int ast_redir_l(struct ast *ast, char *file, struct environnement *env)
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     close(fd);
     return 0;
 }
@@ -129,6 +133,7 @@ int command_redir_rr(struct ast *ast, int count, char *file,
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     close(fd);
     return 0;
 }
@@ -149,6 +154,7 @@ int ast_redir_rr(struct ast *ast, char *file, struct environnement *env)
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     close(fd);
     return 0;
 }
@@ -174,6 +180,7 @@ int command_redir_lr(struct ast *ast, int count, char *file,
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     close(fd);
     return 0;
 }
@@ -194,6 +201,7 @@ int ast_redir_lr(struct ast *ast, char *file, struct environnement *env)
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     close(fd);
     return 0;
 }
@@ -225,6 +233,7 @@ int command_redir_l_and(struct ast *ast, char *file)
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     return 0;
 }
 
@@ -255,6 +264,7 @@ int command_redir_r_and(struct ast *ast, char *file)
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     return 0;
 }
 
@@ -283,6 +293,7 @@ int command_redir_r_pipe(struct ast *ast, int count, char *file,
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     close(fd);
     return 0;
 }
@@ -305,6 +316,7 @@ int ast_redir_r_pipe(struct ast *ast, char *file, struct environnement *env)
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(old_fd);
     close(fd);
     return 0;
 }
