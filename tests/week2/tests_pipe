@@ -5,7 +5,7 @@ diff <(./builddir/42sh -c "echo a | echo b") <(printf "b
 ")
 
 echo "*********** Test 1 with ls and pipe ***********"
-diff <(./builddir/42sh -c "ls | cat-e") <(printf "README.md\$
+diff <(./builddir/42sh -c "ls | cat -e") <(printf "README.md\$
 builddir\$
 doc\$
 flake.lock\$
@@ -20,8 +20,8 @@ diff <(./builddir/42sh -c "echo a | tr a e") <(printf "e
 ")
 
 echo "*********** Test 3 with echo and pipe ***********"
-diff <(./builddir/42sh -c "if echo b; then echo a; else echo c; fi | cat -e") <(printf "b
-a
+diff <(./builddir/42sh -c "if echo b; then echo a; else echo c; fi | tr a e") <(printf "b
+e
 ")
 
 echo "*********** Test 4 with echo and pipe ***********"
