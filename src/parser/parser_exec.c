@@ -134,7 +134,7 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
     while (exec_ast(a->cond, inter) == 0)
     {
         if (inter->exit_status != -1)
-                return inter->exit_status;
+            return inter->exit_status;
         if (inter->flag_loop_break != 0)
         {
             inter->flag_loop_break = 0;
@@ -148,7 +148,7 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
         else
             exec_ast(a->then, inter);
 
-       if (inter->exit_status != -1)
+        if (inter->exit_status != -1)
             return inter->exit_status;
         if (inter->flag_loop_break != 0)
         {
@@ -199,6 +199,8 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
     if (a->cond->type == NODE_FOR_INT)
     {
         // printf("for int node\n");
+        char *var_inter = NULL;
+        var_inter = strndup(a->var, strlen(a->var));
         struct ast_for *inter = ast->data.ast_for;
         struct read_for_int *a_inter = a->cond->data.ast_for_int;
         for (int i = a_inter->start; i < (int)a_inter->end; i += a_inter->step)
@@ -208,7 +210,7 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
             char *val = malloc(sizeof(char) * 1000);
             memset(val, '\0', sizeof(char) * 1000);
             val = itoa(i, val);
-            update_variable(a->var, val, e_inter);
+            update_variable(var_inter, val, e_inter);
             if (e_inter->flag_loop_break != 0)
             {
                 e_inter->flag_loop_break = 0;
@@ -221,7 +223,7 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
             }
             else
                 exec_ast(a->then, e_inter);
-            
+
             a->then = inter->then;
 
             if (e_inter->exit_status != -1)
