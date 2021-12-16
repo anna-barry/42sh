@@ -247,22 +247,22 @@ int exec_ast_root(struct ast *ast, struct environnement *env)
         return 0;
     struct ast_main_root *a = ast->data.ast_main_root;
     int res = -1;
-    int inter = 0;
-    // printf("nb child = %d\n", a->nb_children);
+    // int inter = 0;
+    //  printf("nb child = %d\n", a->nb_children);
     for (int i = 0; i < a->nb_children; i++)
-    {
-        inter = i;
-        if (a->children[i]->type == NODE_DOUBLE_QUOTE
-            || a->children[i]->type == NODE_SIMPLE_QUOTE
-            || a->children[i]->type == NODE_COMMAND)
-        {
-            // printf("HEEERREEE concat command\n");
-            concat_command(a, &i, env);
-        }
+    { /*
+         inter = i;
+         if (a->children[i]->type == NODE_DOUBLE_QUOTE
+             || a->children[i]->type == NODE_SIMPLE_QUOTE
+             || a->children[i]->type == NODE_COMMAND)
+         {
+             // printf("HEEERREEE concat command\n");
+             concat_command(a, &i, env);
+         }*/
         // printf("hihihi%d\n", inter);
         /*for (int m = 0; m < as->count; m++)
             printf("ooooooooooooooooooooo %s\n", as->argv[m]);*/
-        res = exec_ast(a->children[inter], env);
+        res = exec_ast(a->children[i], env);
         if (env->exit_status != -1)
             return env->exit_status;
     }
@@ -336,12 +336,10 @@ int exec_ast_redir(struct ast *ast, struct environnement *env)
         return_value = ast_redir_l(ast, a->redir, env);
         break;
     case REDIR_DESCRIPEUR: // '>&'
-        return_value =
-            command_redir_r_and(a->command->data.ast_command->argv, a->redir);
+        return_value = command_redir_r_and(a->command, a->redir);
         break;
     case REDIR_INPUT_DESCRIPEUR: // '<&'
-        return_value =
-            command_redir_r_and(a->command->data.ast_command->argv, a->redir);
+        return_value = command_redir_r_and(a->command, a->redir);
         break;
     }
     if (env->exit_status != -1)
@@ -409,7 +407,7 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     //     return_value = command_redir_r_and(a->argv, a->redir);
     //     break;
     // default:
-    return_value = command_exec(a->argv, a->count, env);
+    return_value = command_exec(ast, a->count, env);
     // }
     if (env->exit_status != -1)
         return env->exit_status;
