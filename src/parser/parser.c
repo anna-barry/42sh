@@ -173,6 +173,8 @@ struct ast_if_root *build_ast_if(struct info_lexer *i_lex)
     type = lexer_peek(lex)->type;
     if (type == TOKEN_SEMICOLON)
       token_free(lexer_pop(lex));
+    else if (type != TOKEN_THEN && type != TOKEN_DO && type != TOKEN_EOF)
+        errx(2, "need to close after if");
     return new_root;
 }
 
