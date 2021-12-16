@@ -161,8 +161,10 @@ void free_ast_for(struct ast *ast)
 {
     struct ast_for *a = ast->data.ast_for;
     free(a->var);
-    free_ast(a->cond);
-    free_ast(a->then);
+    if (a->cond)
+        free_ast(a->cond);
+    if (a->then)
+        free_ast(a->then);
     if (a)
         free(a);
     if (ast)
