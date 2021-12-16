@@ -4,3 +4,20 @@ echo "****************   Test 1 Unset   ****************"
 diff <(./builddir/42sh -c "a=2; echo $a; unset a; echo $a") <(printf "2
 
 ")
+
+echo "****************   Test 2 export and unset   ****************"
+diff <(./builddir/42sh var.sh) <(printf "non
+
+")
+
+echo "****************   Test 3 export  ****************"
+diff <(./builddir/42sh -c "export hiiiiiiiiiiiiiiiiiiiiiiiiiiiii=lo; echo $hiiiiiiiiiiiiiiiiiiiiiiiiiiiii" ) <(printf "lo
+")
+
+echo "****************   Test 4 export  ****************"
+diff <(./builddir/42sh -c "export best=salt&vinegar; if [ 3 -eq 4 ]; then echo then; else echo $best; fi")<(printf "salt
+")
+
+echo "****************   Test 5 export  ****************"
+diff <(./builddir/42sh -c "export best=chatongang; if false; then echo "fuck off"; else echo $best;fi")<(printf "chatongang
+")

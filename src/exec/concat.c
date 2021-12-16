@@ -167,6 +167,7 @@ void transform_command(struct ast *ast, struct environnement *env)
             {
                 char *new = transform_char(a->argv, env, &index);
                 a->argv = new;
+                break;
             }
         }
     }
@@ -192,6 +193,7 @@ void transform_command(struct ast *ast, struct environnement *env)
                 {
                     char *new = transform_char(a->argv[j], env, &index);
                     a->argv[j] = new;
+                    break;
                 }
                 if (a->argv[j] == NULL)
                     break;

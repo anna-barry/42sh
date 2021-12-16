@@ -66,7 +66,12 @@ int simple_command_exec(char *argv[], int count)
 
 int command_exec(char *argv[], int count, struct environnement *env)
 {
-    if (strcmp("echo", argv[0]) == 0)
+    //printf("argv[0] = %s\n", argv[0]);
+    if (argv[0] == NULL)
+    {
+        err(2, "command missing\n");
+    }
+    else if (strcmp("echo", argv[0]) == 0)
         return echo(argv, count);
 
     else if (strcmp("break", argv[0]) == 0)

@@ -14,7 +14,11 @@
 
 int my_unset(char *argv[], struct environnement *env)
 {
-    if (find_variable(argv[1], env))
+    if (getenv(argv[1]) != NULL)
+    {
+        unsetenv((const char *)argv[1]);
+    }  
+    else if (find_variable(argv[1], env))
     {
         update_variable(argv[1], NULL, env);
     }
@@ -44,7 +48,12 @@ int my_export(char *argv[], struct environnement *env)
     }
     else
     {
-        return setenv( (const char *)res[0],(const char *)res[1], 1);
+        //printf("%s %s \n", res[0], res[1]);
+        //if (setenv( (const char *)res[0],(const char *)res[1], 1) != 0)
+        return putenv(argv[1]);
+        //err(2, "export didn't work\n");
+        //char *x = getenv(res[0]);                                                                                                              
+        //printf("variable = %s\n", (x != NULL) ? x : "undefined");
     }
     return 0;
 }

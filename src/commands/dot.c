@@ -21,7 +21,7 @@ char *get_input(char *path)
 {
     FILE * fptr = fopen (path, "r");
     if (fptr == NULL)
-        return NULL;
+        errx(2, "Error\n");
     size_t cap = 300;
     char *input = malloc(cap * sizeof(char));
     size_t index = 0;
