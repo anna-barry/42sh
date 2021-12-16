@@ -30,13 +30,13 @@ int getnb(char *filepath)
                 counter++;
             }
             else
-                fprintf(stderr, "ERROR in getnb");
+                err(2, "ERROR in getnb\n");
         }
         fclose(file);
         return counter + 1;
     }
     else
-        fprintf(stderr, "ERROR in getnb");
+        err(2, "ERROR in getnb\n");
     //fclose(file);
     return -1;
 }
@@ -50,7 +50,7 @@ char *filetostring(char *filepath)
         char *ptr = malloc(sizeof(char) * len);
         if (ptr == NULL)
         {
-            fprintf(stderr, "ERROR in fileToString");
+            err(2, "ERROR in fileToString\n");
         }
         char c;
         int offset = 0;
@@ -67,7 +67,7 @@ char *filetostring(char *filepath)
         return ptr;
     }
     else
-        fprintf(stderr, "ERROR in fileToString");
+        err(2, "ERROR in fileToString \n");
     fclose(file);
     return NULL;
 }
@@ -108,7 +108,6 @@ char *find_input(int argc, char *argv[])
             c_index = optind - 1;
             break;
         default:
-            printf("little error here\n");
             exit(EXIT_FAILURE);
             break;
         }
@@ -126,7 +125,7 @@ char *find_input(int argc, char *argv[])
     }
     else
     {
-        fprintf(stderr, "error");
+        fprintf(stderr, "Error: nor script nor input \n");
     }
     return NULL;
 }

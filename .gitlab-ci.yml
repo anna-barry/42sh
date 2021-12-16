@@ -105,7 +105,7 @@ week_3:
   script:
     - tests/week3/test_dot builddir/42sh
 
-tests_unset:
+unset/export:
   stage: test
   dependencies:
     - build
