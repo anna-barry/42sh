@@ -75,7 +75,7 @@ week_1_echo Geoff:
   dependencies:
     - build
   script:
-    - tests/week1/tests_echo builddir/42sh
+    - tests/week1/test_echo builddir/42sh
 
 concat:
   stage: test
