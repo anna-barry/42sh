@@ -1,6 +1,8 @@
 #ifndef STRUCT_H
 #define STRUCT_H
 
+#include "../lexer/token.h"
+
 enum ast_type
 {
     NODE_IF, //0
@@ -72,9 +74,8 @@ struct ast_if_root
 struct ast_command
 {
     int count;
+    enum token_type *type;
     char **argv;
-    enum opt opt;
-    char *redir;
 };
 
 struct ast_neg
@@ -140,11 +141,6 @@ struct ast_for
                 // either a struct //read_for_int [1..2..10] : begin, start, step
     struct ast *then;
 };
-
-/*struct ast_for_char
-{
-    struct ast *var;
-};*/
 
 struct ast_main_root
 {

@@ -335,14 +335,14 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             ast->children =
                 realloc(ast->children, sizeof(struct ast *) * count);
         }
-        if (type == TOKEN_IF && mode != NODE_FOR_CHAR)
+        if (!open && type == TOKEN_IF && mode != NODE_FOR_CHAR)
             make_if(ast, i_lex);
-        else if (type == TOKEN_WORDS || type == TOKEN_FOR_WORD)
+        else if (type == TOKEN_WORDS || type == TOKEN_FOR_WORD || type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE || type == TOKEN_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE)
         {
             open = 1;
             make_command(ast, i_lex);
         }
-        else if (type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE)
+        /*else if (type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE)
         {
             open = 1;
             make_simple_quote(ast, lex);
@@ -351,7 +351,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
         {
             open = 1;
             make_double_quote(ast, lex);
-        }
+        }*/
         else if (open && lexer_peek(lex)->type == TOKEN_AND)
         {
             get_and(ast->children[--ast->nb_children - 1], i_lex, mode);
@@ -365,7 +365,8 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
         else if (open && (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK))
         {
             open = 0;
-            make_command(ast,i_lex);
+            ast->nb_children--;
+            token_free(lexer_pop(lex));
         }
         else if (mode == NODE_FOR_CHAR) //if node for char the fllowing are not possible
             err(2, "wrong implementation in for");
@@ -376,18 +377,14 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
         }
         else if (type >= 11 && type <= 17)
             get_redir(ast, i_lex);
-        else if (type == TOKEN_WHILE)
+        else if (!open && type == TOKEN_WHILE)
             make_while(ast, i_lex, 0);
-        else if (type == TOKEN_UNTIL)
+        else if (!open && type == TOKEN_UNTIL)
             make_while(ast, i_lex, 1);
-        else if (type == TOKEN_FOR)
+        else if (!open && type == TOKEN_FOR)
             make_for(ast,i_lex);
         else if (type == TOKEN_PIPE)
-        {
-            //open = 0;
             get_pipe(ast, i_lex);
-            //break;
-        }
         else
           err(2, "wrong implementation");
         if (lex && lexer_peek(lex))

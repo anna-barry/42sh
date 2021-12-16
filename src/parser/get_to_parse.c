@@ -53,34 +53,25 @@ int get_command(struct info_lexer *i_lex, struct ast_command *new)
     /*if (!lex || type == TOKEN_EOF)
         ask_entry(i_lex);*/
     type = lexer_peek(lex)->type;
-    if (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
+    int capy = 30;
+    new->argv = malloc(sizeof(char *) * 30);
+    new->type = malloc(sizeof(enum ast_type) * 30);
+    int y = 0;
+    for (; lex && (type == TOKEN_WORDS || type == TOKEN_FOR_WORD || type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE || type == TOKEN_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE); y++)
     {
-        new->argv = malloc(sizeof(char *));
-        new->argv[0] = NULL;
-        new->count = 1;
-        //printf("test\n");
-        token_free(lexer_pop(lex));
-        return 0;
-    }
-    else
-    {
-        int capy = 30;
-        new->argv = malloc(sizeof(char *) * 30);
-        int y = 0;
-        for (; lex && (type == TOKEN_WORDS || type == TOKEN_FOR_WORD); y++)
+        if (y >= capy)
         {
-            if (y >= capy)
-            {
-                capy *= 2;
-                new->argv = realloc(new->argv, capy);
-            }
-            new->argv[y] =
-            strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
-            token_free(lexer_pop(lex));
-            type = lexer_peek(lex)->type;
+            capy += 30;
+            new->argv = realloc(new->argv, capy);
+            new->type = realloc(new->type, capy);
         }
-        new->count = y;
+        new->argv[y] =
+        strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
+        new->type[y] = type;
+        token_free(lexer_pop(lex));
+        type = lexer_peek(lex)->type;
     }
+    new->count = y;
     return 0;
 }
 
