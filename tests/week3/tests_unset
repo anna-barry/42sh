@@ -15,9 +15,9 @@ diff <(./builddir/42sh -c "export hiiiiiiiiiiiiiiiiiiiiiiiiiiiii=lo; echo \$hiii
 ")
 
 echo "****************   Test 4 export  ****************"
-diff <(./builddir/42sh -c "export best=salt&vinegar; if [ 3 -eq 4 ]; then echo then; else echo \$best; fi")<(printf "salt
+diff <(./builddir/42sh -c "export best=salt&vinegar; if [ 3 -eq 4 ]; then echo then; else echo \$best; fi") <(printf "salt
 ")
 
 echo "****************   Test 5 export  ****************"
-diff <(./builddir/42sh -c "export best=chatongang; if false; then echo "fuck off"; else echo \$best;fi")<(printf "chatongang
+diff <(./builddir/42sh -c "export best=chatongang; if false; then echo "fuck off"; else echo \$best;fi") <(printf "chatongang
 ")
