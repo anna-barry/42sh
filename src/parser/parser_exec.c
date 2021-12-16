@@ -116,7 +116,6 @@ int exec_ast_neg(struct ast *ast, struct environnement *env)
         return 1;
     if (env->exit_status != -1)
         return env->exit_status;
-    // printf("negation\n");
     struct ast_neg *a = ast->data.ast_neg;
     if (exec_ast(a->node, env) == 1)
         return 0;
@@ -137,23 +136,26 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
     int tmp = env->flag_loop_break;
     while (exec_ast(a->cond, inter) == 0)
     {
-        if (env->flag_loop_break != tmp)
+        if (inter->flag_loop_break != tmp)
         {
             bool_et_bool_et_ratatam = 1;
             break;
         }
-        if (env->flag_loop_continue != 0)
+        if (inter->flag_loop_continue != 0)
         {
-            env->flag_loop_continue = 0;
+            inter->flag_loop_continue = 0;
             continue;
         }
         else
             exec_ast(a->then, inter);
-        if (env->exit_status != -1)
-            return env->exit_status;
+        if (inter->exit_status != -1)
+            return inter->exit_status;
     }
     if (bool_et_bool_et_ratatam == 0)
-        env->flag_loop_break -= 1;
+        inter->flag_loop_break -= 1;
+    env->flag_loop_break = inter->flag_loop_break;
+    env->flag_loop_continue = inter->flag_loop_continue;
+    env->exit_status = inter->exit_status;
     free_environnement(inter);
     return 0;
 }

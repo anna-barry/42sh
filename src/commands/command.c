@@ -105,7 +105,9 @@ int command_exec(char *argv[], int count, struct environnement *env)
         res = echo(argv_cpy, count);
 
     else if (strcmp("break", argv_cpy[0]) == 0)
+    {
         res = command_break(env);
+    }
 
     else if (strcmp("continue", argv_cpy[0]) == 0)
         res = command_continue(env);
