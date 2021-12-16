@@ -11,6 +11,8 @@
 #include "../functionnal/functionnal.h"
 #include "parser.h"
 
+int exec_ast_pipe(struct ast *ast, struct environnement *env);
+
 int exec_ast_redir(struct ast *ast, struct environnement *env);
 
 int exec_ast_and(struct ast *ast, struct environnement *env);
