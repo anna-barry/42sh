@@ -401,10 +401,12 @@ int exec_ast_redir(struct ast *ast, struct environnement *env)
         return_value = ast_redir_l(ast, a->redir, env);
         break;
     case REDIR_DESCRIPEUR: // '>&'
-        return_value = command_redir_r_and(a->command, a->redir);
+        return_value =
+            command_redir_r_and(a->command->data.ast_command->argv, a->redir);
         break;
     case REDIR_INPUT_DESCRIPEUR: // '<&'
-        return_value = command_redir_r_and(a->command, a->redir);
+        return_value =
+            command_redir_r_and(a->command->data.ast_command->argv, a->redir);
         break;
     }
     if (env->exit_status != -1)
@@ -420,12 +422,8 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
         return env->exit_status;
     struct ast_command *a = ast->data.ast_command;
     // printf("___________________________________\n");
-    /*
-    for (int i = 0; i < a->count; i++)
-    {
-        printf("command: %s\n", a->argv[i]);
-    }*/
-    // print_variables(env);
+
+    // int_variables(env);
     char **tab = get_all_var(a->argv[0]);
     if (tab != NULL)
     {
