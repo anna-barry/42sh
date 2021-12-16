@@ -138,7 +138,8 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     *index += (strlen(inter->value) - strlen(inter->name));
     if (to_free == 1)
     {
-       free(inter);
+        free(inter->name);
+        free(inter);
     }
     free(argv);
     return res;

@@ -51,6 +51,8 @@ int my_export(char *argv[], struct environnement *env)
         //printf("%s %s \n", res[0], res[1]);
         //if (setenv( (const char *)res[0],(const char *)res[1], 1) != 0)
         int ires = setenv( (const char *)res[0],(const char *)res[1], 1);
+        free(res[0]);
+        free(res[1]);
         free(res);
         return ires;
         //err(2, "export didn't work\n");
