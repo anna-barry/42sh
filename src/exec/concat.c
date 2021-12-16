@@ -8,6 +8,34 @@
 #include "../functionnal/functionnal.h"
 #include "../parser/parser.h"
 
+char *itoa(int value, char *s)
+{
+    int l = 0;
+    int a = value;
+    int neg = 0;
+    if (value < 0)
+    {
+        l += 1;
+        a *= -1;
+        neg = 1;
+        value = a;
+    }
+    while (a >= 10)
+    {
+        l += 1;
+        a = a / 10;
+    }
+    s[l + 1] = '\0';
+    for (int i = l; i >= 0; i--)
+    {
+        s[i] = (value % 10) + '0';
+        value = value / 10;
+    }
+    if (neg == 1)
+        s[0] = '-';
+    return s;
+}
+
 int is_nullf(struct ast *ast)
 {
     if (ast->type == NODE_COMMAND)
@@ -68,36 +96,46 @@ char *transform_char(char *argv, struct environnement *env, int *index)
         }
     }
     indice[interm] = '\0';
-    struct variable *inter = env->var;
-    while (inter)
-    {
-        //printf("inter is %s\n", inter->name);
-        if (strcmp(indice, inter->name) == 0)
-            break;
-        inter = inter->next;
-    }
-    //free(indice);
+    char *tr_char = NULL;
+    struct variable *inter = NULL;
     int to_free = 0;
-    if (inter == NULL)
+    if (strcmp(indice, "UID") == 0)
     {
-        char * env_res = (char *)getenv(indice);
-        if (env_res != NULL)
-        {
-            inter = malloc(sizeof(struct variable));
-            inter->name = strndup(indice, strlen(indice));
-            inter->value = env_res;
-            to_free = 1;
-        }
-        else
-        {
-            char *res = NULL;
-            free(argv);
-            free(indice);
-
-            return res;
-        }
+        char *a = malloc(sizeof(char) * 15);
+        tr_char = itoa((int)(env->uid), a);
+        // free(a);
     }
-    free(indice);
+    else
+    {
+        inter = env->var;
+        while (inter)
+        {
+            // printf("inter is %s\n", inter->name);
+            if (strcmp(indice, inter->name) == 0)
+                break;
+            inter = inter->next;
+        }
+        // free(indice);
+        if (inter == NULL)
+        {
+            char *env_res = (char *)getenv(indice);
+            if (env_res != NULL)
+            {
+                inter = malloc(sizeof(struct variable));
+                inter->name = strndup(indice, strlen(indice));
+                inter->value = env_res;
+                to_free = 1;
+            }
+            else
+            {
+                char *res = NULL;
+                free(argv);
+                free(indice);
+                return res;
+            }
+        }
+        tr_char = inter->value;
+    }
     cap = 200;
     char *res = malloc(sizeof(char) * cap);
     memset(res, '\0', sizeof(char) * cap);
@@ -112,9 +150,9 @@ char *transform_char(char *argv, struct environnement *env, int *index)
         }
     }
     size_t avance = a;
-    for (unsigned long f = 0; f < strlen(inter->value); f++)
+    for (unsigned long f = 0; f < strlen(tr_char); f++)
     {
-        res[avance] = inter->value[f];
+        res[avance] = tr_char[f];
         avance += 1;
         if (avance >= cap)
         {
@@ -123,7 +161,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
         }
     }
     avance += 1;
-    a += strlen(inter->name) + 1;
+    a += strlen(indice) + 1;
     for (; argv[a] != '\0'; a++)
     {
         res[avance] = argv[a];
@@ -135,12 +173,13 @@ char *transform_char(char *argv, struct environnement *env, int *index)
         }
     }
     res[avance] = '\0';
-    *index += (strlen(inter->value) - strlen(inter->name));
+    *index += avance; //(strlen(tr_char) - strlen(indice));
     if (to_free == 1)
     {
-        free(inter->name);
+        free(tr_char);
         free(inter);
     }
+    free(indice);
     free(argv);
     return res;
 }
@@ -155,7 +194,8 @@ void transform_command(struct ast *ast, struct environnement *env)
         int index = 0;
         for (; a->argv[index] != '\0'; index++)
         {
-            if (index > 0 && a->argv[index - 1] == '\\' && a->argv[index] == '$')
+            if (index > 0 && a->argv[index - 1] == '\\'
+                && a->argv[index] == '$')
             {
                 int i = index - 1;
                 for (; a->argv[i + 1] != '\0'; i++)
@@ -164,7 +204,7 @@ void transform_command(struct ast *ast, struct environnement *env)
                 }
                 a->argv[i] = '\0';
             }
-            else if(a->argv[index] == '$')
+            else if (a->argv[index] == '$')
             {
                 char *new = transform_char(a->argv, env, &index);
                 a->argv = new;
@@ -181,7 +221,8 @@ void transform_command(struct ast *ast, struct environnement *env)
                 break;
             for (int index = 0; index < (int)strlen(a->argv[j]); index++)
             {
-                if (index > 0 && a->argv[j][index - 1] == '\\' && a->argv[j][index] == '$')
+                if (index > 0 && a->argv[j][index - 1] == '\\'
+                    && a->argv[j][index] == '$')
                 {
                     int i = index - 1;
                     for (; a->argv[j][i + 1] != '\0'; i++)
@@ -190,7 +231,7 @@ void transform_command(struct ast *ast, struct environnement *env)
                     }
                     a->argv[j][i] = '\0';
                 }
-                else if ( a->argv[j][index] == '$')
+                else if (a->argv[j][index] == '$')
                 {
                     char *new = transform_char(a->argv[j], env, &index);
                     a->argv[j] = new;
@@ -213,14 +254,14 @@ void concat_node(struct ast *node1, struct ast *node2,
     {
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_simple_quote *a2 = node2->data.ast_simple_quote;
-        //char **res = malloc(sizeof(char *) * (2 + a1->count));
-        //res[a1->count + 1] = NULL;
-        //int index = 0;
+        // char **res = malloc(sizeof(char *) * (2 + a1->count));
+        // res[a1->count + 1] = NULL;
+        // int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
             if (strcmp(a1->argv[a], "exit") == 0)
             {
-                //printf("in if\n");
+                // printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
@@ -240,13 +281,13 @@ void concat_node(struct ast *node1, struct ast *node2,
         }
         if (a2->argv != NULL)
         {
-            //res[index] = strndup(a2->argv, strlen(a2->argv));
+            // res[index] = strndup(a2->argv, strlen(a2->argv));
             a1->argv[a1->count] = strndup(a2->argv, strlen(a2->argv));
-            //free(a2->argv);
+            // free(a2->argv);
             a1->count += 1;
         }
-        //free(a1->argv);
-        //  ******  Test ******  //
+        // free(a1->argv);
+        //   ******  Test ******  //
         /*
         a1->argv = malloc(sizeof(char *) * (2 + a1->count));
         a1->count = index;
@@ -256,7 +297,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             {
                 free(a1->argv[i]);
             }
-            
+
             if (res[i])
             {
                 a1->argv[i] = strndup( res[i], strlen(res[i]));
@@ -270,24 +311,24 @@ void concat_node(struct ast *node1, struct ast *node2,
                 free(res[i]);
             }
         }
-        
+
         free(res);*/
-        //a1->argv = res;
+        // a1->argv = res;
     }
     else if (node1->type == NODE_COMMAND && node2->type == NODE_DOUBLE_QUOTE)
     {
         struct ast_double_quote *a2 = node2->data.ast_double_quote;
         struct ast_command *a1 = node1->data.ast_command;
-        //char **res = malloc(sizeof(char *) * (2 + a1->count));
-        //a1->argv = realloc(a1->argv, sizeof(char *) * (2 + a1->count));
-        //res[a1->count + 1] = NULL;
+        // char **res = malloc(sizeof(char *) * (2 + a1->count));
+        // a1->argv = realloc(a1->argv, sizeof(char *) * (2 + a1->count));
+        // res[a1->count + 1] = NULL;
         a1->argv[a1->count + 1] = NULL;
-        //int index = 0;
+        // int index = 0;
         for (int a = 0; a < a1->count; a++)
         {
             if (strcmp(a1->argv[a], "exit") == 0)
             {
-                //printf("in if\n");
+                // printf("in if\n");
                 if (a1->count > a + 1 && a1->argv[a + 1] != NULL)
                     env->exit_status = atoi(a1->argv[a + 1]);
                 else
@@ -305,18 +346,18 @@ void concat_node(struct ast *node1, struct ast *node2,
                 a1->count -= 1;
             }*/
         }
-        //free(a1->argv);
+        // free(a1->argv);
         if (a2->argv != NULL)
         {
-            //res[index] = strndup(a2->argv, strlen(a2->argv));
+            // res[index] = strndup(a2->argv, strlen(a2->argv));
 
             a1->argv[a1->count] = strndup(a2->argv, strlen(a2->argv));
-            //free(a2->argv);
+            // free(a2->argv);
             a1->count += 1;
         }
-        //  ******  Test ******  
-        //free(a1->argv);
-        //a1->argv = malloc(sizeof(char *) * (2 + a1->count));
+        //  ******  Test ******
+        // free(a1->argv);
+        // a1->argv = malloc(sizeof(char *) * (2 + a1->count));
         /*
         a1->count = index;
         for (int i = 0; i < index; i++)
@@ -325,7 +366,7 @@ void concat_node(struct ast *node1, struct ast *node2,
             {
                 free(a1->argv[i]);
             }
-            
+
             if (res[i])
             {
                 a1->argv[i] = strndup( res[i], strlen(res[i]));
@@ -339,17 +380,18 @@ void concat_node(struct ast *node1, struct ast *node2,
                 free(res[i]);
             }
         }
-        
+
         free(res);*/
-        //a1->argv = res;
+        // a1->argv = res;
     }
     else if (node1->type == NODE_COMMAND && node2->type == NODE_COMMAND)
     {
         struct ast_command *a1 = node1->data.ast_command;
         struct ast_command *a2 = node2->data.ast_command;
-        //char **res = malloc(sizeof(char *) * (a1->count + a2->count + 1));
-        a1->argv = realloc(a1->argv, sizeof(char *) * (a1->count + a2->count + 1));
-        //res[a1->count + a2->count] = NULL;
+        // char **res = malloc(sizeof(char *) * (a1->count + a2->count + 1));
+        a1->argv =
+            realloc(a1->argv, sizeof(char *) * (a1->count + a2->count + 1));
+        // res[a1->count + a2->count] = NULL;
         a1->argv[a1->count + a2->count] = NULL;
         int index = 0;
         int a = 0;
@@ -380,27 +422,27 @@ void concat_node(struct ast *node1, struct ast *node2,
         index = a1->count;
         for (a = 0; a < a2->count; a++)
         {
-            if (a2->argv[a] && strcmp(a2->argv[a], "exit") == 0 )
+            if (a2->argv[a] && strcmp(a2->argv[a], "exit") == 0)
             {
-                //printf("in if\n");
+                // printf("in if\n");
                 if (a2->count > a + 1 && a2->argv[a + 1] != NULL)
                     env->exit_status = atoi(a2->argv[a + 1]);
                 else
                     env->exit_status = 0;
-                //free(res);
+                // free(res);
                 return;
             }
             if (a2->argv[a] != NULL)
             {
-                //res[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
+                // res[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
                 a1->argv[index] = strndup(a2->argv[a], strlen(a2->argv[a]));
-                //free(a2->argv[a]);
+                // free(a2->argv[a]);
                 index += 1;
                 a1->count += 1;
             }
         }
-        //free(a2->argv);
-        //a1->argv = res;
+        // free(a2->argv);
+        // a1->argv = res;
     }
 }
 
@@ -413,7 +455,7 @@ void concat_command(struct ast_main_root *a, int *i, struct environnement *env)
     // printf("child = %d\n", a->nb_children);
     // printf("inter = %d\n", inter);
     int ii = *i;
-    transform_command(a->children[inter], env);
+    // transform_command(a->children[inter], env);
     if (is_nullf(a->children[inter]))
     {
         return;
@@ -429,7 +471,7 @@ void concat_command(struct ast_main_root *a, int *i, struct environnement *env)
             || a->children[inter]->type == NODE_COMMAND)
         {
             // printf("inter 2 = %d\n", inter);
-            transform_command(a->children[inter], env);
+            // transform_command(a->children[inter], env);
             // printf("concat node\n");
             concat_node(a->children[ii], a->children[inter], env);
             *i = inter;
