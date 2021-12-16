@@ -77,6 +77,7 @@ void free_ast_command(struct ast *ast)
     for (int i = 0; i < a->count; i++)
         free(a->argv[i]);
     free(a->argv);
+    free(a->type);
     if (a)
         free(a);
     if (ast)
