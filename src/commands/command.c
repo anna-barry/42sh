@@ -65,8 +65,11 @@ int simple_command_exec(char *argv[], int count)
     return WEXITSTATUS(wstatus); // return the return value of the command
 }
 
-int command_exec(char *argv[], int count, struct environnement *env)
+int command_exec(struct ast *ast, int count, struct environnement *env)
 {
+    struct ast_command *asttt = ast->data.ast_command;
+    char **argv = asttt->argv;
+    enum token_type *type = asttt->type;
     if (argv[count - 1] != NULL)
         count += 1;
     char **argv_cpy = malloc(sizeof(char *) * count);
@@ -86,11 +89,23 @@ int command_exec(char *argv[], int count, struct environnement *env)
             break;
         for (int index = 0; index < (int)strlen(argv_cpy[j]); index++)
         {
-            // printf("%d %d \n", j, index);
-            if (argv_cpy[j][index] == '$')
+            if (index > 0 && argv_cpy[j][index - 1] == '\\'
+                && argv_cpy[j][index] == '$')
+            {
+                int i = index - 1;
+                for (; argv_cpy[j][i + 1] != '\0'; i++)
+                {
+                    argv_cpy[j][i] = argv_cpy[j][i + 1];
+                }
+                argv_cpy[j][i] = '\0';
+            }
+            // printf("type of quote = %d when = %s\n", type[j], argv_cpy[j]);
+            if (argv_cpy[j][index] == '$' && type[j] != TOKEN_SIMPLE_QUOTE
+                && type[j] != TOKEN_FOR_SINGLE_QUOTE)
             {
                 char *new = transform_char(argv_cpy[j], env, &index);
                 argv_cpy[j] = new;
+                break;
             }
             if (argv_cpy[j] == NULL)
                 break;
