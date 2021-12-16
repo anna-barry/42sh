@@ -177,6 +177,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     if (to_free == 1)
     {
         //free(tr_char);
+        free(inter->name);
         free(inter);
     }
     free(indice);
