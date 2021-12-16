@@ -19,12 +19,15 @@
 
 int command_break(struct environnement *env)
 {
-    env->flag_loop_break -= 1;
+    //printf("break \n");
+    //env->flag_loop_break -= 1;
+    env->flag_loop_break = 1;
     return 0;
 }
 
 int command_continue(struct environnement *env)
 {
+    //printf("continue \n");
     env->flag_loop_continue = 1;
     return 0;
 }

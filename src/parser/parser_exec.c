@@ -131,14 +131,28 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
         return env->exit_status;
     struct environnement *inter = copy_env(env);
     struct ast_while *a = ast->data.ast_while;
-    int bool_et_bool_et_ratatam = 0;
-    env->flag_loop_break += 1;
-    int tmp = env->flag_loop_break;
     while (exec_ast(a->cond, inter) == 0)
     {
-        if (inter->flag_loop_break != tmp)
+        if (inter->exit_status != -1)
+            return inter->exit_status;
+        if (inter->flag_loop_break != 0)
         {
-            bool_et_bool_et_ratatam = 1;
+            inter->flag_loop_break = 0;
+            break;
+        }
+        else if (inter->flag_loop_continue != 0)
+        {
+            inter->flag_loop_continue = 0;
+            continue;
+        }
+        else
+            exec_ast(a->then, inter);
+
+        if (inter->exit_status != -1)
+            return inter->exit_status;
+        if (inter->flag_loop_break != 0)
+        {
+            inter->flag_loop_break = 0;
             break;
         }
         if (inter->flag_loop_continue != 0)
@@ -146,13 +160,7 @@ int exec_ast_while(struct ast *ast, struct environnement *env)
             inter->flag_loop_continue = 0;
             continue;
         }
-        else
-            exec_ast(a->then, inter);
-        if (inter->exit_status != -1)
-            return inter->exit_status;
     }
-    if (bool_et_bool_et_ratatam == 0)
-        inter->flag_loop_break -= 1;
     env->flag_loop_break = inter->flag_loop_break;
     env->flag_loop_continue = inter->flag_loop_continue;
     env->exit_status = inter->exit_status;
@@ -188,20 +196,48 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
         return 1;
     struct ast_for *a = ast->data.ast_for;
     struct environnement *e_inter = copy_env(env);
-    // printf("type is %d\n", a->cond->type);
     if (a->cond->type == NODE_FOR_INT)
     {
         // printf("for int node\n");
+        char *var_inter = NULL;
+        var_inter = strndup(a->var, strlen(a->var));
         struct ast_for *inter = ast->data.ast_for;
         struct read_for_int *a_inter = a->cond->data.ast_for_int;
         for (int i = a_inter->start; i < (int)a_inter->end; i += a_inter->step)
         {
+            if (e_inter->exit_status != -1)
+                return e_inter->exit_status;
             char *val = malloc(sizeof(char) * 1000);
             memset(val, '\0', sizeof(char) * 1000);
             val = itoa(i, val);
-            update_variable(a->var, val, e_inter);
-            exec_ast(a->then, e_inter);
+            update_variable(var_inter, val, e_inter);
+            if (e_inter->flag_loop_break != 0)
+            {
+                e_inter->flag_loop_break = 0;
+                break;
+            }
+            else if (e_inter->flag_loop_continue != 0)
+            {
+                e_inter->flag_loop_continue = 0;
+                continue;
+            }
+            else
+                exec_ast(a->then, e_inter);
+
             a->then = inter->then;
+
+            if (e_inter->exit_status != -1)
+                return e_inter->exit_status;
+            if (e_inter->flag_loop_break != 0)
+            {
+                e_inter->flag_loop_break = 0;
+                break;
+            }
+            if (e_inter->flag_loop_continue != 0)
+            {
+                e_inter->flag_loop_continue = 0;
+                continue;
+            }
         }
     }
     else if (a->cond->type == NODE_ROOT)
@@ -228,21 +264,44 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
             // printf("voici elt = %s\n", a_interme->argv[e]);
             if (a_interme->argv[e] != NULL)
             {
-                // printf("element for %s\n", a_interme->argv[e]);
+                if (e_inter->exit_status != -1)
+                    return e_inter->exit_status;
                 char *elt_inter = NULL;
                 elt_inter =
                     strndup(a_interme->argv[e], strlen(a_interme->argv[e]));
                 update_variable(var_inter, elt_inter, e_inter);
-                // printf("element cpy for %s\n", elt_inter);
-                // print_variables(e_inter);
-                exec_ast(a->then, e_inter);
-                if (e < a_interme->count - 1)
-                    free(elt_inter);
+                if (e_inter->flag_loop_break != 0)
+                {
+                    e_inter->flag_loop_break = 0;
+                    break;
+                }
+                else if (e_inter->flag_loop_continue != 0)
+                {
+                    e_inter->flag_loop_continue = 0;
+                    continue;
+                }
+                else
+                    exec_ast(a->then, e_inter);
+
+                if (e_inter->exit_status != -1)
+                    return e_inter->exit_status;
+                if (e_inter->flag_loop_break != 0)
+                {
+                    e_inter->flag_loop_break = 0;
+                    break;
+                }
+                if (e_inter->flag_loop_continue != 0)
+                {
+                    e_inter->flag_loop_continue = 0;
+                    continue;
+                }
             }
         }
         // free(a_par);
     }
-    // free(val_inter);
+    env->flag_loop_break = e_inter->flag_loop_break;
+    env->flag_loop_continue = e_inter->flag_loop_continue;
+    env->exit_status = e_inter->exit_status;
     free_environnement(e_inter);
     return 0;
 }
@@ -413,8 +472,10 @@ int exec_ast_command(struct ast *ast, struct environnement *env)
     //     return_value = command_redir_r_and(a->argv, a->redir);
     //     break;
     // default:
-    // printf("count = %d\n", a->count);
-    return_value = command_exec(ast, a->count, env);
+    if (env->flag_loop_break == 0 && env->flag_loop_continue == 0)
+        return_value = command_exec(ast, a->count, env);
+    else
+        return_value = 2;
     // }
     if (env->exit_status != -1)
         return env->exit_status;
