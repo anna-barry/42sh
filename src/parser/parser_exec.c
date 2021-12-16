@@ -297,6 +297,8 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
                     e_inter->flag_loop_continue = 0;
                     continue;
                 }
+                if (e < a_interme->count - 1)
+                    free(elt_inter);
             }
         }
         // free(a_par);
