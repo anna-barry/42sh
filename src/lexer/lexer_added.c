@@ -59,6 +59,7 @@ struct cap_and_i * spe_token(const char *input, size_t *index, struct cap_and_i 
     current_char = current_char + ('a' - 'A');
   if (current_char >= 'a' && current_char <= 'z')
   {
+      //printf("char is right now %c \n", current_char);
     /*
      * testing echo to change mode
      */
@@ -241,6 +242,7 @@ struct cap_and_i * spe_token(const char *input, size_t *index, struct cap_and_i 
       }
       else
       {
+        //printf("in else %c \n", input[*for_s->i + 0]);
         new[*index - 1].current_tok = token_new(TOKEN_WORDS);
         nb = 0;
         while (*for_s->i + nb < strlen(input) && !is_end(input[*for_s->i + nb])
