@@ -275,28 +275,42 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
                 if (e_inter->flag_loop_break != 0)
                 {
                     e_inter->flag_loop_break = 0;
+                    if (e < a_interme->count - 1)
+                        free(elt_inter);
                     break;
                 }
                 else if (e_inter->flag_loop_continue != 0)
                 {
                     e_inter->flag_loop_continue = 0;
+                    if (e < a_interme->count - 1)
+                        free(elt_inter);
                     continue;
                 }
                 else
                     exec_ast(a->then, e_inter);
 
                 if (e_inter->exit_status != -1)
+                {
+                    if (e < a_interme->count - 1)
+                        free(elt_inter);
                     return e_inter->exit_status;
+                }
                 if (e_inter->flag_loop_break != 0)
                 {
                     e_inter->flag_loop_break = 0;
+                    if (e < a_interme->count - 1)
+                        free(elt_inter);
                     break;
                 }
                 if (e_inter->flag_loop_continue != 0)
                 {
                     e_inter->flag_loop_continue = 0;
+                    if (e < a_interme->count - 1)
+                        free(elt_inter);
                     continue;
                 }
+                if (e < a_interme->count - 1)
+                    free(elt_inter);
             }
         }
         // free(a_par);
