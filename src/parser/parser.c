@@ -264,12 +264,12 @@ else
       err(2, "wrong implementation in for: for i in x do commands <done>");
   token_free(lexer_pop(lex));
 
-printf("token type is = %d\n == %d ?",lexer_peek(lex)->type, TOKEN_SEMICOLON );
+//printf("token type is = %d\n == %d ?",lexer_peek(lex)->type, TOKEN_SEMICOLON );
     if (lexer_peek(lex)->type != TOKEN_SEMICOLON && lexer_peek(lex)->type != TOKEN_DO && lexer_peek(lex)->type != TOKEN_EOF)
       errx(2, "need to close after do");
     if (lexer_peek(lex)->type == TOKEN_SEMICOLON)
       token_free(lexer_pop(lex));
-    print(lex);
+    //print(lex);
   return new_for;
 }
 
@@ -329,9 +329,9 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
     int open = 0;
     while (lex && check_break(mode, type, open))
     {
-        printf("MODE = %d\n", mode);
-        printf("TYPE = %d\n", type);
-        print(lex);
+        //printf("MODE = %d\n", mode);
+        //printf("TYPE = %d\n", type);
+        //print(lex);
         //ast->nb_children++;
         if (++ast->nb_children >= count)
         {
