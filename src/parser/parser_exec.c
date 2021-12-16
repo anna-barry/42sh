@@ -233,10 +233,13 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
                     strndup(a_interme->argv[e], strlen(a_interme->argv[e]));
                 update_variable(var_inter, elt_inter, e_inter);
                 exec_ast(a->then, e_inter);
+                if (e < a_interme->count - 1)
+                    free(elt_inter);
             }
         }
         // free(a_par);
     }
+    // free(val_inter);
     free_environnement(e_inter);
     return 0;
 }
