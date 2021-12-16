@@ -195,6 +195,8 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
     if (env == NULL)
         return 1;
     struct ast_for *a = ast->data.ast_for;
+    if (a->cond == NULL)
+        return 0;
     struct environnement *e_inter = copy_env(env);
     if (a->cond->type == NODE_FOR_INT)
     {
@@ -203,7 +205,7 @@ int exec_ast_for(struct ast *ast, struct environnement *env)
         var_inter = strndup(a->var, strlen(a->var));
         struct ast_for *inter = ast->data.ast_for;
         struct read_for_int *a_inter = a->cond->data.ast_for_int;
-        for (int i = a_inter->start; i < (int)a_inter->end; i += a_inter->step)
+        for (int i = a_inter->start; i <= (int)a_inter->end; i += a_inter->step)
         {
             if (e_inter->exit_status != -1)
                 return e_inter->exit_status;
