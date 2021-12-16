@@ -65,6 +65,5 @@ diff <(./builddir/42sh -c "until true ; do ; echo oui ; break ; echo non ; done"
 
 echo "****************   Test 1 While   ****************"
 diff <(./builddir/42sh -c "while true ; do echo oui ; break ; echo non ; done") <(printf "
-oui
-")
+oui")
 
