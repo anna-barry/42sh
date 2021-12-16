@@ -22,6 +22,7 @@ int echo(char *argv[], int count)
     if (test_null(argv, count) == 0)
     {
         printf("\n");
+        fflush(stdout);
         return 0;
     }
     int flag_e = 0;
@@ -58,10 +59,10 @@ int echo(char *argv[], int count)
         i = begin;
     for (; i < count; i++)
     {
-        //printf("\ncount %i is %s \n", i, argv[i]);
+        // printf("\ncount %i is %s \n", i, argv[i]);
         if (argv[i] == NULL)
         {
-            //continue;
+            // continue;
             break;
         }
         for (int j = 0; argv[i][j]; j++)
@@ -72,35 +73,48 @@ int echo(char *argv[], int count)
                     && (argv[i][j] == '\\' && argv[i][j + 1] == 'n'))
                 {
                     printf("\n");
+                    fflush(stdout);
                     j++;
                 }
                 else if (argv[i][j + 1] != '\0'
                          && (argv[i][j] == '\\' && argv[i][j + 1] == 't'))
                 {
                     printf("\t");
+                    fflush(stdout);
                     j++;
                 }
                 else if (argv[i][j + 1] != '\0'
                          && (argv[i][j] == '\\' && argv[i][j + 1] == '\\'))
                 {
                     printf("\\");
+                    fflush(stdout);
                     j++;
                 }
                 else
+                {
                     printf("%c", argv[i][j]);
+                    fflush(stdout);
+                }
             }
             else
+            {
                 printf("%c", argv[i][j]);
+                fflush(stdout);
+            }
         }
         if (argv[i + 1] == NULL)
             continue;
         if (i != count - 1)
         {
             printf(" ");
+            fflush(stdout);
         }
     }
     if (flag_n != 1)
+    {
         printf("\n");
+        fflush(stdout);
+    }
     return 0;
 }
 
