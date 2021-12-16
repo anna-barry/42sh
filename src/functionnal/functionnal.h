@@ -59,6 +59,8 @@ int is_var(char *command);
  */
 char **get_all_var(char *command);
 
+struct environnement *copy_env(struct environnement *env);
+
 /*
  * Insert environnement variables
  */

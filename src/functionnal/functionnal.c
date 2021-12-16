@@ -57,13 +57,12 @@ int my_strcmp(char *s, char *s2)
 
 int find_variable(char *name, struct environnement *new)
 {
-
-    char * env_res = (char *)getenv(name);
+    char *env_res = (char *)getenv(name);
     if (env_res != NULL)
     {
         return 1;
     }
-    
+
     struct variable *index = new->var;
     for (; index != NULL; index = index->next)
     {
@@ -81,16 +80,15 @@ void free_variables(struct variable *index)
         free_variables(index->next);
 
     if (index->value)
-         free(index->value);
+        free(index->value);
     if (index->name)
-         free(index->name);
+        free(index->name);
     if (index)
         free(index);
 }
 
 void free_environnement(struct environnement *new)
 {
-    
     for (int i = 0; i < new->nb_args; i++)
     {
         if (new->args[i])
@@ -135,27 +133,27 @@ void update_variable(char *name, char *value, struct environnement *new)
         }
         else
         {
-        for (; index->next != NULL; index = index->next)
-        {
-            if (strcmp(index->next->name, name) == 0)
+            for (; index->next != NULL; index = index->next)
             {
-                if (value == NULL)
+                if (strcmp(index->next->name, name) == 0)
                 {
-                    struct variable *tmp = index->next;
-                    index->next = index->next->next;
-                    if (tmp->name)
-                        free(tmp->name);
-                    if (tmp->value)
-                        free(tmp->value);
-                    if (tmp)
+                    if (value == NULL)
                     {
-                        free(tmp);
+                        struct variable *tmp = index->next;
+                        index->next = index->next->next;
+                        if (tmp->name)
+                            free(tmp->name);
+                        if (tmp->value)
+                            free(tmp->value);
+                        if (tmp)
+                        {
+                            free(tmp);
+                        }
                     }
+                    else
+                        index->value = value;
                 }
-                else
-                    index->value = value;
             }
-        }
         }
     }
 }
@@ -170,13 +168,13 @@ void insert_variable(char *name, char *value, struct environnement *new)
     struct variable *new_v = malloc(sizeof(struct variable));
     if (!new_v)
         err(2, "Error with malloc\n");
-   /* new_v->name = strndup(name, strlen(name));
-    if (value == NULL)
-    {
-       new_v->value = NULL;
-    }
-    else
-        new_v->value = strndup(value, strlen(value));*/
+    /* new_v->name = strndup(name, strlen(name));
+     if (value == NULL)
+     {
+        new_v->value = NULL;
+     }
+     else
+         new_v->value = strndup(value, strlen(value));*/
     new_v->name = name;
     new_v->value = value;
     if (new->nb_variables == 0)
@@ -223,9 +221,9 @@ char **get_all_var(char *command)
 {
     if (command == NULL)
     {
-       return NULL;
+        return NULL;
     }
-    
+
     int res = is_var(command);
     if (res == -1)
     {
@@ -234,8 +232,41 @@ char **get_all_var(char *command)
     char **result = malloc(sizeof(char *) * 2);
     result[0] = strndup(command, res); // name
     result[1] = strndup(command + res + 1, strlen(command) - res); // value
-    //printf("first is %s and second is %s \n", result[0], result[1]);
+    // printf("first is %s and second is %s \n", result[0], result[1]);
     return result;
+}
+
+struct environnement *copy_env(struct environnement *env)
+{
+    struct environnement *env1 = malloc(sizeof(struct environnement));
+    env1->nb_variables = 0;
+    env1->var = NULL;
+    env1->uid = env->uid;
+    env1->exit_status = env->exit_status;
+    struct variable *a = env->var;
+    // print_variables(env);
+    while (a)
+    {
+        char *name = NULL;
+        char *value = NULL;
+        if (a->name)
+        {
+            name = strndup(a->name, strlen(a->name));
+            // name = malloc(sizeof(char) * (strlen(a->name) + 1));
+            // memcpy(name, a->name, (strlen(a->name) + 1));
+        }
+        if (a->value)
+        {
+            // printf("copy 2\n");
+            value = strndup(a->value, strlen(a->value));
+            // value = malloc(sizeof(char) * (strlen(a->value) + 1));
+            // memcpy(value, a->value, (strlen(a->value) + 1));
+        }
+        insert_variable(name, value, env1);
+        a = a->next;
+        // printf("je suis ici\n");
+    }
+    return env1;
 }
 
 struct environnement *init_env(void)
