@@ -22,13 +22,20 @@ int command_redir_r(struct ast *ast, int count, char *file,
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(ast, count, env) == 127)
+    {
+        close(fd);
         return 127;
+    }
     else if (command_exec(ast, count, env) != 0)
+    {
+        close(fd);
         return 2;
+    }
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(fd);
     return 0;
 }
 
@@ -40,11 +47,15 @@ int ast_redir_r(struct ast *ast, char *file, struct environnement *env)
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (exec_ast(ast, env) != 0)
-        return 2;
+    {
+        close(fd);
+        return 127;
+    }
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(fd);
     return 0;
 }
 
@@ -57,13 +68,20 @@ int command_redir_l(struct ast *ast, int count, char *file,
     if (dup2(fd, STDIN_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(ast, count, env) == 127)
+    {
+        close(fd);
         return 127;
+    }
     else if (command_exec(ast, count, env) != 0)
+    {
+        close(fd);
         return 2;
+    }
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(fd);
     return 0;
 }
 
@@ -75,11 +93,15 @@ int ast_redir_l(struct ast *ast, char *file, struct environnement *env)
     if (dup2(fd, STDIN_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (exec_ast(ast, env) != 0)
+    {
+        close(fd);
         return 2;
+    }
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(fd);
     return 0;
 }
 
@@ -94,13 +116,20 @@ int command_redir_rr(struct ast *ast, int count, char *file,
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(ast, count, env) == 127)
+    {
+        close(fd);
         return 127;
+    }
     else if (command_exec(ast, count, env) != 0)
+    {
+        close(fd);
         return 2;
+    }
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(fd);
     return 0;
 }
 
@@ -112,11 +141,15 @@ int ast_redir_rr(struct ast *ast, char *file, struct environnement *env)
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (exec_ast(ast, env) != 0)
+    {
+        close(fd);
         return 2;
+    }
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(fd);
     return 0;
 }
 
@@ -128,13 +161,20 @@ int command_redir_lr(struct ast *ast, int count, char *file,
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(ast, count, env) == 127)
+    {
+        close(fd);
         return 127;
+    }
     else if (command_exec(ast, count, env) != 0)
+    {
+        close(fd);
         return 2;
+    }
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(fd);
     return 0;
 }
 
@@ -146,11 +186,15 @@ int ast_redir_lr(struct ast *ast, char *file, struct environnement *env)
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (exec_ast(ast, env) != 0)
+    {
+        close(fd);
         return 2;
+    }
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(fd);
     return 0;
 }
 
@@ -218,37 +262,50 @@ int command_redir_r_and(struct ast *ast, char *file)
 int command_redir_r_pipe(struct ast *ast, int count, char *file,
                          struct environnement *env)
 {
-    if (open(file, O_RDONLY, 0644) >= 0)
+    int fd = 0;
+    if ((fd = open(file, O_RDONLY, 0644)) >= 0)
         err(2, "the file %s already exist, you can not overwrite it", file);
     int old_fd = dup(STDOUT_FILENO);
-    int fd = open(file, O_CREAT | O_WRONLY, 0644);
+    fd = open(file, O_CREAT | O_WRONLY, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (command_exec(ast, count, env) == 127)
+    {
+        close(fd);
         return 127;
+    }
     else if (command_exec(ast, count, env) != 0)
+    {
+        close(fd);
         return 2;
+    }
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(fd);
     return 0;
 }
 
 int ast_redir_r_pipe(struct ast *ast, char *file, struct environnement *env)
 {
-    if (open(file, O_RDONLY, 0644) >= 0)
+    int fd = 0;
+    if ((fd = open(file, O_RDONLY, 0644)) >= 0)
         err(2, "the file %s already exist, you can not overwrite it", file);
     int old_fd = dup(STDOUT_FILENO);
-    int fd = open(file, O_CREAT | O_WRONLY, 0644);
+    fd = open(file, O_CREAT | O_WRONLY, 0644);
     if (dup2(fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     if (exec_ast(ast, env) != 0)
+    {
+        close(fd);
         return 2;
+    }
     fflush(stdout);
     if (dup2(old_fd, STDOUT_FILENO) == -1)
         fprintf(stderr, "Error with dup2");
     fcntl(old_fd, F_SETFD, FD_CLOEXEC);
+    close(fd);
     return 0;
 }
 
