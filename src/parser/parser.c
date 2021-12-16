@@ -171,10 +171,15 @@ struct ast_if_root *build_ast_if(struct info_lexer *i_lex)
     /*if (!lex)
         ask_entry(i_lex);*/
     type = lexer_peek(lex)->type;
-    if (type == TOKEN_SEMICOLON)
-      token_free(lexer_pop(lex));
-    else if (type != TOKEN_THEN && type != TOKEN_DO && type != TOKEN_EOF)
+    if (type == TOKEN_IF || type == TOKEN_ELIF || type == TOKEN_ELSE || type == TOKEN_WHILE || type == TOKEN_FOR)
         errx(2, "need to close after if");
+    else if (type == TOKEN_SEMICOLON)
+    {
+        token_free(lexer_pop(lex));
+        type = lexer_peek(lex)->type;
+        if (type == TOKEN_PIPE)
+            errx(2, "shouldn't have putted ; before");
+    }
     return new_root;
 }
 
@@ -208,7 +213,9 @@ struct ast_while *build_ast_while(struct info_lexer *i_lex, int until)
     /*if (!lex)
         ask_entry(i_lex);*/
     if (lexer_peek(lex)->type == TOKEN_SEMICOLON)
-        token_free(lexer_pop(lex));
+      token_free(lexer_pop(lex));
+    else if (lexer_peek(lex)->type != TOKEN_DO && lexer_peek(lex)->type != TOKEN_EOF)
+        errx(2, "need to close after while");
     return new_root;
 }
 
@@ -257,7 +264,8 @@ struct ast_for *build_ast_for(struct info_lexer *i_lex)
       ask_entry(i_lex);*/
   if (lexer_peek(lex)->type == TOKEN_SEMICOLON)
       token_free(lexer_pop(lex));
-  //token_free(lexer_pop(lex));
+  else if (lexer_peek(lex)->type != TOKEN_DO && lexer_peek(lex)->type != TOKEN_EOF)
+      errx(2, "need to close after do");
   return new_for;
 }
 
@@ -276,6 +284,8 @@ int check_break(enum ast_type mode, enum token_type type, int open )
     //printf("MODE = %d\n, TYPE = %d\n", mode, type);
     if ((mode == NODE_ROOT || open) && type == TOKEN_EOF)// each function must handle asking tnew info
         return 0;
+    if (mode == NODE_PIPE && (type == TOKEN_SEMICOLON || type == TOKEN_EOF || type == TOKEN_LINE_BREAK || type == TOKEN_PIPE))
+        return 0;
     if (open)
         return 1;
     if (mode == NODE_IF || mode == NODE_ELIF)
@@ -288,8 +298,6 @@ int check_break(enum ast_type mode, enum token_type type, int open )
       if (type == TOKEN_DO) //|| type == TOKEN_SEMICOLON)
         return 0;
     }
-    if (mode == NODE_PIPE && (type == TOKEN_SEMICOLON || type == TOKEN_EOF || type == TOKEN_LINE_BREAK || type == TOKEN_PIPE))
-        return 0;
     if (mode == NODE_DO && type == TOKEN_DONE)
         return 0;
     if (mode == NODE_THEN)
@@ -376,8 +384,9 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             make_for(ast,i_lex);
         else if (type == TOKEN_PIPE)
         {
-            get_pipe(ast, i_lex);
             //open = 0;
+            get_pipe(ast, i_lex);
+            //break;
         }
         else
           err(2, "wrong implementation");

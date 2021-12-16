@@ -87,22 +87,7 @@ int get_command(struct info_lexer *i_lex, struct ast_command *new)
 // create the new node and calls build_ast for the struct
 struct ast *get_then(struct info_lexer *i_lex, enum ast_type mode)
 {
-    //struct lexer *lex = i_lex->lexer;
-    /*if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
-        ask_entry(i_lex);*/
     struct ast *new  = build_ast(i_lex, mode);
-    // printf("\n\n\n\nGET COND :
-    // %d\n\n\n",new->data.ast_main_root->children[0]->type);
-    //print(lex);
-    //printf("\n\n\nTOKEN MODE IS : %d\n\n\n\n", mode);
-    /*if (mode == NODE_THEN || mode == NODE_DO)
-    {
-        //printf("\n\n\n\nTOKEN THEN\n\n\n\n");
-        if (lexer_peek(lex)->type == TOKEN_AND)
-          get_and(new, i_lex, mode);
-        else if (lexer_peek(lex)->type == TOKEN_OR)
-          get_or(new, i_lex, mode);
-    }*/
     return new;
 }
 
