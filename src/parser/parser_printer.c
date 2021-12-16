@@ -100,11 +100,11 @@ void print_ast_or(struct ast *ast)
 void print_ast_pipe(struct ast *ast)
 {
     struct ast_pipe *a = ast->data.ast_pipe;
-    printf("{ ");
+    printf("{ ast pipe\n");
     print_ast(a->left);
-    printf("} | { ");
+    printf("}\n | \n{ ");
     print_ast(a->right);
-    printf("}");
+    printf("\nend ast pipe}");
 }
 
 void print_ast_simple_quote(struct ast *ast)
