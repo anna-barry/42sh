@@ -71,6 +71,7 @@ int get_command(struct info_lexer *i_lex, struct ast_command *new)
         token_free(lexer_pop(lex));
         type = lexer_peek(lex)->type;
     }
+    new->count = y;
     return 0;
 }
 
