@@ -181,6 +181,8 @@ void free_ast_redir(struct ast *ast)
 {
     struct ast_redir *a = ast->data.ast_redir;
     free(a);
+    free(a->command);
+    free(a->redir);
     if (ast)
         free(ast);
 }
