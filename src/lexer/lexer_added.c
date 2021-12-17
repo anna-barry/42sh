@@ -69,17 +69,14 @@ int var2(const char *command, size_t index)
             size_t j = i + 1; 
             while ( j < strlen(command) && command[j] == ' ')
             {
-                //printf("in while command j is %c \n", command[j]);
                 j++;
             }
-            //printf("in if command j is %c \n", command[j]);
             if (command[j] == '\'')
             {
                 return 1;
             }
             if (command[j] == '\"')
             {
-                //printf("next is double quote");
                 return 2;
             }
             return 0;
@@ -332,7 +329,6 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
             }
             new[*index - 1].current_tok->value = strndup(input + *for_s->i, nb);
             new[*index - 1].current_tok->value[nb] = '\0';
-            printf("string is now %s\n", new[*index - 1].current_tok->value);
             if (nb > 0)
             {
                 nb--;

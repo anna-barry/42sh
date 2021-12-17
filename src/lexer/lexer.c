@@ -41,7 +41,9 @@ void lexer_new(const char *input, struct info_lexer *info)
                 token_new(TOKEN_LINE_BREAK);
             info->lexer[*info->index - 1].current_tok->value = NULL;
             if (mode == 1)
+            {
                 mode = 0;
+            }
             break;
             /*
              * Testing for end of file

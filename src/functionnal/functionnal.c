@@ -152,6 +152,7 @@ void update_variable(char *name, char *value, struct environnement *new)
                     }
                     else
                         index->next->value = value;
+                    break;
                 }
             }
         }
@@ -211,6 +212,15 @@ int is_var(char *command)
     {
         if (command[i] == '=')
         {
+            size_t j = i + 1; 
+            while ( j < strlen(command) && command[j] == ' ')
+            {
+                j++;
+            }
+            if (command[j] == '\'' || command[j] == '\"')
+            {
+                return j + 1;
+            }
             return i;
         }
     }
@@ -229,10 +239,31 @@ char **get_all_var(char *command)
     {
         return NULL;
     }
+    int flag = 0;
+    if (res > 0 && command[res - 1] == '\'')
+    {
+        flag = 1;
+    }
+    if (res > 0 && command[res - 1] == '\"')
+    {
+        flag = 2;
+    }
     char **result = malloc(sizeof(char *) * 2);
-    result[0] = strndup(command, res); // name
-    result[1] = strndup(command + res + 1, strlen(command) - res); // value
-    printf("first is %s and second is %s \n", result[0], result[1]);
+    if (flag == 1 || flag == 2)
+    {
+        result[0] = strndup(command, res - 2); // name
+    }
+    else
+        result[0] = strndup(command, res); // name
+    if (flag == 1 || flag == 2)
+    {
+        result[1] = strndup(command + res, strlen(command) - res - 1); // value
+    }
+    else
+        result[1] = strndup(command + res + 1, strlen(command) - res); // value
+    
+    //result[1] = strndup(command + res + 1, strlen(command) - res); // value
+    //printf("first is %s and second is %s \n", result[0], result[1]);
     return result;
 }
 
