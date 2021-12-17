@@ -164,10 +164,14 @@ int command_exec(struct ast *ast, int count, struct environnement *env)
     }
     else if (strcmp("cd", argv_cpy[0]) == 0)
     {
-        if (count == 2)
+        // printf("%d count\n", count);
+        if (count == 3)
+        {
+            // printf("ici\n");
             res = cd(argv_cpy[1]);
+        }
         else
-            res = 1;
+            res = 0;
     }
     else if (is_dot(argv_cpy[0]))
         res = my_dot(argv_cpy, count, env);
@@ -184,7 +188,7 @@ int command_exec(struct ast *ast, int count, struct environnement *env)
         free(argv_cpy[a]);
     }
     free(argv_cpy);
-    // printf("exit_status = %d\n", env->exit_status);
+    // printf("res = %d\n", res);
     return res;
 }
 
