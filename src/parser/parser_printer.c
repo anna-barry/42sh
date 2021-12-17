@@ -1,10 +1,9 @@
-#include "parser.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "../lexer/lexer.h"
 #include "../lexer/token.h"
+#include "parser.h"
 void print_ast(struct ast *ast);
 
 void print_ast_if_root(struct ast *ast)
@@ -32,7 +31,6 @@ void print_ast_if(struct ast *ast)
 {
     struct ast_if *a = ast->data.ast_if;
     printf("if { ");
-
 
     print_ast(a->cond);
 
@@ -65,7 +63,7 @@ void print_ast_command(struct ast *ast)
     printf(" command ");
     for (int i = 0; i < a->count; i++)
     {
-        printf(" \"%s\"",a->argv[i]);
+        printf(" \"%s\"", a->argv[i]);
     }
 }
 
@@ -158,8 +156,7 @@ void print_ast_redir(struct ast *ast)
 
 typedef void (*ast_print_function)(struct ast *ast);
 
-static ast_print_function ast_printers[] =
-{
+static ast_print_function ast_printers[] = {
     [NODE_IF] = print_ast_if,
     [NODE_ELIF] = print_ast_elif,
     [NODE_ELSE] = print_ast_else,
@@ -178,7 +175,8 @@ static ast_print_function ast_printers[] =
     [NODE_REDIR] = print_ast_redir,
 };
 
-void print_ast(struct ast *ast) {
+void print_ast(struct ast *ast)
+{
     ast_printers[ast->type](ast);
 }
 
@@ -186,4 +184,3 @@ void my_pretty_print(struct ast *ast)
 {
     print_ast(ast);
 }
-

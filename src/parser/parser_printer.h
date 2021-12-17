@@ -1,13 +1,12 @@
 #ifndef PARSER_PRINTER_H
 #define PARSER_PRINTER_H
 
-#include "parser.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "../lexer/lexer.h"
 #include "../lexer/token.h"
+#include "parser.h"
 
 void print_ast(struct ast *ast);
 

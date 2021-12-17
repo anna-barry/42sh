@@ -1,6 +1,6 @@
 #include <stddef.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "lexer.h"
@@ -49,9 +49,9 @@ size_t get_end(const char *input, size_t *i)
         if (!special && input[j] == ' ')
             break;
         else if ((single_q && input[j] == '\'')
-                || (double_q && input[j] == '\"')
-                || (is_nb && input[j] == '}'))
-                break;
+                 || (double_q && input[j] == '\"')
+                 || (is_nb && input[j] == '}'))
+            break;
     }
     if (!special)
         j--;
@@ -72,7 +72,7 @@ size_t nb_max(size_t a)
     return res;
 }
 
-struct read_for_int* get_structure(char *input)
+struct read_for_int *get_structure(char *input)
 {
     size_t step = 1;
     size_t start = 0;
@@ -80,39 +80,41 @@ struct read_for_int* get_structure(char *input)
     size_t i = 0;
     size_t leng = strlen(input);
     /*
-    * Example 1: 1..5(..1)
-    * Example 2: 2..20..2
-    */
+     * Example 1: 1..5(..1)
+     * Example 2: 2..20..2
+     */
     while (input[i] != '.')
     {
-        start = start * 10 + ((int) input[i] - 48);
+        start = start * 10 + ((int)input[i] - 48);
         i++;
     }
-   /*
-    * Example 1: ..5(..1)
-    * Example 2: ..20..2
-    */
+    /*
+     * Example 1: ..5(..1)
+     * Example 2: ..20..2
+     */
     while (input[i] == '.')
         i++;
-   /*
-    * Example 1: 5(..1)
-    * Example 2: 20..2
-    */
+    /*
+     * Example 1: 5(..1)
+     * Example 2: 20..2
+     */
     while (input[i] != '.')
     {
-        end = end * 10 + ((int) input[i] - 48);
+        end = end * 10 + ((int)input[i] - 48);
         i++;
     }
-   /*
-    * Example 1: (..1)
-    * Example 2: ..2
-    */
+    /*
+     * Example 1: (..1)
+     * Example 2: ..2
+     */
     while (input[i] == '.')
+    {
         i++;
+    }
     step = 0;
-    while (i!= leng)
+    while (i != leng)
     {
-        step = step * 10 + ((int) input[i] - 48);
+        step = step * 10 + ((int)input[i] - 48);
         i++;
     }
     struct read_for_int *res = malloc(sizeof(struct read_for_int));
@@ -122,47 +124,46 @@ struct read_for_int* get_structure(char *input)
     return res;
 }
 
-
 char *get_value(const char *input, struct cap_and_i *s, size_t end)
 {
     char *value = malloc(((end - *s->i) + 4) * sizeof(char));
     size_t index = 0;
-   /*
-    * Example 1: {1..5}
-    * Example 2: {2..20..2}
-    */
+    /*
+     * Example 1: {1..5}
+     * Example 2: {2..20..2}
+     */
     while (input[*s->i] == '{')
         *s->i = *s->i + 1;
-   /*
-    * Example 1: 1..5}
-    * Example 2: 2..20..2}
-    */
+    /*
+     * Example 1: 1..5}
+     * Example 2: 2..20..2}
+     */
     while (input[*s->i] != '.')
     {
         value[index++] = input[*s->i];
         *s->i = *s->i + 1;
     }
-   /*
-    * Example 1: ..5}
-    * Example 2: ..20..2}
-    */
+    /*
+     * Example 1: ..5}
+     * Example 2: ..20..2}
+     */
     while (input[*s->i] == '.')
         *s->i = *s->i + 1;
     value[index++] = '.';
     value[index++] = '.';
-   /*
-    * Example 1: 5}
-    * Example 2: 20..2}
-    */
+    /*
+     * Example 1: 5}
+     * Example 2: 20..2}
+     */
     while (index <= end && !(input[*s->i] == '.' || input[*s->i] == '}'))
     {
         value[index++] = input[*s->i];
         *s->i = *s->i + 1;
     }
-   /*
-    * Example 1: }
-    * Example 2: ..2}
-    */
+    /*
+     * Example 1: }
+     * Example 2: ..2}
+     */
     value[index++] = '.';
     value[index++] = '.';
     if (input[*s->i] != '}')
@@ -184,14 +185,15 @@ char *get_value(const char *input, struct cap_and_i *s, size_t end)
 }
 
 // do this function after an in
-void get_for(const char *input, struct cap_and_i *s, size_t *index, struct lexer *new)
+void get_for(const char *input, struct cap_and_i *s, size_t *index,
+             struct lexer *new)
 {
     while (*s->i < strlen(input) && input[*s->i] != ';')
     {
         if (*s->cap < (*index + 2))
         {
-          *s->cap *= 2;
-          new = realloc(new, *s->cap * sizeof(struct lexer));
+            *s->cap *= 2;
+            new = realloc(new, *s->cap * sizeof(struct lexer));
         }
         while (input[*s->i] == ' ')
         {
@@ -215,7 +217,8 @@ void get_for(const char *input, struct cap_and_i *s, size_t *index, struct lexer
         {
             new[*index - 1].current_tok = token_new(TOKEN_FOR_SINGLE_QUOTE);
             nb = end - *s->i;
-            new[*index - 1].current_tok->value = strndup(input + *s->i + 1, nb - 1);
+            new[*index - 1].current_tok->value =
+                strndup(input + *s->i + 1, nb - 1);
             new[*index - 1].current_tok->value[nb - 1] = '\0';
             *s->i = *s->i + nb;
         }
@@ -223,14 +226,15 @@ void get_for(const char *input, struct cap_and_i *s, size_t *index, struct lexer
         {
             new[*index - 1].current_tok = token_new(TOKEN_FOR_DOUBLE_QUOTE);
             nb = end - *s->i;
-            new[*index - 1].current_tok->value = strndup(input + *s->i + 1, nb - 1);
+            new[*index - 1].current_tok->value =
+                strndup(input + *s->i + 1, nb - 1);
             new[*index - 1].current_tok->value[nb - 1] = '\0';
             *s->i = *s->i + nb;
         }
         else if (is_int(input, s->i, end))
         {
             new[*index - 1].current_tok = token_new(TOKEN_FOR_INT);
-            //nb = end - *s->i;
+            // nb = end - *s->i;
             new[*index - 1].current_tok->value = get_value(input, s, end);
         }
         else
@@ -239,7 +243,7 @@ void get_for(const char *input, struct cap_and_i *s, size_t *index, struct lexer
             nb = end - *s->i;
             new[*index - 1].current_tok->value = strndup(input + *s->i, nb + 2);
             new[*index - 1].current_tok->value[nb + 1] = '\0';
-            *s->i = *s->i + nb; 
+            *s->i = *s->i + nb;
         }
         *index = *index + 1;
         *s->i = *s->i + 1;

@@ -30,7 +30,7 @@ enum token_type
     TOKEN_DOUBLE_QUOTE, ///< '"' -> 23
     TOKEN_AND, ///< '&&' -> 24
     TOKEN_OR, ///< '||' -> 25
-    TOKEN_FOR, ///< 'For' -> 26  carreful: next word is variable 
+    TOKEN_FOR, ///< 'For' -> 26  carreful: next word is variable
     TOKEN_IN, ///< 'In' -> 27 carreful: next word is sequence (1..10..2)
     TOKEN_FOR_WORD, ///< 'WORD+' -> 28
     TOKEN_FOR_SINGLE_QUOTE, ///< ''WORD+'' -> 29

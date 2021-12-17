@@ -1,13 +1,12 @@
 #ifndef PARSER_FREE_H
 #define PARSER_FREE_H
 
-#include "parser.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "../lexer/lexer.h"
 #include "../lexer/token.h"
+#include "parser.h"
 
 void free_ast(struct ast *ast);
 

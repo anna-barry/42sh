@@ -78,14 +78,15 @@ struct token *lexer_pop(struct lexer *lexer);
 /**
  * \brief Get condition for for loop
  */
-void get_for(const char *input, struct cap_and_i *i, size_t *index, struct lexer *new);
+void get_for(const char *input, struct cap_and_i *i, size_t *index,
+             struct lexer *new);
 
 int is_end(char c);
 
-struct cap_and_i * spe_token(const char *input, size_t *index, struct cap_and_i *for_s, struct lexer *new);
-
+struct cap_and_i *spe_token(const char *input, size_t *index,
+                            struct cap_and_i *for_s, struct lexer *new);
 
 /**
  * \brief Get condition Structure for for loop for execution purposes
  */
-struct read_for_int* get_structure(char *input);
+struct read_for_int *get_structure(char *input);

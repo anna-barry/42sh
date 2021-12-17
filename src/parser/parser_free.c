@@ -1,11 +1,11 @@
-#include "parser.h"
+#include "parser_free.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "../lexer/lexer.h"
 #include "../lexer/token.h"
-#include "parser_free.h"
+#include "parser.h"
 
 void free_ast(struct ast *ast);
 
@@ -189,8 +189,7 @@ void free_ast_redir(struct ast *ast)
         free(ast);
 }
 
-static ast_free_function ast_freeers[] =
-{
+static ast_free_function ast_freeers[] = {
     [NODE_IF] = free_ast_if,
     [NODE_ELIF] = free_ast_elif,
     [NODE_ELSE] = free_ast_else,
@@ -209,7 +208,8 @@ static ast_free_function ast_freeers[] =
     [NODE_REDIR] = free_ast_redir,
 };
 
-void free_ast(struct ast *ast) {
+void free_ast(struct ast *ast)
+{
     ast_freeers[ast->type](ast);
 }
 

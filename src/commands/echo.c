@@ -53,6 +53,14 @@ int echo(char *argv[], int count)
             no_option = 1;
             begin++;
         }
+        if (argv[i] != NULL
+            && (strcmp("-en", argv[i]) == 0 || strcmp("-ne", argv[i]) == 0))
+        {
+            flag_e = 1;
+            flag_n = 1;
+            no_option = 1;
+            begin++;
+        }
     }
     int i = 1; // i = 1
     if (flag_e > 0 || flag_n > 0)

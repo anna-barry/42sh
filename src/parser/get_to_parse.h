@@ -1,9 +1,9 @@
 #ifndef GET_TO_PARSE_H
 #define GET_TO_PARSE_H
 
-#include "struct.h"
 #include "../lexer/lexer.h"
 #include "parser.h"
+#include "struct.h"
 
 /*enum ast_type;
 struct ast_redir;
