@@ -54,6 +54,14 @@ void lexer_new(const char *input, struct info_lexer *info)
             if (mode == 1)
                 mode = 0;
             break;
+        case (')'):
+            info->lexer[*info->index - 1].current_tok = token_new(TOKEN_PARENTHESE_2);
+            info->lexer[*info->index - 1].current_tok->value = NULL;
+            break;
+        case ('('):
+            info->lexer[*info->index - 1].current_tok = token_new(TOKEN_PARENTHESE_1);
+            info->lexer[*info->index - 1].current_tok->value = NULL;
+            break;
         case (';'):
             info->lexer[*info->index - 1].current_tok =
                 token_new(TOKEN_SEMICOLON);
