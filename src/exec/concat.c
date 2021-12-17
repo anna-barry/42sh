@@ -99,11 +99,20 @@ char *transform_char(char *argv, struct environnement *env, int *index)
     char *tr_char = NULL;
     struct variable *inter = NULL;
     int to_free = 0;
+    char *ab = NULL;
+    int la = 0;
     if (strcmp(indice, "UID") == 0)
     {
-        char *a = malloc(sizeof(char) * 15);
-        tr_char = itoa((int)(env->uid), a);
-        // free(a);
+        ab = malloc(sizeof(char) * 15);
+        tr_char = itoa((int)(env->uid), ab);
+        la = 1;
+    }
+    else if (strcmp(indice, "PID") == 0)
+    {
+        ab = malloc(sizeof(char) * 15);
+        tr_char = itoa((int)(getpid()), ab);
+        // printf("le pid est = %s\n", tr_char);
+        la = 1;
     }
     else
     {
@@ -116,7 +125,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
             inter = inter->next;
         }
         // free(indice);
-        if (inter == NULL)
+        if (inter == NULL || inter->value == NULL)
         {
             char *env_res = (char *)getenv(indice);
             if (env_res != NULL)
@@ -128,6 +137,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
             }
             else
             {
+                // printf("ici\n");
                 char *res = NULL;
                 free(argv);
                 free(indice);
@@ -180,6 +190,8 @@ char *transform_char(char *argv, struct environnement *env, int *index)
         free(inter->name);
         free(inter);
     }
+    if (la == 1)
+        free(ab);
     free(indice);
     free(argv);
     return res;
