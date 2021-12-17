@@ -21,7 +21,7 @@ int pipe_ast(struct ast *ast, struct environnement *env)
     struct ast_pipe *pipe_ast = ast->data.ast_pipe;
     int fd[2];
     if (pipe(fd) == -1)
-        return 1;
+        return 2;
     int fdout = dup(STDOUT_FILENO);
     dup2(fd[1], STDOUT_FILENO);
     int res = exec_ast(pipe_ast->left, env);
