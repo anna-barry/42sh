@@ -7,7 +7,8 @@
 
 int is_space(char c)
 {
-    return c == '\t' || c == '\n' || c == ' ';
+    //return c == '\t' || c == '\n' || c == ' ';
+    return c == '\t' || c == ' ';
 }
 
 int is_end(char c)
