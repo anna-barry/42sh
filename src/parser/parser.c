@@ -35,6 +35,8 @@ void print(struct lexer *lexer)
         [TOKEN_REDIR_INPUT_DESCRIPEUR] = "<&", ///< '<&' -> 15
         [TOKEN_REDIR_PIPE] = ">|", ///< '>|' -> 16
         [TOKEN_REDIR_RW] = "<>", ///< '<>' -> 17
+        [TOKEN_PARENTHESE_2] = ")",
+        [TOKEN_PARENTHESE_1] = "(",
     };
     size_t i = 0;
     if (!lexer[0].current_tok || lexer[i].current_tok == NULL)
@@ -344,8 +346,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
     struct lexer *lex = i_lex->lexer;
     enum token_type type = lexer_peek(lex)->type;
     int open = 0;
-    int parenthesis = 0;
-    int bracket = 0;
+    int par = 0;
     while (lex && check_break(mode, type, open))
     {
         //printf("MODE = %d\n", mode);
@@ -367,6 +368,20 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
         {
             open = 1;
             make_command(ast, i_lex);
+        }
+        else if (type == TOKEN_PARENTHESE_1)
+        {
+            par += 1;
+            ast->nb_children--;
+            token_free(lexer_pop(lex));
+        }
+        else if (type == TOKEN_PARENTHESE_2 && par > 0)
+        {
+            par -= 1;
+            ast->nb_children--;
+            token_free(lexer_pop(lex));
+            if (open && (lexer_peek(lex)->type != TOKEN_SEMICOLON && lexer_peek(lex)->type != TOKEN_EOF))
+                errx(2,"split your changes");
         }
         else if (open && lexer_peek(lex)->type == TOKEN_AND)
         {
@@ -417,7 +432,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
         if (lex && lexer_peek(lex))
             type = lexer_peek(lex)->type;
     }
-    if (parenthesis || bracket)
+    if (par != 0)
         err(2, "didn't close !");
     new_ast->data.ast_main_root = ast;
     new_ast->type = NODE_ROOT;

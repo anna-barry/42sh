@@ -91,6 +91,8 @@ struct ast *get_then(struct info_lexer *i_lex, enum ast_type mode)
 // right is the next args
 void get_pipe(struct ast_main_root *ast, struct info_lexer *i_lex)
 {
+    if (ast->nb_children == 1)
+        errx(2, "| unexpected");
     struct ast_pipe *new_pipe = create_pipe();
     struct lexer *lex = i_lex->lexer;
     ast->nb_children--;
