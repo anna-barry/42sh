@@ -129,17 +129,6 @@ char *find_input(int argc, char *argv[])
     }
     return NULL;
 }
-/*
-*
-* Catching sigint
-*
-*
-
-static void sigintHandler(int sig)
-{
-    printf("int sig %i \n", sig);
-}
-*/
 
 int main(int argc, char *argv[])
 {
@@ -162,7 +151,7 @@ int main(int argc, char *argv[])
     }
     const char *input = (const char *)find_input(argc, argv);
     if (input == NULL || strlen(input) == 0)
-        return 1;
+        return 2;
     struct environnement *env = init_env();
     struct info_lexer *new = lexer_init();
     lexer_new(input, new);
