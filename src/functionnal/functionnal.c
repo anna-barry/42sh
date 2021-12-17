@@ -232,7 +232,7 @@ char **get_all_var(char *command)
     char **result = malloc(sizeof(char *) * 2);
     result[0] = strndup(command, res); // name
     result[1] = strndup(command + res + 1, strlen(command) - res); // value
-    // printf("first is %s and second is %s \n", result[0], result[1]);
+    printf("first is %s and second is %s \n", result[0], result[1]);
     return result;
 }
 
