@@ -36,6 +36,10 @@ enum token_type
     TOKEN_FOR_SINGLE_QUOTE, ///< ''WORD+'' -> 29
     TOKEN_FOR_DOUBLE_QUOTE, ///< '"WORD+"' -> 30
     TOKEN_FOR_INT, ///< 'WORD+' with for {1..10..2}-> 31
+    TOKEN_BRACKETS_1, ///< '{' -> 32
+    TOKEN_BRACKETS_2, ///< '}' -> 33
+    TOKEN_PARENTHESE_1, ///< '(' -> 34
+    TOKEN_PARENTHESE_2, ///< ')' -> 35
     TOKEN_ERROR ///< tt's not a real token, it's returned in case of invalid
                 ///< input
 };

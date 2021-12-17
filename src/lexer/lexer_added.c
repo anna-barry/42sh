@@ -292,7 +292,9 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
             while (
                 *for_s->i + nb < strlen(input)
                 && input[*for_s->i + nb] != '<' && input[*for_s->i + nb] != '>'
-                && input[*for_s->i + nb] != '|' && input[*for_s->i + nb] != '&')
+                && input[*for_s->i + nb] != '|' && input[*for_s->i + nb] != '&'
+                && input[*for_s->i + nb] != '}' && input[*for_s->i + nb] != '{'
+                && input[*for_s->i + nb] != '(' && input[*for_s->i + nb] != ')')
             {
                 //printf("char %c var = %i single q = %i double q = %i \n", input[*for_s->i + nb],
                 //var, single_q, double_q);
@@ -358,7 +360,9 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                        && input[*for_s->i + nb] != '<'
                        && input[*for_s->i + nb] != '>'
                        && input[*for_s->i + nb] != '|'
-                       && input[*for_s->i + nb] != '&')
+                       && input[*for_s->i + nb] != '&'
+                       && input[*for_s->i + nb] != '}' && input[*for_s->i + nb] != '{'
+                && input[*for_s->i + nb] != '(' && input[*for_s->i + nb] != ')')
                 {
                     nb++;
                 }
