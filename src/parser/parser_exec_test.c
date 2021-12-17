@@ -2,6 +2,7 @@
 #include "../commands/command.h"
 #include "../functionnal/functionnal.h"
 #include "parser.h"
+#include "struct.h"
 
 int main()
 {

@@ -34,7 +34,8 @@ int main()
     //char *input = "i=2; while [ $i -eq 3 ]; do echo $i; done; echo b";
     //char *input = "for i in word; do echo a; done";
     //char *input = "echo a > test.txt 2 >& 1";
-    char *input = "for i in okokok; do echo a; done; echo a;";
+   // char *input = "for i in okokok; do echo a; done; echo a;";
+   char *input = "echo \\$'te*st'";
     //char *input = "for i in ; do echo a; done; echo a;";
     //char *input = "echo b; echo a | cat -e";
     //char *input = "echo a | cat -e; echo c|cat -e; echo b | cat -e";
