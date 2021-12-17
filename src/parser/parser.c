@@ -267,10 +267,13 @@ struct ast_for *build_ast_for(struct info_lexer *i_lex)
                 err(2, "missing a semicolone between for i in {...} [HERE] do ..;");
             token_free(lexer_pop(lex));
         }
-        else if (type != TOKEN_SEMICOLON && type != TOKEN_DO)
+        else if (type != TOKEN_SEMICOLON)
             new_for->cond = get_then(i_lex, NODE_FOR_CHAR);
         else
+        {  
+            token_free(lexer_pop(lex));
             new_for->cond = NULL;
+        }
     }
     if (lexer_peek(lex)->type != TOKEN_DO)
         err(2, "missing th do instruction :for i in {...}; [DO] .. [DONE];");
