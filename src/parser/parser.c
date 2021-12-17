@@ -350,7 +350,7 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
     {
         //printf("MODE = %d\n", mode);
         //printf("TYPE = %d\n", type);
-        print(lex);
+        //print(lex);
         //ast->nb_children++;
         if (++ast->nb_children >= count)
         {
