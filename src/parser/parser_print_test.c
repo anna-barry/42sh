@@ -65,6 +65,7 @@ int main()
     // cat -e"; char *input = "if echo a ;then echo b ;fi"; char *input = "if
     // echo a | echo b; then echo c; fi"; char *input = "if echo a \n then echo
     // b \n fi";
+    //char *input = "echo \\$'te*st'";
     struct info_lexer *new = lexer_init();
     lexer_new(input, new);
     struct ast *ast = build_ast(new, NODE_ROOT);

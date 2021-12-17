@@ -109,7 +109,8 @@ int build_elif(struct info_lexer *i_lex, struct ast_if_root *root)
 {
     struct ast_elif *new_elif = malloc(sizeof(struct ast_elif));
     struct lexer *lex = i_lex->lexer;
-    if ((new_elif->cond = get_then(i_lex, NODE_THEN)) == NULL)
+    if (lexer_peek(lex)->type == TOKEN_THEN
+        || (new_elif->cond = get_then(i_lex, NODE_THEN)) == NULL)
         return 1;
     token_free(lexer_pop(lex));
     enum token_type type = lexer_peek(lex)->type;
@@ -249,36 +250,32 @@ struct ast_for *build_ast_for(struct info_lexer *i_lex)
     char *trans = lexer_peek(lex)->value;
     new_for->var = strndup(trans, strlen(trans) + 1);
     token_free(lexer_pop(lex));
-    if (lexer_peek(lex)->type != TOKEN_IN)
-        err(2, "wrong implementation of variable : for i <in>");
-    token_free(lexer_pop(lex));
-    enum token_type type = lexer_peek(lex)->type;
-    if (type == TOKEN_FOR_INT)
+    if (lexer_peek(lex)->type == TOKEN_IN)
     {
-        struct read_for_int *trans = get_structure(lexer_peek(lex)->value);
-        new_for->cond = malloc(sizeof(struct ast));
-        new_for->cond->type = NODE_FOR_INT;
-        new_for->cond->data.ast_for_int = trans;
         token_free(lexer_pop(lex));
-        if (lexer_peek(lex)->type != TOKEN_SEMICOLON)
-            err(2, "missing a semicolone between for i in {...} [HERE] do ..;");
-        token_free(lexer_pop(lex));
-    }
-    else if (lexer_peek(lex)->type != TOKEN_SEMICOLON)
-        new_for->cond = get_then(i_lex, NODE_FOR_CHAR);
-    else
-    {
-        new_for->cond = NULL;
-        token_free(lexer_pop(lex));
+        enum token_type type = lexer_peek(lex)->type;
+        if (type == TOKEN_FOR_INT)
+        {
+            struct read_for_int *trans = get_structure(lexer_peek(lex)->value);
+            new_for->cond = malloc(sizeof(struct ast));
+            new_for->cond->type = NODE_FOR_INT;
+            new_for->cond->data.ast_for_int = trans;
+            token_free(lexer_pop(lex));
+            if (lexer_peek(lex)->type != TOKEN_SEMICOLON)
+                err(2, "missing a semicolone between for i in {...} [HERE] do ..;");
+            token_free(lexer_pop(lex));
+        }
+        else if (type != TOKEN_SEMICOLON && type != TOKEN_DO)
+            new_for->cond = get_then(i_lex, NODE_FOR_CHAR);
+        else
+            new_for->cond = NULL;
     }
     if (lexer_peek(lex)->type != TOKEN_DO)
         err(2, "missing th do instruction :for i in {...}; [DO] .. [DONE];");
     token_free(lexer_pop(lex));
     // now get the get then with the commands to execute
-    if ((new_for->then = get_then(i_lex, NODE_DO)) == NULL)
+    if (lexer_peek(lex)->type == TOKEN_DONE || (new_for->then = get_then(i_lex, NODE_DO)) == NULL)
         err(2, "couldn't get commands in while");
-    /*if (!lex || lexer_peek(lex)->type == TOKEN_EOF)
-            ask_entry(i_lex);*/
     if (lexer_peek(lex)->type != TOKEN_DONE)
         err(2, "wrong implementation in for: for i in x do commands <done>");
     token_free(lexer_pop(lex));
@@ -287,16 +284,14 @@ struct ast_for *build_ast_for(struct info_lexer *i_lex)
     // TOKEN_SEMICOLON );
     if (lexer_peek(lex)->type != TOKEN_SEMICOLON
         && lexer_peek(lex)->type != TOKEN_DO
-        && lexer_peek(lex)->type != TOKEN_EOF)
+        && lexer_peek(lex)->type != TOKEN_EOF
+        && lexer_peek(lex)->type != TOKEN_THEN)
         errx(2, "need to close after do");
     if (lexer_peek(lex)->type == TOKEN_SEMICOLON)
         token_free(lexer_pop(lex));
     // print(lex);
     return new_for;
 }
-
-//################################################################
-//#####EACH FUNCTION TOOL IS HANDLED HERE TO ADD IN THE TREE######
 
 //################################################################
 //#######MAIN ROOT STRUCTURE HANDLING FUNCTIONS###################
@@ -349,12 +344,14 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
     struct lexer *lex = i_lex->lexer;
     enum token_type type = lexer_peek(lex)->type;
     int open = 0;
+    int parenthesis = 0;
+    int bracket = 0;
     while (lex && check_break(mode, type, open))
     {
-        // printf("MODE = %d\n", mode);
-        // printf("TYPE = %d\n", type);
-        // print(lex);
-        // ast->nb_children++;
+        //printf("MODE = %d\n", mode);
+        //printf("TYPE = %d\n", type);
+        //print(lex);
+        //ast->nb_children++;
         if (++ast->nb_children >= count)
         {
             count += 30;
@@ -387,6 +384,9 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             open = 0;
             ast->nb_children--;
             token_free(lexer_pop(lex));
+            type = lexer_peek(lex)->type;
+            if (type == TOKEN_PIPE || (type >= 11 && type <= 17))
+                errx(2, "souldn't have done that");
         }
         else if (type == TOKEN_LINE_BREAK)
         {
@@ -417,6 +417,8 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
         if (lex && lexer_peek(lex))
             type = lexer_peek(lex)->type;
     }
+    if (parenthesis || bracket)
+        err(2, "didn't close !");
     new_ast->data.ast_main_root = ast;
     new_ast->type = NODE_ROOT;
     return new_ast;

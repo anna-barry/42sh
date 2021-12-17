@@ -1,6 +1,7 @@
 #include "../commands/command.h"
 #include "../functionnal/functionnal.h"
 #include "parser.h"
+#include "struct.h"
 #include "parser_exec.h"
 
 int main()
