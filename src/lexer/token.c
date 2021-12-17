@@ -1,9 +1,9 @@
 #include "token.h"
 
 #include <err.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 //#include "alloc.h"
 static inline void *xmalloc(size_t size)
@@ -13,7 +13,6 @@ static inline void *xmalloc(size_t size)
         abort();
     return res;
 }
-
 
 static inline void *zalloc(size_t size)
 {

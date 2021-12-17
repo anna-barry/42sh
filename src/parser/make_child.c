@@ -19,13 +19,14 @@ void make_for(struct ast_main_root *ast, struct info_lexer *i_lex)
     ast->children[ast->nb_children - 1]->data.ast_for = build_ast_for(i_lex);
 }
 
-//PROCESS AND ADD CHILD WHEN while
+// PROCESS AND ADD CHILD WHEN while
 void make_while(struct ast_main_root *ast, struct info_lexer *i_lex, int until)
 {
     token_free(lexer_pop(i_lex->lexer));
     ast->children[ast->nb_children - 1] = malloc(sizeof(struct ast));
     ast->children[ast->nb_children - 1]->type = NODE_WHILE;
-    ast->children[ast->nb_children - 1]->data.ast_while = build_ast_while(i_lex, until);
+    ast->children[ast->nb_children - 1]->data.ast_while =
+        build_ast_while(i_lex, until);
 }
 
 // PROCESS AND ADD CHILD WHEN COMMAND
@@ -39,7 +40,7 @@ void make_command(struct ast_main_root *ast, struct info_lexer *i_lex)
     // to be tested
     ast->children[rank]->type = NODE_COMMAND;
     ast->children[rank]->data.ast_command = new_com;
-    //printf("\n\n\n\nTOKEN THEN\n\n\n\n");
+    // printf("\n\n\n\nTOKEN THEN\n\n\n\n");
     /*if (lexer_peek(lex)->type == TOKEN_AND)
         get_and(ast->children[rank], i_lex, mode);
     else if (lexer_peek(lex)->type == TOKEN_OR)
@@ -71,13 +72,14 @@ void make_double_quote(struct ast_main_root *ast, struct lexer *lex)
     token_free(lexer_pop(lex));
 }
 
-void make_neg(struct ast_main_root *ast, struct info_lexer *i_lex, enum ast_type mode)
+void make_neg(struct ast_main_root *ast, struct info_lexer *i_lex,
+              enum ast_type mode)
 {
     int rank = ast->nb_children - 1;
     ast->children[rank] = malloc(sizeof(struct ast));
     token_free(lexer_pop(i_lex->lexer));
     ast->children[rank]->type = NODE_NEG;
     ast->children[rank]->data.ast_neg = malloc(sizeof(struct ast_neg));
-    //ast->children[rank]->data.ast_neg->node = malloc(sizeof(struct ast));
-    ast->children[rank]->data.ast_neg->node =  build_ast(i_lex, mode);
+    // ast->children[rank]->data.ast_neg->node = malloc(sizeof(struct ast));
+    ast->children[rank]->data.ast_neg->node = build_ast(i_lex, mode);
 }

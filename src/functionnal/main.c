@@ -2,18 +2,18 @@
 #include <errno.h>
 #include <getopt.h>
 //#include <limits.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 #include <unistd.h>
 
 #include "../lexer/lexer.h"
 #include "../lexer/token.h"
 #include "../parser/parser.h"
 #include "../parser/parser_exec.h"
-#include "../parser/parser_printer.h"
 #include "../parser/parser_free.h"
+#include "../parser/parser_printer.h"
 #include "functionnal.h"
 
 int getnb(char *filepath)
@@ -37,7 +37,7 @@ int getnb(char *filepath)
     }
     else
         err(2, "ERROR in getnb\n");
-    //fclose(file);
+    // fclose(file);
     return -1;
 }
 
@@ -61,9 +61,9 @@ char *filetostring(char *filepath)
         }
         fclose(file);
         if (ptr[offset - 1] == '\n')
-          ptr[offset - 1] = '\0';
+            ptr[offset - 1] = '\0';
         else
-          ptr[offset] = '\0';
+            ptr[offset] = '\0';
         return ptr;
     }
     else
@@ -129,41 +129,30 @@ char *find_input(int argc, char *argv[])
     }
     return NULL;
 }
-/*
-*
-* Catching sigint
-*
-*
-
-static void sigintHandler(int sig)
-{
-    printf("int sig %i \n", sig);
-}
-*/
 
 int main(int argc, char *argv[])
 {
     if (argc < 1)
         fprintf(stderr, "Number of arguments not correct");
 
-   // signal(SIGINT, sigintHandler);
+    // signal(SIGINT, sigintHandler);
 
     int res_e = 2;
     int pretty_print = 0;
     if (argc > 0 && argv[1] != NULL && strcmp(argv[1], "--pretty-print") == 0)
     {
-            pretty_print = 1;
-            int i = 1;
-            for (; i + 1 < argc; i++)
-            {
-                argv[i] = argv[i + 1];
-            }
-            argv[i] = "\0";
+        pretty_print = 1;
+        int i = 1;
+        for (; i + 1 < argc; i++)
+        {
+            argv[i] = argv[i + 1];
+        }
+        argv[i] = "\0";
     }
-    struct environnement *env = init_env();
     const char *input = (const char *)find_input(argc, argv);
     if (input == NULL || strlen(input) == 0)
-      return 1;
+        return 2;
+    struct environnement *env = init_env();
     struct info_lexer *new = lexer_init();
     lexer_new(input, new);
     struct ast *ast = build_ast(new, NODE_ROOT);
@@ -177,7 +166,7 @@ int main(int argc, char *argv[])
     token_free(lexer_pop(new->lexer));
     lexer_info_free(new);
     my_pretty_free(ast);
-    //free_environnement(env);
+    // free_environnement(env);
     free((void *)input);
     free_environnement(env);
     return res_e;

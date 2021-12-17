@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "*********** Test 1 with \$ **********"
+diff <(./builddir/42sh as_script.sh) <(printf "I have $1200
+")

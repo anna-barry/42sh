@@ -17,7 +17,7 @@
     lexer_new(buf, i_lex);
 }*/
 
-//gets the type of redir of chars if existing, else does nothing
+// gets the type of redir of chars if existing, else does nothing
 int get_opt(struct lexer *lex, struct ast_redir *new)
 {
     enum token_type type = lexer_peek(lex)->type;
@@ -39,7 +39,7 @@ int get_opt(struct lexer *lex, struct ast_redir *new)
         new->opt = REDIR_PIPE;
     else
         return 1;
-    //printf("\n\n\nget opt type = %d\n", type);
+    // printf("\n\n\nget opt type = %d\n", type);
     new->redir =
         strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
     return 0;
@@ -57,7 +57,11 @@ int get_command(struct info_lexer *i_lex, struct ast_command *new)
     new->argv = malloc(sizeof(char *) * 30);
     new->type = malloc(sizeof(enum ast_type) * 30);
     int y = 0;
-    for (; lex && (type == TOKEN_WORDS || type == TOKEN_FOR_WORD || type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE || type == TOKEN_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE); y++)
+    for (; lex
+         && (type == TOKEN_WORDS || type == TOKEN_FOR_WORD
+             || type == TOKEN_SIMPLE_QUOTE || type == TOKEN_FOR_SINGLE_QUOTE
+             || type == TOKEN_DOUBLE_QUOTE || type == TOKEN_FOR_DOUBLE_QUOTE);
+         y++)
     {
         if (y >= capy)
         {
@@ -66,7 +70,7 @@ int get_command(struct info_lexer *i_lex, struct ast_command *new)
             new->type = realloc(new->type, capy);
         }
         new->argv[y] =
-        strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
+            strndup(lexer_peek(lex)->value, strlen(lexer_peek(lex)->value) + 1);
         new->type[y] = type;
         token_free(lexer_pop(lex));
         type = lexer_peek(lex)->type;
@@ -78,13 +82,13 @@ int get_command(struct info_lexer *i_lex, struct ast_command *new)
 // create the new node and calls build_ast for the struct
 struct ast *get_then(struct info_lexer *i_lex, enum ast_type mode)
 {
-    struct ast *new  = build_ast(i_lex, mode);
+    struct ast *new = build_ast(i_lex, mode);
     return new;
 }
 
-//when a pipe is found: replaces child by a pipe and puts child as the 
-//left child of root
-//right is the next args
+// when a pipe is found: replaces child by a pipe and puts child as the
+// left child of root
+// right is the next args
 void get_pipe(struct ast_main_root *ast, struct info_lexer *i_lex)
 {
     struct ast_pipe *new_pipe = create_pipe();
@@ -99,7 +103,7 @@ void get_pipe(struct ast_main_root *ast, struct info_lexer *i_lex)
     ast->children[ast->nb_children - 1]->data.ast_pipe = new_pipe;
 }
 
-//get redir
+// get redir
 void get_redir(struct ast_main_root *ast, struct info_lexer *i_lex)
 {
     struct ast_redir *new = malloc(sizeof(struct ast_redir));
@@ -114,7 +118,7 @@ void get_redir(struct ast_main_root *ast, struct info_lexer *i_lex)
     ast->children[ast->nb_children - 1]->data.ast_redir = new;
 }
 
-//same as pipe with and
+// same as pipe with and
 void get_and(struct ast *ast, struct info_lexer *i_lex, enum ast_type mode)
 {
     struct ast_and *new_and = create_and();
@@ -128,7 +132,7 @@ void get_and(struct ast *ast, struct info_lexer *i_lex, enum ast_type mode)
     ast->data.ast_and = new_and;
 }
 
-//same as or with or
+// same as or with or
 void get_or(struct ast *ast, struct info_lexer *i_lex, enum ast_type mode)
 {
     struct ast_or *new_or = create_or();

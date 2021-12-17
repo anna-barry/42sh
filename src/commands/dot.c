@@ -1,16 +1,15 @@
-#include <stdio.h>
-#include <err.h>
-#include <stdlib.h>
 #include <ctype.h>
+#include <err.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-
+#include "../functionnal/functionnal.h"
 #include "../lexer/lexer.h"
 #include "../lexer/token.h"
 #include "../parser/parser.h"
 #include "../parser/parser_exec.h"
-#include "../parser/parser_printer.h"
 #include "../parser/parser_free.h"
-#include "../functionnal/functionnal.h"
+#include "../parser/parser_printer.h"
 
 int is_dot(char *c)
 {
@@ -19,13 +18,13 @@ int is_dot(char *c)
 
 char *get_input(char *path)
 {
-    FILE * fptr = fopen (path, "r");
+    FILE *fptr = fopen(path, "r");
     if (fptr == NULL)
         errx(2, "Error\n");
     size_t cap = 300;
     char *input = malloc(cap * sizeof(char));
     size_t index = 0;
-	char str1 = fgetc(fptr);
+    char str1 = fgetc(fptr);
     // If there's a shebang
     if (str1 == '#')
     {
@@ -34,41 +33,41 @@ char *get_input(char *path)
             str1 = fgetc(fptr);
         }
     }
-	while (str1 != EOF)
-	{
+    while (str1 != EOF)
+    {
         if (index + 1 >= cap)
         {
             cap *= 2;
             input = realloc(input, cap * sizeof(char));
         }
         input[index++] = str1;
-		str1 = fgetc(fptr);
-	}
+        str1 = fgetc(fptr);
+    }
     input[index] = '\0';
-    fclose (fptr);
+    fclose(fptr);
     return input;
 }
 
 int my_dot(char *argv[], int count, struct environnement *env)
 {
-   // if (is_dot(argv[0]))
-   // {
-    // Get path 
+    // if (is_dot(argv[0]))
+    // {
+    // Get path
     // ./test.sh else
     // . test.sh if
     int res_e = 0;
 
     if (count > 0 && strcmp(argv[0], ".") == 0)
-    { 
+    {
         const char *input = (const char *)get_input(argv[1]);
         if (input == NULL)
         {
             err(2, "Error to open file\n");
         }
-        
+
         struct info_lexer *new = lexer_init();
         lexer_new(input, new);
-       // struct lexer *lexer = lexer_new(input);
+        // struct lexer *lexer = lexer_new(input);
         struct ast *ast = build_ast(new, NODE_ROOT);
         res_e = execution(ast, env);
         token_free(lexer_pop(new->lexer));
@@ -77,7 +76,7 @@ int my_dot(char *argv[], int count, struct environnement *env)
         free((void *)input);
     }
     else
-    {   
+    {
         const char *input = (const char *)get_input(argv[0]);
         if (input == NULL)
         {
@@ -85,7 +84,7 @@ int my_dot(char *argv[], int count, struct environnement *env)
         }
         struct info_lexer *new = lexer_init();
         lexer_new(input, new);
-        //struct lexer *lexer = lexer_new(input);
+        // struct lexer *lexer = lexer_new(input);
         struct ast *ast = build_ast(new, NODE_ROOT);
         struct environnement *env2 = init_env();
         res_e = execution(ast, env2);
@@ -96,5 +95,5 @@ int my_dot(char *argv[], int count, struct environnement *env)
         free((void *)input);
     }
     //}
-    return  res_e;
+    return res_e;
 }
