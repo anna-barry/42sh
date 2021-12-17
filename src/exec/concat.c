@@ -116,7 +116,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
             inter = inter->next;
         }
         // free(indice);
-        if (inter == NULL)
+        if (inter == NULL || inter->value == NULL)
         {
             char *env_res = (char *)getenv(indice);
             if (env_res != NULL)
@@ -128,6 +128,7 @@ char *transform_char(char *argv, struct environnement *env, int *index)
             }
             else
             {
+                // printf("ici\n");
                 char *res = NULL;
                 free(argv);
                 free(indice);
