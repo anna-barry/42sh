@@ -50,6 +50,41 @@ void clear_info(struct info_lexer *new)
     *new->index = 1;
 }
 
+/*
+ *
+ *
+ *  Is a variable
+ *  return 0 if just variable
+ *  return 1 if end is single quote
+ *  return 2 if end is double quote
+ *
+ */
+
+int var2(const char *command, size_t index)
+{
+    for (size_t i = index; i < strlen(command) && command[i] != ' '; i++)
+    {
+        if (command[i] == '=')
+        {
+            size_t j = i + 1; 
+            while ( j < strlen(command) && command[j] == ' ')
+            {
+                j++;
+            }
+            if (command[j] == '\'')
+            {
+                return 1;
+            }
+            if (command[j] == '\"')
+            {
+                return 2;
+            }
+            return 0;
+        }
+    }
+    return -1;
+}
+
 struct cap_and_i *spe_token(const char *input, size_t *index,
                             struct cap_and_i *for_s, struct lexer *new)
 {
@@ -250,12 +285,46 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
              * testing word
              */
             new[*index - 1].current_tok = token_new(TOKEN_WORDS);
+            int var = var2(input, *for_s->i);
+            int single_q = 0;
+            int double_q = 0;
             nb = 0;
             while (
-                *for_s->i + nb < strlen(input) && !is_end(input[*for_s->i + nb])
+                *for_s->i + nb < strlen(input)
                 && input[*for_s->i + nb] != '<' && input[*for_s->i + nb] != '>'
                 && input[*for_s->i + nb] != '|' && input[*for_s->i + nb] != '&')
             {
+                //printf("char %c var = %i single q = %i double q = %i \n", input[*for_s->i + nb],
+                //var, single_q, double_q);
+                    if (var == 1 && input[*for_s->i + nb] == '\'')
+                {
+                   if (single_q == 0)
+                   {
+                       single_q = 1;
+                   }
+                   else
+                   {
+                        nb++;
+                        break;
+                   }
+                }
+                else if (var == 2 && input[*for_s->i + nb] == '\"')
+                {
+                    if (double_q == 0)
+                    {
+                        double_q = 1;
+                    }
+                    else
+                    {
+                        nb++;
+                        break;
+                    }
+                }
+                else if ((var == 0 || var == -1) && is_end(input[*for_s->i + nb]))
+                {
+                    break;
+                }
+                
                 nb++;
             }
             new[*index - 1].current_tok->value = strndup(input + *for_s->i, nb);
