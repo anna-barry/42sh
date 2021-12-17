@@ -132,22 +132,35 @@ int command_exec(struct ast *ast, int count, struct environnement *env)
 
     else if (strcmp("exit", argv_cpy[0]) == 0)
     {
+        // printf("exit\n");
+        // printf("count = %d\n", count);
         int start = 0;
         int i = 0;
-        if (count == 1)
-            start = 0;
-        else if (count == 2)
+        if (count == 2)
         {
-            while (argv_cpy[1][i] != '\0')
+            start = 0;
+            env->exit_status = start;
+            res = env->exit_status;
+        }
+        else if (count == 3)
+        {
+            // printf("ici\n");
+            while (argv_cpy[1][i] != '\0' && argv_cpy[1][i] >= '0'
+                   && argv_cpy[1][i] <= '9')
             {
-                start = start * 10 + ((int)argv_cpy[1][i] - 48);
                 i++;
             }
+            if (i == (int)strlen(argv_cpy[1]))
+            {
+                start = atoi(argv_cpy[1]);
+                env->exit_status = start;
+                res = env->exit_status;
+            }
+            else
+                res = 2;
         }
         else
             res = 2;
-        env->exit_status = start;
-        res = env->exit_status;
     }
     else if (strcmp("cd", argv_cpy[0]) == 0)
     {
@@ -171,7 +184,7 @@ int command_exec(struct ast *ast, int count, struct environnement *env)
         free(argv_cpy[a]);
     }
     free(argv_cpy);
-
+    // printf("exit_status = %d\n", env->exit_status);
     return res;
 }
 

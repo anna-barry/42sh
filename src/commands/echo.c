@@ -16,11 +16,16 @@ int test_null(char *argv[], int count)
 
 int echo(char *argv[], int count)
 {
-    // printf("count is = %d\n", count);
-    // for (int i = 0; i < count; i++)
-    //     printf("elt %d is = %s\n", i, argv[i]);
     if (test_null(argv, count) == 0)
     {
+        printf("\n");
+        fflush(stdout);
+        return 0;
+    }
+    if (count == 3 && strcmp(argv[0], "echo") == 0 && strcmp(argv[1], "\n") == 0
+        && argv[2] == NULL)
+    {
+        // printf("ici\n");
         printf("\n");
         fflush(stdout);
         return 0;
