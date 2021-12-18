@@ -337,6 +337,29 @@ int check_break(enum ast_type mode, enum token_type type, int open)
     return 1;
 }
 
+void skip_break(struct lexer *lex, int semi)
+{
+    enum token_type tok = lexer_peek(lex)->type;
+    while (tok != TOKEN_EOF)
+    {
+        if (tok == TOKEN_LINE_BREAK)
+            token_free(lexer_pop(lex));
+        else if (tok == TOKEN_SEMICOLON && semi)
+        {
+            semi = 0;
+            token_free(lexer_pop(lex));
+            tok = lexer_peek(lex)->type;
+            if (tok == TOKEN_PIPE || (tok >= 11 && tok <= 17))
+                errx(2, "souldn't have done that");
+        }
+        else if (tok == TOKEN_SEMICOLON)
+            errx(2, "to many ;");
+        else
+            break;
+        tok = lexer_peek(lex)->type;
+    }
+}
+
 // small begining of creation of global ast
 // char is already lexed so need a function before to link everything
 // for now only handles IF and commands (for now echo)
@@ -385,6 +408,8 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             token_free(lexer_pop(lex));
             if (open && (lexer_peek(lex)->type != TOKEN_SEMICOLON && lexer_peek(lex)->type != TOKEN_EOF))
                 errx(2,"split your changes");
+            if (!open && lexer_peek(lex)->type != TOKEN_SEMICOLON)
+                token_free(lexer_pop(lex));
         }
         else if (open && lexer_peek(lex)->type == TOKEN_AND)
         {
@@ -396,20 +421,11 @@ struct ast *build_ast(struct info_lexer *i_lex, enum ast_type mode)
             get_or(ast->children[--ast->nb_children - 1], i_lex, mode);
             open = 0;
         }
-        else if ((open || mode == NODE_FOR_CHAR)
-                 && (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK))
+        else if (type == TOKEN_SEMICOLON || type == TOKEN_LINE_BREAK)
         {
+            skip_break(lex, open);
             open = 0;
             ast->nb_children--;
-            token_free(lexer_pop(lex));
-            type = lexer_peek(lex)->type;
-            if (type == TOKEN_PIPE || (type >= 11 && type <= 17))
-                errx(2, "souldn't have done that");
-        }
-        else if (type == TOKEN_LINE_BREAK)
-        {
-            ast->nb_children--;
-            token_free(lexer_pop(lex));
         }
         else if (mode == NODE_FOR_CHAR) // if node for char the fllowing are not
                                         // possible
