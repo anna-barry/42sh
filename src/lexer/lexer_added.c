@@ -107,6 +107,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                 || (*for_s->i + 4 < len
                     && (input[*for_s->i + 4] == ' '
                         || input[*for_s->i + 4] == ';'
+                        || input[*for_s->i + 4] == ')'
                         || input[*for_s->i + 4] == '\n'))))
         {
             new[*index - 1].current_tok = token_new(TOKEN_WORDS);
@@ -124,6 +125,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                      || (*for_s->i + 2 < len
                          && (input[*for_s->i + 2] == ' '
                              || input[*for_s->i + 2] == ';'
+                             || input[*for_s->i + 2] == ')'
                              || input[*for_s->i + 2] == '\n'))))
         {
             new[*index - 1].current_tok = token_new(TOKEN_IF);
@@ -140,6 +142,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                      || (*for_s->i + 4 < len
                          && (input[*for_s->i + 4] == ' '
                              || input[*for_s->i + 4] == ';'
+                             || input[*for_s->i + 4] == ')'
                              || input[*for_s->i + 4] == '\n'))))
         {
             new[*index - 1].current_tok = token_new(TOKEN_ELSE);
@@ -156,6 +159,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                      || (*for_s->i + 4 < len
                          && (input[*for_s->i + 4] == ' '
                              || input[*for_s->i + 4] == ';'
+                             || input[*for_s->i + 4] == ')'
                              || input[*for_s->i + 4] == '\n'))))
         {
             new[*index - 1].current_tok = token_new(TOKEN_ELIF);
@@ -172,6 +176,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                      || (*for_s->i + 4 < len
                          && (input[*for_s->i + 4] == ' '
                              || input[*for_s->i + 4] == ';'
+                             || input[*for_s->i + 4] == ')'
                              || input[*for_s->i + 4] == '\n'))))
         {
             new[*index - 1].current_tok = token_new(TOKEN_THEN);
@@ -187,6 +192,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                      || (*for_s->i + 2 < len
                          && (input[*for_s->i + 2] == ' '
                              || input[*for_s->i + 2] == ';'
+                             || input[*for_s->i + 2] == ')'
                              || input[*for_s->i + 2] == '\n'))))
         {
             new[*index - 1].current_tok = token_new(TOKEN_FI);
@@ -202,6 +208,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                      || (*for_s->i + 3 < len
                          && (input[*for_s->i + 3] == ' '
                              || input[*for_s->i + 3] == ';'
+                             || input[*for_s->i + 3] == ')'
                              || input[*for_s->i + 3] == '\n'))))
         {
             new[*index - 1].current_tok = token_new(TOKEN_FOR);
@@ -216,6 +223,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                  && (*for_s->i + 2 == len
                      || (*for_s->i + 2 < len
                          && (input[*for_s->i + 2] == ' '
+                         || input[*for_s->i + 2] == ')'
                              || input[*for_s->i + 2] == ';'
                              || input[*for_s->i + 2] == '\n'))))
         {
@@ -238,6 +246,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                      || (*for_s->i + 5 < len
                          && (input[*for_s->i + 5] == ' '
                              || input[*for_s->i + 5] == ';'
+                             || input[*for_s->i + 5] == ')'
                              || input[*for_s->i + 5] == '\n'))))
         {
             new[*index - 1].current_tok = token_new(TOKEN_UNTIL);
@@ -254,6 +263,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                      || (*for_s->i + 4 < len
                          && (input[*for_s->i + 4] == ' '
                              || input[*for_s->i + 4] == ';'
+                             || input[*for_s->i + 4] == ')'
                              || input[*for_s->i + 4] == '\n'))))
         {
             new[*index - 1].current_tok = token_new(TOKEN_DONE);
@@ -269,6 +279,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                      || (*for_s->i + 2 < len
                          && (input[*for_s->i + 2] == ' '
                              || input[*for_s->i + 2] == ';'
+                             || input[*for_s->i + 2] == ')'
                              || input[*for_s->i + 2] == '\n'))))
         {
             new[*index - 1].current_tok = token_new(TOKEN_DO);
@@ -284,6 +295,7 @@ struct cap_and_i *spe_token(const char *input, size_t *index,
                  && (*for_s->i + 5 == len
                      || (*for_s->i + 5 < len
                          && (input[*for_s->i + 5] == ' '
+                         || input[*for_s->i + 5] == ')'
                              || input[*for_s->i + 5] == ';'
                              || input[*for_s->i + 5] == '\n'))))
         {
